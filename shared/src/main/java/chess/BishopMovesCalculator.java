@@ -25,7 +25,6 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
             //todo: check for obstacles
             ChessPosition checkPos = new ChessPosition(row, col);
             if (board.getPiece(checkPos) != null) { //if there is something in the position
-
                 if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, checkPos);
                     possibleMoves.add(move);

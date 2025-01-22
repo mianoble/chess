@@ -10,7 +10,8 @@ public class PieceMovesCalculator {
 
     public Collection<ChessMove> pieceMovesCalc (ChessBoard board, ChessPosition myPosition) {
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING) {
-            return new ArrayList<ChessMove>();
+            KingMovesCalc kingMovesCalc = new KingMovesCalc();
+            return kingMovesCalc.pieceMovesCalc(board, myPosition);
 
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.QUEEN) {
