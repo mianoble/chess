@@ -19,11 +19,12 @@ public class PieceMovesCalculator {
 
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.BISHOP) {
-            BishopMovesCalculator bishopMovesCalculator = new BishopMovesCalculator();
-            return bishopMovesCalculator.pieceMovesCalc(board, myPosition);
+            BishopMovesCalc bishopMovesCalc = new BishopMovesCalc();
+            return bishopMovesCalc.pieceMovesCalc(board, myPosition);
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KNIGHT) {
-            return new ArrayList<ChessMove>();
+            KnightMovesCalc knightMovesCalc = new KnightMovesCalc();
+            return knightMovesCalc.pieceMovesCalc(board, myPosition);
 
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.ROOK) {

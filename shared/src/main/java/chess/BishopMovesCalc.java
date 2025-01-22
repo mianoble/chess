@@ -3,8 +3,8 @@ package chess;
 import java.util.Collection;
 import java.util.ArrayList;
 
-public class BishopMovesCalculator extends PieceMovesCalculator {
-    public BishopMovesCalculator() {
+public class BishopMovesCalc extends PieceMovesCalculator {
+    public BishopMovesCalc() {
 
     }
 
