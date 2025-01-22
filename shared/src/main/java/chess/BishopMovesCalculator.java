@@ -13,6 +13,7 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
+        ChessPiece myPiece = board.getPiece(myPosition);
 
         // going left and up (row++, col++)
         while (true) {
@@ -22,11 +23,17 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
                 break;
             }
             //todo: check for obstacles
-            /*
-            if () {
-                break;
+            ChessPosition checkPos = new ChessPosition(row, col);
+            if (board.getPiece(checkPos) != null) { //if there is something in the position
+
+                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
+                    ChessMove move = new ChessMove(myPosition, checkPos);
+                    possibleMoves.add(move);
+                    break;
+                }
+                else
+                    break;
             }
-             */
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
@@ -43,11 +50,18 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
                 break;
             }
             //todo: check for obstacles
-            /*
-            if () {
-                break;
+            ChessPosition checkPos = new ChessPosition(row, col);
+            if (board.getPiece(checkPos) != null) { //if there is something in the position
+
+                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
+                    ChessMove move = new ChessMove(myPosition, checkPos);
+                    possibleMoves.add(move);
+                    break;
+                }
+                else
+                    break;
             }
-             */
+
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
@@ -64,11 +78,17 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
                 break;
             }
             //todo: check for obstacles
-            /*
-            if () {
-                break;
+            ChessPosition checkPos = new ChessPosition(row, col);
+            if (board.getPiece(checkPos) != null) { //if there is something in the position
+
+                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
+                    ChessMove move = new ChessMove(myPosition, checkPos);
+                    possibleMoves.add(move);
+                    break;
+                }
+                else
+                    break;
             }
-             */
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
@@ -85,11 +105,17 @@ public class BishopMovesCalculator extends PieceMovesCalculator {
                 break;
             }
             //todo: check for obstacles
-            /*
-            if () {
-                break;
+            ChessPosition checkPos = new ChessPosition(row, col);
+            if (board.getPiece(checkPos) != null) { //if there is something in the position
+
+                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
+                    ChessMove move = new ChessMove(myPosition, checkPos);
+                    possibleMoves.add(move);
+                    break;
+                }
+                else
+                    break;
             }
-             */
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
