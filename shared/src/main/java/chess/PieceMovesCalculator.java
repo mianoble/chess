@@ -30,7 +30,8 @@ public class PieceMovesCalculator {
             return rookMovesCalc.pieceMovesCalc(board, myPosition);
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.PAWN) {
-            return new ArrayList<ChessMove>();
+            PawnMovesCalc pawnMovesCalc = new PawnMovesCalc();
+            return pawnMovesCalc.pieceMovesCalc(board, myPosition);
         }
 
         return new ArrayList<ChessMove>();
