@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -57,6 +58,90 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        // white rooks
+        ChessPiece wr1 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        ChessPosition wr1Pos = new ChessPosition(1, 1);
+        this.addPiece(wr1Pos, wr1);
+        ChessPiece wr2 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        ChessPosition wr2Pos = new ChessPosition(1, 8);
+        this.addPiece(wr2Pos, wr2);
+
+        // white knights
+        ChessPiece wn1 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        ChessPosition wn1Pos = new ChessPosition(1, 2);
+        this.addPiece(wn1Pos, wn1);
+        ChessPiece wn2 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        ChessPosition wn2Pos = new ChessPosition(1, 7);
+        this.addPiece(wn2Pos, wn2);
+
+        // white bishops
+        ChessPiece wb1 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        ChessPosition wb1Pos = new ChessPosition(1, 3);
+        this.addPiece(wb1Pos, wb1);
+        ChessPiece wb2 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        ChessPosition wb2Pos = new ChessPosition(1, 6);
+        this.addPiece(wb2Pos, wb2);
+
+        // white queen
+        ChessPiece wq = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        ChessPosition wqPos = new ChessPosition(1, 4);
+        this.addPiece(wqPos, wq);
+
+        // white king
+        ChessPiece wk = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        ChessPosition wkPos = new ChessPosition(1, 5);
+        this.addPiece(wkPos, wk);
+
+        // white pawns
+        for (int i = 1; i < 9; i++) {
+            ChessPiece wp = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            ChessPosition wpPos = new ChessPosition(2, i);
+            this.addPiece(wpPos, wp);
+        }
+
+        /*-----------------------------------*/
+
+        // black rooks
+        ChessPiece br1 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        ChessPosition br1Pos = new ChessPosition(8, 1);
+        this.addPiece(br1Pos, br1);
+        ChessPiece br2 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        ChessPosition br2Pos = new ChessPosition(8, 8);
+        this.addPiece(br2Pos, br2);
+
+        // black knights
+        ChessPiece bn1 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        ChessPosition bn1Pos = new ChessPosition(8, 2);
+        this.addPiece(bn1Pos, bn1);
+        ChessPiece bn2 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        ChessPosition bn2Pos = new ChessPosition(8, 7);
+        this.addPiece(bn2Pos, bn2);
+
+        // black bishops
+        ChessPiece bb1 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPosition bb1Pos = new ChessPosition(8, 3);
+        this.addPiece(bb1Pos, bb1);
+        ChessPiece bb2 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPosition bb2Pos = new ChessPosition(8, 6);
+        this.addPiece(bb2Pos, bb2);
+
+        // black queen
+        ChessPiece bq = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        ChessPosition bqPos = new ChessPosition(8, 4);
+        this.addPiece(bqPos, bq);
+
+        // black king
+        ChessPiece bk = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        ChessPosition bkPos = new ChessPosition(8, 5);
+        this.addPiece(bkPos, bk);
+
+        // black pawns
+        for (int i = 1; i < 9; i++) {
+            ChessPiece bp = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            ChessPosition bpPos = new ChessPosition(7, i);
+            this.addPiece(bpPos, bp);
+        }
+
+
     }
 }
