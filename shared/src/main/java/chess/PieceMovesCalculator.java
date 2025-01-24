@@ -15,7 +15,8 @@ public class PieceMovesCalculator {
             return kingMovesCalc.pieceMovesCalc(board, myPosition);
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.QUEEN) {
-            return new ArrayList<ChessMove>();
+            QueenMovesCalc queenMovesCalc = new QueenMovesCalc();
+            return queenMovesCalc.pieceMovesCalc(board, myPosition);
         }
         else if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.BISHOP) {
             BishopMovesCalc bishopMovesCalc = new BishopMovesCalc();
