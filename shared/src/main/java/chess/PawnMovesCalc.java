@@ -47,10 +47,12 @@ public class PawnMovesCalc extends PieceMovesCalculator{
 
                     col += 2; // diagonal to the right
                     ChessPosition checkPos2 = new ChessPosition(row, col);
-                    if (board.getPiece(checkPos2) != null) {
-                        if (myPiece.getTeamColor() != board.getPiece(checkPos2).getTeamColor()) {
-                            ChessMove move = new ChessMove(myPosition, checkPos2);
-                            possibleMoves.add(move);
+                    if (row > 0 && row <= 8 && col > 0 && col <= 8) {
+                        if (board.getPiece(checkPos2) != null) {
+                            if (myPiece.getTeamColor() != board.getPiece(checkPos2).getTeamColor()) {
+                                ChessMove move = new ChessMove(myPosition, checkPos2);
+                                possibleMoves.add(move);
+                            }
                         }
                     }
                 }
