@@ -46,28 +46,6 @@ public class ChessMove {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (o == null) {
-//            return false;
-//        }
-//        if (o == this) {
-//            return true;
-//        }
-//        // next check that obj is of same type/class
-//        if (this.getClass() != o.getClass()) {
-//            return false;
-//        }
-//        // now we can actually check the different variables in the Person objects
-//        if (this.startPosition != ((ChessMove) o).startPosition) {
-//            return false;
-//        }
-//        else if (this.endPosition != ((ChessMove) o).endPosition) {
-//            return false;
-//        }
-//        return true;
-//    }
-
 
     /**
      * @return ChessPosition of starting location
