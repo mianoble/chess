@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 public class PawnMovesCalc extends PieceMovesCalculator{
-    public PawnMovesCalc() {
-
-    }
+    public PawnMovesCalc() {}
 
     @Override
     public Collection<ChessMove> pieceMovesCalc (ChessBoard board, ChessPosition myPosition) {
@@ -30,7 +28,6 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                     else {
                         break;
                     }
-
                 }
                 // check two diagonals
                 row = myPosition.getRow();
@@ -56,8 +53,6 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                         }
                     }
                 }
-
-
             }
             else if (row == 7) { // close to other side of the board
                 // check if pos in front is open and add with promotion
@@ -110,8 +105,7 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                             possibleMoves.add(moveQ);
                         }
                     }
-            }
-
+                }
             }
             else { // if its not in the starting position
                 // check if pos in front is open and add
@@ -137,7 +131,6 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                     }
                 }
 
-
                 col+=2;
                 ChessPosition checkPos3 = new ChessPosition(row, col);
                 // check within board bounds
@@ -150,7 +143,6 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                     }
                 }
             }
-
         }
 
         // black pawns
@@ -285,11 +277,7 @@ public class PawnMovesCalc extends PieceMovesCalculator{
                         }
                     }
                 }
-
-
             }
-
-
         }
 
         return possibleMoves;
