@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -51,6 +52,88 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    /**
+     *  find the position of the king
+     *  loop through the pieces and find the king
+     *  pass in a bool if the king is white or black
+     */
+    public ChessPosition findKingPos (boolean isWhite) {
+        if (isWhite) { // we are looking for the black king
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (squares[i][j].getPieceType() == ChessPiece.PieceType.KING &&
+                        squares[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        return new ChessPosition(i, j);
+                    }
+                }
+            }
+        }
+        else { // we are looking for the white king
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (squares[i][j].getPieceType() == ChessPiece.PieceType.KING &&
+                        squares[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        return new ChessPosition(i, j);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * getOpponentPieces
+     */
+    public Collection<ChessPiece> getOpponentPieces(boolean isWhite) {
+        Collection<ChessPiece> opponentPieces = new ArrayList<>();
+        if (isWhite) { // get all the black pieces
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (squares[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        opponentPieces.add(squares[i][j]);
+                    }
+                }
+            }
+        }
+        else { // get all the white pieces
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (squares[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        opponentPieces.add(squares[i][j]);
+                    }
+                }
+            }
+        }
+        return opponentPieces;
+    }
+
+    /**
+     * isKingInCheck // this is just going to check if the king is in check, but not anything about
+     * the king being able to move to get out of this position
+     */
+    public boolean isKingInCheck (boolean isWhite) {
+        ChessPosition kingPos = findKingPos(isWhite);
+        for (ChessPiece piece : getOpponentPieces(isWhite)) {
+            Collection<ChessMove> moves = piece.pieceMoves(this, findPos(piece));
+            for (ChessMove move : moves) {
+                if (move.getEndPosition().equals(kingPos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public ChessPosition findPos(ChessPiece piece) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (squares[i][j].equals(piece)) {
+                    return new ChessPosition(i, j);
+                }
+            }
+        }
+        return null;
     }
 
     /**
