@@ -61,6 +61,7 @@ public class ChessGame {
         else {
             ChessPiece currPiece = this.thisBoard.getPiece(startPosition);
             possMoves = currPiece.pieceMoves(this.thisBoard, startPosition);
+            possMoves.removeIf(move -> !safeMove(move, currPiece.getTeamColor()));
             return possMoves;
         }
     }
@@ -69,8 +70,22 @@ public class ChessGame {
      * check if this new move is safe
      * check if this move will put u in check.
      */
-    public boolean safeMove (ChessPosition endPos) {
-        if ()
+    public boolean safeMove (ChessMove move, TeamColor color) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        ChessPiece currPiece = this.thisBoard.getPiece(startPosition);
+        ChessPiece endPiece = this.thisBoard.getPiece(endPosition);
+
+        thisBoard.addPiece(startPosition, null);
+        thisBoard.addPiece(endPosition, currPiece);
+
+        boolean isSafe = !isInCheck(color);
+
+        thisBoard.addPiece(startPosition, currPiece);
+        thisBoard.addPiece(endPosition, endPiece);
+
+        return isSafe;
     }
 
     /**
@@ -104,7 +119,17 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean check = isInCheck(teamColor);
+
+    }
+
+    /**
+     * no valid moves
+     * returns true if there are no valid moves
+     * go through all the pieces on that team and check if there are any valid moves
+     */
+    public boolean noValidMoves(TeamColor teamColor) {
+        
     }
 
     /**
