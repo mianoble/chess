@@ -10,10 +10,12 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor currentTeam;
+    private TeamColor currentTeam = TeamColor.WHITE;
     private ChessBoard thisBoard;
 
     public ChessGame() {
+        thisBoard = new ChessBoard();
+        thisBoard.resetBoard();
 
     }
 
@@ -135,7 +137,7 @@ public class ChessGame {
         Collection <ChessMove> anyMoves = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                ChessPosition position = new ChessPosition(i, j);
+                ChessPosition position = new ChessPosition(i + 1, j + 1);
                 if (thisBoard.getPiece(position) != null &&
                         this.thisBoard.getPiece(position).getTeamColor() == teamColor) { //on the same team
                     anyMoves.addAll(validMoves(position));

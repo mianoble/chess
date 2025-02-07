@@ -19,6 +19,45 @@ public class ChessBoard {
         squares = new ChessPiece[8][8];
     }
 
+
+    // TODO: change
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("  a b c d e f g h\n"); // Column labels
+
+        for (int row = 8; row >= 1; row--) { // Chess boards print from rank 8 down to 1
+            sb.append(row).append(" "); // Row label
+
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = squares[row - 1][col - 1];
+                if (piece == null) {
+                    sb.append(". ");
+                } else {
+                    sb.append(getPieceChar(piece)).append(" ");
+                }
+            }
+            sb.append(row).append("\n");
+        }
+
+        sb.append("  a b c d e f g h\n"); // Column labels again at the bottom
+        return sb.toString();
+    }
+
+    private char getPieceChar(ChessPiece piece) {
+        char c;
+        switch (piece.getPieceType()) {
+            case KING -> c = 'K';
+            case QUEEN -> c = 'Q';
+            case ROOK -> c = 'R';
+            case BISHOP -> c = 'B';
+            case KNIGHT -> c = 'N';
+            case PAWN -> c = 'P';
+            default -> c = '?'; // Should never happen
+        }
+        return piece.getTeamColor() == ChessGame.TeamColor.WHITE ? c : Character.toLowerCase(c);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
