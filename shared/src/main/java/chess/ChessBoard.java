@@ -131,8 +131,8 @@ public class ChessBoard {
     /**
      * getOpponentPieces
      */
-    public Collection<ChessPiece> getOpponentPieces(boolean isWhite) {
-        Collection<ChessPiece> opponentPieces = new ArrayList<>();
+    public Collection<ChessPosition> getOpponentPieces(boolean isWhite) {
+        Collection<ChessPosition> opponentPos = new ArrayList<>();
         if (isWhite) { // get all the black pieces
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
@@ -140,7 +140,7 @@ public class ChessBoard {
                         continue;
                     }
                     if (squares[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
-                        opponentPieces.add(squares[i][j]);
+                        opponentPos.add(new ChessPosition(i + 1, j + 1));
                     }
                 }
             }
@@ -152,12 +152,12 @@ public class ChessBoard {
                         continue;
                     }
                     if (squares[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        opponentPieces.add(squares[i][j]);
+                        opponentPos.add(new ChessPosition(i + 1, j + 1));
                     }
                 }
             }
         }
-        return opponentPieces;
+        return opponentPos;
     }
 
     /**
@@ -166,8 +166,10 @@ public class ChessBoard {
      */
     public boolean isKingInCheck (boolean isWhite) {
         ChessPosition kingPos = findKingPos(isWhite);
-        for (ChessPiece piece : getOpponentPieces(isWhite)) {
-            Collection<ChessMove> moves = piece.pieceMoves(this, findPos(piece));
+//        for (ChessPiece piece : getOpponentPieces(isWhite)) {
+        for (ChessPosition position : getOpponentPieces(isWhite)) {
+            ChessPiece piece = getPiece(position);
+            Collection<ChessMove> moves = piece.pieceMoves(this, position);
             for (ChessMove move : moves) {
                 if (move.getEndPosition().equals(kingPos)) {
                     return true;
