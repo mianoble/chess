@@ -63,9 +63,12 @@ public class ChessBoard {
         if (isWhite) { // we are looking for the black king
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
+                    if (squares[i][j] == null) {
+                        continue;
+                    }
                     if (squares[i][j].getPieceType() == ChessPiece.PieceType.KING &&
                         squares[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
-                        return new ChessPosition(i, j);
+                        return new ChessPosition(i + 1, j + 1);
                     }
                 }
             }
@@ -73,13 +76,17 @@ public class ChessBoard {
         else { // we are looking for the white king
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
+                    if (squares[i][j] == null) {
+                        continue;
+                    }
                     if (squares[i][j].getPieceType() == ChessPiece.PieceType.KING &&
                         squares[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        return new ChessPosition(i, j);
+                        return new ChessPosition(i + 1, j + 1);
                     }
                 }
             }
         }
+        return null;
     }
 
     /**
@@ -90,6 +97,9 @@ public class ChessBoard {
         if (isWhite) { // get all the black pieces
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
+                    if (squares[i][j] == null) {
+                        continue;
+                    }
                     if (squares[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                         opponentPieces.add(squares[i][j]);
                     }
@@ -99,6 +109,9 @@ public class ChessBoard {
         else { // get all the white pieces
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
+                    if (squares[i][j] == null) {
+                        continue;
+                    }
                     if (squares[i][j].getTeamColor() == ChessGame.TeamColor.WHITE) {
                         opponentPieces.add(squares[i][j]);
                     }
@@ -128,8 +141,11 @@ public class ChessBoard {
     public ChessPosition findPos(ChessPiece piece) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
+                if (squares[i][j] == null) {
+                    continue;
+                }
                 if (squares[i][j].equals(piece)) {
-                    return new ChessPosition(i, j);
+                    return new ChessPosition(i + 1, j + 1);
                 }
             }
         }
