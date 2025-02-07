@@ -60,7 +60,7 @@ public class ChessBoard {
      *  pass in a bool if the king is white or black
      */
     public ChessPosition findKingPos (boolean isWhite) {
-        if (isWhite) { // we are looking for the black king
+        if (!isWhite) { // we are looking for the black king
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     if (squares[i][j] == null) {
