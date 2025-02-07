@@ -24,10 +24,9 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("  a b c d e f g h\n"); // Column labels
 
-        for (int row = 8; row >= 1; row--) { // Chess boards print from rank 8 down to 1
-            sb.append(row).append(" "); // Row label
+        for (int row = 8; row >= 1; row--) {
+            sb.append(row).append(" ");
 
             for (int col = 1; col <= 8; col++) {
                 ChessPiece piece = squares[row - 1][col - 1];
@@ -39,8 +38,6 @@ public class ChessBoard {
             }
             sb.append(row).append("\n");
         }
-
-        sb.append("  a b c d e f g h\n"); // Column labels again at the bottom
         return sb.toString();
     }
 
@@ -166,7 +163,6 @@ public class ChessBoard {
      */
     public boolean isKingInCheck (boolean isWhite) {
         ChessPosition kingPos = findKingPos(isWhite);
-//        for (ChessPiece piece : getOpponentPieces(isWhite)) {
         for (ChessPosition position : getOpponentPieces(isWhite)) {
             ChessPiece piece = getPiece(position);
             Collection<ChessMove> moves = piece.pieceMoves(this, position);

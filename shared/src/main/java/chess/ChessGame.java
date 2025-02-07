@@ -32,12 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (this.currentTeam == TeamColor.WHITE) {
-            this.currentTeam = TeamColor.BLACK;
-        }
-        else {
-            this.currentTeam = TeamColor.WHITE;
-        }
+        this.currentTeam = team;
     }
 
     /**
@@ -97,7 +92,41 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece currPiece = this.thisBoard.getPiece(startPosition);
+
+        if (currPiece == null) {
+            throw new InvalidMoveException("Invalid move");
+        }
+        else if (currPiece.getTeamColor() != currentTeam) {
+            throw new InvalidMoveException("Invalid move");
+        }
+        else {
+            Collection<ChessMove> validMovesArray = validMoves(startPosition);
+            if (validMovesArray.contains(move)) {
+                // execute the move
+                // check if theres a promotion
+                if (move.getPromotionPiece() == null) {
+                    thisBoard.addPiece(startPosition, null);
+                    thisBoard.addPiece(endPosition, currPiece);
+                }
+                else { // there is a promotion
+                    // new piece
+                    ChessPiece promotionPiece = new ChessPiece(currentTeam, move.getPromotionPiece());
+                    thisBoard.addPiece(startPosition, null);
+                    thisBoard.addPiece(endPosition, promotionPiece);
+                }
+            }
+            else
+                throw new InvalidMoveException("Invalid move");
+        }
+        if (this.currentTeam == TeamColor.WHITE) {
+            currentTeam = TeamColor.BLACK;
+        }
+        else {
+            currentTeam = TeamColor.WHITE;
+        }
     }
 
     /**
