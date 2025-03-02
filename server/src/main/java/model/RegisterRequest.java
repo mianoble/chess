@@ -1,6 +1,6 @@
 package model;
 
-public record UserData(
+public record RegisterRequest(
         String username,
         String password,
         String email) {
