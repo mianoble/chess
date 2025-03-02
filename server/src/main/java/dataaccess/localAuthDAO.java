@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 public class localAuthDAO implements AuthTokenDAO {
 
-    HashSet<AuthData> localAuthData;
+    private HashSet<AuthData> localAuthData;
 
     public localAuthDAO() {
         localAuthData = new HashSet<>();
