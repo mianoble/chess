@@ -1,6 +1,6 @@
 package dataaccess;
 
-import Model.AuthData;
+import model.AuthData;
 
 public interface AuthTokenDAO {
     //CRUD
