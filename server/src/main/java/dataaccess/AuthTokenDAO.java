@@ -5,17 +5,19 @@ import model.AuthData;
 public interface AuthTokenDAO {
     //CRUD
     // Create
-    void createAuth(AuthData authData) throws DataAccessException;
+    void createAuth(AuthData authData) throws ResponseException;
 
     // Read
-    AuthData getAuth(String authToken) throws DataAccessException;
+    AuthData getAuth(String authToken) throws ResponseException;
 
     // Update
     // i think there are no updates for auth tokens?
 
     // Delete
-    void deleteAuth(String authToken) throws DataAccessException;
+    void deleteAuth(String authToken) throws ResponseException;
 
-    void clear() throws DataAccessException;
+    void clear() throws ResponseException;
+
+    public boolean authExists(String gameName) throws ResponseException;
 
 }

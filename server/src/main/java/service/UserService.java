@@ -16,90 +16,67 @@ public class UserService {
         this.userDAO = user;
         this.authTokenDAO = authToken;
     }
-    /*
-    public RegisterResult register(RegisterRequest registerRequest) {}
-    public LoginResult login(LoginRequest loginRequest) {}
-    public LogoutResult logout(LogoutRequest logoutRequest) {}
-     */
+
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
-        try {
-            // check if username already taken
-            if (userDAO.userExists(registerRequest.username())) {
-                throw new ResponseException(403, "Error: username already taken");
-            }
-
-            // check that username, password, and email are all filled out
-            if (registerRequest.username() == null || registerRequest.username().isEmpty()) {
-                throw new ResponseException(400, "Username cannot be null or empty"); // TODO: or do i send a failure response?
-            } else if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
-                throw new ResponseException(400, "Password cannot be null or empty");
-            } else if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
-                throw new ResponseException(400, "Email cannot be null or empty");
-            }
-
-            UserData newUser = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-            userDAO.createUser(newUser);
-
-            String authID = UUID.randomUUID().toString();
-            AuthData authData = new AuthData(authID, registerRequest.username());
-            authTokenDAO.createAuth(authData);
-
-            return new RegisterResult(registerRequest.username(), authID,
-                    "username: " + registerRequest.username() + "authToken:" + authID);
-
-        } catch (DataAccessException e) {
-            throw new ResponseException(500, "Error");
+        // check if username already taken
+        if (userDAO.userExists(registerRequest.username())) {
+            throw new ResponseException(403, "Error: username already taken");
         }
+
+        // check that username, password, and email are all filled out
+        if (registerRequest.username() == null || registerRequest.username().isEmpty()) {
+            throw new ResponseException(400, "Username cannot be null or empty"); // TODO: or do i send a failure response?
+        } else if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
+            throw new ResponseException(400, "Password cannot be null or empty");
+        } else if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
+            throw new ResponseException(400, "Email cannot be null or empty");
+        }
+
+        UserData newUser = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+        userDAO.createUser(newUser);
+
+        String authID = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authID, registerRequest.username());
+        authTokenDAO.createAuth(authData);
+
+        return new RegisterResult(registerRequest.username(), authID);
     }
 
     public LoginResult login(LoginRequest loginRequest) throws ResponseException{
-        try {
-            if (loginRequest.username() == null || loginRequest.username().isEmpty()) {
-                throw new ResponseException(500, "Username cannot be null or empty");
-            } else if (loginRequest.password() == null || loginRequest.password().isEmpty()) {
-                throw new ResponseException(400, "Password cannot be null or empty");
-            }
 
-            UserData thisUser;
-            thisUser = userDAO.getUser(loginRequest.username());
-            if (thisUser == null) {
-                throw new ResponseException(500, "Error: username not found");
-            }
-            else if (!thisUser.password().equals(loginRequest.password())) {
-                throw new ResponseException(401, "Error: unauthorized login, incorrect password");
-            }
-
-            String authID = UUID.randomUUID().toString();
-            AuthData authData = new AuthData(authID, loginRequest.username());
-            authTokenDAO.createAuth(authData);
-
-            return new LoginResult(thisUser.username(), authID,
-                    "username: " + thisUser.username() + "authToken: " + authID);
-
-
-        } catch (DataAccessException e) {
-            throw new ResponseException(500, "Error");
+        if (loginRequest.username() == null || loginRequest.username().isEmpty()) {
+            throw new ResponseException(500, "Error: Username cannot be null or empty");
+        } else if (loginRequest.password() == null || loginRequest.password().isEmpty()) {
+            throw new ResponseException(500, "Error: Password cannot be null or empty");
         }
+
+        UserData thisUser;
+        thisUser = userDAO.getUser(loginRequest.username());
+        if (thisUser == null) {
+            throw new ResponseException(500, "Error: username not found");
+        }
+        else if (!thisUser.password().equals(loginRequest.password())) {
+            throw new ResponseException(401, "Error: unauthorized login, incorrect password");
+        }
+
+        String authID = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authID, loginRequest.username());
+        authTokenDAO.createAuth(authData);
+
+        return new LoginResult(loginRequest.username(), authID);
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws ResponseException {
-        try {
-            if (logoutRequest.authToken() == null || logoutRequest.authToken().isEmpty()) {
-                throw new ResponseException(500, "AuthToken cannot be null or empty");
-            }
 
-            AuthData thisAuth = authTokenDAO.getAuth(logoutRequest.authToken());
-            if (thisAuth == null) {
-                throw new ResponseException(500, "AuthToken not found");
-            }
 
-            authTokenDAO.deleteAuth(logoutRequest.authToken());
-            return new LogoutResult("authToken removed: " + thisAuth.username());
-
-        } catch (DataAccessException e) {
-            throw new ResponseException(500, "Error");
+    public LogoutResult logout(String authID) throws ResponseException {
+        if (authID == null) {
+            throw new ResponseException(500, "Error: AuthToken cannot be null or empty");
         }
+
+        authTokenDAO.deleteAuth(authID);
+        return new LogoutResult();
+
     }
 
 }

@@ -2,6 +2,7 @@ package handler;
 
 import dataaccess.AuthTokenDAO;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.RegisterRequest;
 import model.RegisterResult;
@@ -10,6 +11,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import com.google.gson.Gson;
+
+import java.util.Map;
 
 public class RegisterHandler implements Route {
     private final Gson gson;
@@ -38,9 +41,17 @@ public class RegisterHandler implements Route {
             res.status(200);
             return gson.toJson(result);
 
-        } catch (Exception e) {
+        } catch (ResponseException re) {
+            res.status(re.status());
+            String json = gson.toJson(Map.of("message", re.getMessage()));
+            res.body(json);
+            return json;
+        }
+        catch (Exception e) {
             res.status(500);
-            return gson.toJson(new DataAccessException("Error: testing still"));
+            String json = gson.toJson(Map.of("message", e.getMessage()));
+            res.body(json);
+            return json;
         }
 
     }

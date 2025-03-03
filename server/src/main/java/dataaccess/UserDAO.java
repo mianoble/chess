@@ -2,14 +2,14 @@ package dataaccess;
 import model.UserData;
 
 public interface UserDAO {
-    void createUser(UserData user) throws DataAccessException;
+    void createUser(UserData user) throws ResponseException;
 
-    UserData getUser(String username) throws DataAccessException;
+    UserData getUser(String username) throws ResponseException;
 
     public boolean userExists(String username) throws ResponseException;
 
-    void deleteUser(UserData user) throws DataAccessException;
+    void deleteUser(UserData user) throws ResponseException;
 
-    void clear() throws DataAccessException;
+    void clear() throws ResponseException;
 
 }

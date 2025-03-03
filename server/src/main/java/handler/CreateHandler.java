@@ -2,47 +2,46 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
-import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import dataaccess.ResponseException;
 import dataaccess.UserDAO;
-import model.LogoutRequest;
-import model.LogoutResult;
+import model.CreateRequest;
+import model.CreateResult;
+import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import java.io.Reader;
 import java.util.Map;
-import java.util.Set;
 
-public class LogoutHandler implements Route {
+public class CreateHandler implements Route {
     private final Gson gson;
-    private final UserService userService;
+    private final GameService gameService;
 
-    public LogoutHandler(UserDAO userDAO, AuthTokenDAO authTokenDAO) {
-        gson = new Gson();
-        userService = new UserService(userDAO, authTokenDAO);
+    public CreateHandler(GameDAO gameDAO, AuthTokenDAO authTokenDAO) {
+        this.gson = new Gson();
+        this.gameService = new GameService(gameDAO, authTokenDAO);
     }
-
 
     @Override
     public Object handle(Request req, Response res) throws Exception {
         try {
-
             String authToken = req.headers("authorization");
+            CreateRequest tempReq = gson.fromJson(req.body(), CreateRequest.class);
 
-            LogoutResult logoutRes = userService.logout(authToken);
+            System.out.println(tempReq.gameName());
+            CreateRequest createRequest = new CreateRequest(authToken, tempReq.gameName());
+
+            CreateResult createResult = gameService.create(createRequest);
 
             res.status(200);
-            return gson.toJson(logoutRes);
-
+            return gson.toJson(createResult);
         } catch (ResponseException re) {
             res.status(re.status());
             String json = gson.toJson(Map.of("message", re.getMessage()));
             res.body(json);
             return json;
-
         } catch (Exception e) {
             res.status(500);
             String json = gson.toJson(Map.of("message", e.getMessage()));

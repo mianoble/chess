@@ -11,6 +11,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Map;
+
 public class ClearHandler implements Route {
     private final Gson gson;
     private final ClearService clearService;
@@ -27,8 +29,17 @@ public class ClearHandler implements Route {
 
             res.status(200);
             return gson.toJson(result);
-        } catch (Exception e) {
-            return new ResponseException(500, "Error occurred while clearing game");
+        } catch (ResponseException re) {
+            res.status(re.status());
+            String json = gson.toJson(Map.of("message", re.getMessage()));
+            res.body(json);
+            return json;
+        }
+        catch (Exception e) {
+            res.status(500);
+            String json = gson.toJson(Map.of("message", e.getMessage()));
+            res.body(json);
+            return json;
         }
     }
 }

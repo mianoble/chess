@@ -7,4 +7,8 @@ public class ResponseException extends DataAccessException {
         this.statusCode = statusCode;
     }
 
+    public int status() {
+        return statusCode;
+    }
+
 }

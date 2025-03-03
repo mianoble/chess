@@ -18,15 +18,12 @@ public class ClearService {
     }
 
     public ClearResult clear() throws ResponseException {
-        try {
             userDAO.clear();
             authTokenDAO.clear();
             gameDAO.clear();
 
-            return new ClearResult ("success");
-        } catch (Exception e) {
-            throw new ResponseException(500, "Error");
-        }
+            return new ClearResult ();
+
 
 
     }

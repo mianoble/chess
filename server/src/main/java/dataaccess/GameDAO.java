@@ -2,17 +2,22 @@ package dataaccess;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.Set;
 
 public interface GameDAO {
 
-    void addGame(GameData game) throws DataAccessException;
+    void addGame(GameData game) throws ResponseException;
 
-    GameData getGame(int id) throws DataAccessException;
+    GameData getGame(int id) throws ResponseException;
 
-    Collection<GameData> getAllGames() throws DataAccessException;
+    Collection<GameData> getAllGames() throws ResponseException;
 
-    void updateGame(GameData newGame) throws DataAccessException;
+    Set<Integer> getGameIDs() throws ResponseException;
 
-    void clear() throws DataAccessException;
+    void updateGame(GameData newGame) throws ResponseException;
+
+    void clear() throws ResponseException;
+
+    public boolean gameExists(String gameName) throws ResponseException;
 
 }

@@ -3,6 +3,7 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.LoginRequest;
 import model.LoginResult;
@@ -11,6 +12,8 @@ import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import java.util.Map;
 
 public class LoginHandler implements Route {
     private final Gson gson;
@@ -31,9 +34,17 @@ public class LoginHandler implements Route {
 
             res.status(200);
             return gson.toJson(loginResult);
-        } catch (Exception e) {
+        } catch (ResponseException re) {
+            res.status(re.status());
+            String json = gson.toJson(Map.of("message", re.getMessage()));
+            res.body(json);
+            return json;
+        }
+        catch (Exception e) {
             res.status(500);
-            return gson.toJson(new DataAccessException("Failed to login // still testing"));
+            String json = gson.toJson(Map.of("message", e.getMessage()));
+            res.body(json);
+            return json;
         }
     }
 }

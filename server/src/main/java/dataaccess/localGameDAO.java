@@ -4,39 +4,48 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class localGameDAO implements GameDAO {
 
     private HashSet<GameData> localGameData;
+    Set<Integer> gameIDs;
 
     public localGameDAO() {
         localGameData = new HashSet<>();
+        gameIDs = new HashSet<>();
     }
 
     @Override
-    public void addGame(GameData game) throws DataAccessException {
+    public void addGame(GameData game) throws ResponseException {
         localGameData.add(game);
     }
 
     @Override
-    public GameData getGame(int id) throws DataAccessException {
+    public GameData getGame(int id) throws ResponseException {
         for (GameData i : localGameData) {
             if (i.gameID() == id) {
                 return i;
             }
         }
-        throw new DataAccessException("No game (" + id + ") found");
+        throw new ResponseException(400, "Error: No game (" + id + ") found");
     }
 
     @Override
-    public Collection<GameData> getAllGames() throws DataAccessException {
+    public Collection<GameData> getAllGames() throws ResponseException {
         return localGameData;
     }
 
     @Override
-    public void updateGame(GameData newGame) throws DataAccessException {
+    public Set<Integer> getGameIDs() throws ResponseException {
+        return gameIDs;
+    }
+
+    @Override
+    public void updateGame(GameData newGame) throws ResponseException {
         if (newGame == null) {
-            throw new DataAccessException("New game is null");
+            throw new ResponseException(500, "Error: New game is null");
         }
 
         GameData thisGame = null;
@@ -48,7 +57,7 @@ public class localGameDAO implements GameDAO {
         }
 
         if (thisGame == null) {
-            throw new DataAccessException("No game (ID: " + newGame.gameID() + ") found");
+            throw new ResponseException(500, "Error: No game (ID: " + newGame.gameID() + ") found");
         }
         else {
             localGameData.remove(thisGame);
@@ -57,7 +66,16 @@ public class localGameDAO implements GameDAO {
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws ResponseException {
         localGameData.clear();
+    }
+
+    public boolean gameExists(String gameName) throws ResponseException {
+        for (GameData i : localGameData) {
+            if (i.gameName().equals(gameName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
