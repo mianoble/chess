@@ -43,8 +43,5 @@ public class RegisterHandler implements Route {
             return gson.toJson(new DataAccessException("Error: testing still"));
         }
 
-
-
-
     }
 }

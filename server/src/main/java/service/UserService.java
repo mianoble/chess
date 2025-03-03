@@ -6,10 +6,7 @@ import dataaccess.AuthTokenDAO;
 import dataaccess.DataAccessException;
 import dataaccess.ResponseException;
 import dataaccess.UserDAO;
-import model.AuthData;
-import model.RegisterRequest;
-import model.RegisterResult;
-import model.UserData;
+import model.*;
 
 public class UserService {
     private UserDAO userDAO;
@@ -22,7 +19,7 @@ public class UserService {
     /*
     public RegisterResult register(RegisterRequest registerRequest) {}
     public LoginResult login(LoginRequest loginRequest) {}
-    public void logout(LogoutRequest logoutRequest) {}
+    public LogoutResult logout(LogoutRequest logoutRequest) {}
      */
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
@@ -55,4 +52,54 @@ public class UserService {
             throw new ResponseException(500, "Error");
         }
     }
+
+    public LoginResult login(LoginRequest loginRequest) throws ResponseException{
+        try {
+            if (loginRequest.username() == null || loginRequest.username().isEmpty()) {
+                throw new ResponseException(500, "Username cannot be null or empty");
+            } else if (loginRequest.password() == null || loginRequest.password().isEmpty()) {
+                throw new ResponseException(400, "Password cannot be null or empty");
+            }
+
+            UserData thisUser;
+            thisUser = userDAO.getUser(loginRequest.username());
+            if (thisUser == null) {
+                throw new ResponseException(500, "Error: username not found");
+            }
+            else if (!thisUser.password().equals(loginRequest.password())) {
+                throw new ResponseException(401, "Error: unauthorized login, incorrect password");
+            }
+
+            String authID = UUID.randomUUID().toString();
+            AuthData authData = new AuthData(authID, loginRequest.username());
+            authTokenDAO.createAuth(authData);
+
+            return new LoginResult(thisUser.username(), authID,
+                    "username: " + thisUser.username() + "authToken: " + authID);
+
+
+        } catch (DataAccessException e) {
+            throw new ResponseException(500, "Error");
+        }
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws ResponseException {
+        try {
+            if (logoutRequest.authToken() == null || logoutRequest.authToken().isEmpty()) {
+                throw new ResponseException(500, "AuthToken cannot be null or empty");
+            }
+
+            AuthData thisAuth = authTokenDAO.getAuth(logoutRequest.authToken());
+            if (thisAuth == null) {
+                throw new ResponseException(500, "AuthToken not found");
+            }
+
+            authTokenDAO.deleteAuth(logoutRequest.authToken());
+            return new LogoutResult("authToken removed: " + thisAuth.username());
+
+        } catch (DataAccessException e) {
+            throw new ResponseException(500, "Error");
+        }
+    }
+
 }
