@@ -5,7 +5,7 @@ import model.UserData;
 import java.util.HashSet;
 
 public class localUserDAO implements UserDAO {
-    private HashSet<UserData> localUserData;
+    private final HashSet<UserData> localUserData;
 
     public localUserDAO() {
         this.localUserData = new HashSet<>();
@@ -30,7 +30,7 @@ public class localUserDAO implements UserDAO {
         throw new DataAccessException("User not found");
     }
 
-    public boolean userExists(String username) throws DataAccessException {
+    public boolean userExists(String username) throws ResponseException {
         for (UserData i : localUserData) {
             if (i.username().equals(username)) {
                 return true;
