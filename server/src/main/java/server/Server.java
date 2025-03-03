@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import handler.ClearHandler;
 import handler.LoginHandler;
+import handler.LogoutHandler;
 import spark.*;
 import handler.RegisterHandler;
 
@@ -21,6 +22,8 @@ public class Server {
         Spark.post("/user", new RegisterHandler(userDAO, authDAO)); //input userDAO and authTokenDAO somehow
         // log in
         Spark.get("/session", new LoginHandler(userDAO, authDAO));
+        // log out
+        Spark.delete("/session", new LogoutHandler(userDAO, authDAO));
 
         // clear
         Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));
