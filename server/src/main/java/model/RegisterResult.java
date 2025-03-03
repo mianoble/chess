@@ -2,5 +2,6 @@ package model;
 
 public record RegisterResult (
         String username,
-        String authToken) {
+        String authToken,
+        String message) {
 }

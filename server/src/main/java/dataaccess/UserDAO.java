@@ -6,7 +6,7 @@ public interface UserDAO {
 
     UserData getUser(String username) throws DataAccessException;
 
-    public boolean userExists(String username) throws DataAccessException;
+    public boolean userExists(String username) throws ResponseException;
 
     void deleteUser(UserData user) throws DataAccessException;
 

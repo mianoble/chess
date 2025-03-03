@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import dataaccess.AuthTokenDAO;
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.RegisterRequest;
@@ -24,20 +25,20 @@ public class UserService {
     public void logout(LogoutRequest logoutRequest) {}
      */
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+    public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
         try {
             // check if username already taken
             if (userDAO.userExists(registerRequest.username())) {
-                throw new DataAccessException("Error: username already taken");
+                throw new ResponseException(403, "Error: username already taken");
             }
 
             // check that username, password, and email are all filled out
             if (registerRequest.username() == null || registerRequest.username().isEmpty()) {
-                throw new DataAccessException("Username cannot be null or empty"); // TODO: or do i send a failure response?
+                throw new ResponseException(400, "Username cannot be null or empty"); // TODO: or do i send a failure response?
             } else if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
-                throw new DataAccessException("Password cannot be null or empty");
+                throw new ResponseException(400, "Password cannot be null or empty");
             } else if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
-                throw new DataAccessException("Email cannot be null or empty");
+                throw new ResponseException(400, "Email cannot be null or empty");
             }
 
             UserData newUser = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
@@ -47,10 +48,11 @@ public class UserService {
             AuthData authData = new AuthData(authID, registerRequest.username());
             authTokenDAO.createAuth(authData);
 
-            return new RegisterResult(registerRequest.username(), authID);
+            return new RegisterResult(registerRequest.username(), authID,
+                    "username: " + registerRequest.username() + "authToken:" + authID);
 
         } catch (DataAccessException e) {
-            throw new DataAccessException("Error");
+            throw new ResponseException(500, "Error");
         }
     }
 }
