@@ -78,4 +78,14 @@ public class localGameDAO implements GameDAO {
         }
         return false;
     }
+
+    public void deleteGame(GameData game) throws ResponseException {
+        for (GameData i : localGameData) {
+            if (i.equals(game)) {
+                localGameData.remove(i);
+                return;
+            }
+        }
+        throw new ResponseException(500, "Game " + game.gameID() + " not found");
+    }
 }

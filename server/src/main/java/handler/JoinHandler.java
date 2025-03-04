@@ -4,22 +4,21 @@ import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
 import dataaccess.ResponseException;
-import dataaccess.UserDAO;
 import model.CreateRequest;
-import model.CreateResult;
+import model.JoinRequest;
+import model.JoinResult;
 import service.GameService;
-import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 import java.util.Map;
 
-public class CreateHandler implements Route {
+public class JoinHandler implements Route {
     private final Gson gson;
     private final GameService gameService;
 
-    public CreateHandler(GameDAO gameDAO, AuthTokenDAO authTokenDAO) {
+    public JoinHandler (GameDAO gameDAO, AuthTokenDAO authTokenDAO) {
         this.gson = new Gson();
         this.gameService = new GameService(gameDAO, authTokenDAO);
     }
@@ -28,14 +27,14 @@ public class CreateHandler implements Route {
     public Object handle(Request req, Response res) throws Exception {
         try {
             String authToken = req.headers("authorization");
-            CreateRequest tempReq = gson.fromJson(req.body(), CreateRequest.class);
+            JoinRequest tempReq = gson.fromJson(req.body(), JoinRequest.class);
 
-            CreateRequest createRequest = new CreateRequest(authToken, tempReq.gameName());
+            JoinRequest joinRequest = new JoinRequest(authToken, tempReq.playerColor(), tempReq.gameID());
 
-            CreateResult createResult = gameService.create(createRequest);
+            JoinResult joinResult = gameService.join(joinRequest);
 
             res.status(200);
-            return gson.toJson(createResult);
+            return gson.toJson(joinResult);
         } catch (ResponseException re) {
             res.status(re.status());
             String json = gson.toJson(Map.of("message", re.getMessage()));
@@ -47,5 +46,7 @@ public class CreateHandler implements Route {
             res.body(json);
             return json;
         }
+
+
     }
 }

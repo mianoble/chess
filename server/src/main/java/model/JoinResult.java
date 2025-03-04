@@ -1,4 +1,4 @@
 package model;
 
-public class JoinResult {
+public record JoinResult ( ){
 }

@@ -28,7 +28,7 @@ public class Server {
         // create game
         Spark.post("/game", new CreateHandler(gameDAO, authDAO));
         // join game
-//        Spark.put("/game", new JoinHandler(...,...));
+        Spark.put("/game", new JoinHandler(gameDAO, authDAO));
         // list games
 //        Spark.get("/game", new ListHandler(...,...));
 

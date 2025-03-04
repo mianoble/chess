@@ -20,4 +20,6 @@ public interface GameDAO {
 
     public boolean gameExists(String gameName) throws ResponseException;
 
+    public void deleteGame(GameData game) throws ResponseException;
+
 }
