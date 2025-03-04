@@ -12,9 +12,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        localUserDAO userDAO = new localUserDAO();
-        localAuthDAO authDAO = new localAuthDAO();
-        localGameDAO gameDAO = new localGameDAO();
+        localUserDao userDAO = new localUserDao();
+        localAuthDao authDAO = new localAuthDao();
+        localGameDao gameDAO = new localGameDao();
 
         // UserService
         // register

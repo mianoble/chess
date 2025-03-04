@@ -1,16 +1,14 @@
 package dataaccess;
 
 import model.AuthData;
-import model.GameData;
-import spark.Response;
 
 import java.util.HashSet;
 
-public class localAuthDAO implements AuthTokenDAO {
+public class localAuthDao implements AuthTokenDAO {
 
     private HashSet<AuthData> localAuthData;
 
-    public localAuthDAO() {
+    public localAuthDao() {
         localAuthData = new HashSet<>();
     }
 

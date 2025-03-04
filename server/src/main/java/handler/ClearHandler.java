@@ -5,7 +5,7 @@ import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
 import dataaccess.ResponseException;
 import dataaccess.UserDAO;
-import model.ClearResult;
+import model.EmptyResult;
 import service.ClearService;
 import spark.Request;
 import spark.Response;
@@ -25,7 +25,7 @@ public class ClearHandler implements Route {
     @Override
     public Object handle(Request req, Response res) throws ResponseException {
         try {
-            ClearResult result = clearService.clear();
+            EmptyResult result = clearService.clear();
 
             res.status(200);
             return gson.toJson(result);

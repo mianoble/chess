@@ -14,8 +14,6 @@ public interface GameDAO {
 
     Set<Integer> getGameIDs() throws ResponseException;
 
-    void updateGame(GameData newGame) throws ResponseException;
-
     void clear() throws ResponseException;
 
     public boolean gameExists(String gameName) throws ResponseException;

@@ -20,7 +20,6 @@ public class ChessBoard {
     }
 
 
-    // TODO: change
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -175,19 +174,6 @@ public class ChessBoard {
         return false;
     }
 
-    public ChessPosition findPos(ChessPiece piece) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (squares[i][j] == null) {
-                    continue;
-                }
-                if (squares[i][j].equals(piece)) {
-                    return new ChessPosition(i + 1, j + 1);
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * Sets the board to the default starting board

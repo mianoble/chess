@@ -1,5 +1,5 @@
 package model;
 
-public record ClearResult(
+public record EmptyResult(
         ) {
 }

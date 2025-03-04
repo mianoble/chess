@@ -23,10 +23,9 @@ public class ChessMove {
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
-        this.promotionPiece = null; //todo: change this probably
+        this.promotionPiece = null;
     }
 
-    //TODO: override toString method
     @Override
     public String toString() {
         return "[" + endPosition.getRow() + ", " + endPosition.getColumn() + "]";

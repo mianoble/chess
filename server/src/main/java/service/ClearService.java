@@ -4,7 +4,7 @@ import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
 import dataaccess.ResponseException;
 import dataaccess.UserDAO;
-import model.ClearResult;
+import model.EmptyResult;
 
 public class ClearService {
     private UserDAO userDAO;
@@ -17,12 +17,12 @@ public class ClearService {
         this.gameDAO = gameDAO;
     }
 
-    public ClearResult clear() throws ResponseException {
+    public EmptyResult clear() throws ResponseException {
             userDAO.clear();
             authTokenDAO.clear();
             gameDAO.clear();
 
-            return new ClearResult ();
+            return new EmptyResult();
     }
 
 

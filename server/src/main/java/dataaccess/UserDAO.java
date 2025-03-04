@@ -8,8 +8,6 @@ public interface UserDAO {
 
     public boolean userExists(String username) throws ResponseException;
 
-    void deleteUser(UserData user) throws ResponseException;
-
     void clear() throws ResponseException;
 
 }

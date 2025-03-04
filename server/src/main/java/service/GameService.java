@@ -13,17 +13,12 @@ import java.util.Random;
 public class GameService {
     private GameDAO gameDAO;
     private AuthTokenDAO authDAO;
-    private static final Random random = new Random();
+    private static final Random rand = new Random();
 
     public GameService (GameDAO gameDAO, AuthTokenDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
-    /*
-    public CreateResult create(CreateRequest r) {}
-    public JoinResult join(JoinRequest r) {}
-    public ListResult list(ListRequest r) {}
-     */
 
     public CreateResult create(CreateRequest r) throws ResponseException {
         if (r.authToken() == null || r.authToken().isEmpty()) {
@@ -43,7 +38,7 @@ public class GameService {
         // make a random gameID & make sure it is not in the set of IDs already
         int randomID = 0;
         do {
-            randomID = random.nextInt(1_000_000);
+            randomID = rand.nextInt(1_000_000);
         } while (gameDAO.getGameIDs().contains(randomID));
 
         gameDAO.getGameIDs().add(randomID);
@@ -52,14 +47,14 @@ public class GameService {
         // create new ChessGame first
         ChessGame newGame = new ChessGame();
         GameData newGameData = new GameData(randomID, null, null,
-                r.gameName(), newGame); // TODO: how to pull usernames? and from where?
+                r.gameName(), newGame);
 
         gameDAO.addGame(newGameData);
 
         return new CreateResult(randomID);
     }
 
-    public JoinResult join(JoinRequest r) throws ResponseException {
+    public EmptyResult join(JoinRequest r) throws ResponseException {
         // check that the game exists with ID
         if (!gameDAO.getGameIDs().contains(r.gameID())) {
             throw new ResponseException(400, "Error: bad request, gameID does not exist");
@@ -94,7 +89,7 @@ public class GameService {
             throw new ResponseException(403, "Error: already taken");
         }
 
-        return new JoinResult();
+        return new EmptyResult();
 
     }
 
@@ -111,15 +106,8 @@ public class GameService {
 
         // return a collection / list of all the games and info (gameID, whiteuser, blackuser, and gamename)
         Collection<GameData> games = gameDAO.getAllGames();
-        Collection<GameDataForListing> allGames = new java.util.ArrayList<>(List.of());
 
-        for (GameData i: games) {
-            GameDataForListing newGameData = new GameDataForListing(i.gameID(), i.whiteUsername(), 
-                                                                    i.blackUsername(), i.gameName());
-            allGames.add(newGameData);
-        }
-
-        return new ListResult(allGames);
+        return new ListResult(games);
     }
 
 }

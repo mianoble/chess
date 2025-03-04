@@ -1,14 +1,13 @@
 package dataaccess;
 
 import model.UserData;
-import spark.Response;
 
 import java.util.HashSet;
 
-public class localUserDAO implements UserDAO {
+public class localUserDao implements UserDAO {
     private final HashSet<UserData> localUserData;
 
-    public localUserDAO() {
+    public localUserDao() {
         this.localUserData = new HashSet<>();
     }
 
@@ -41,14 +40,7 @@ public class localUserDAO implements UserDAO {
     }
 
     @Override
-    public void deleteUser(UserData user) throws ResponseException {
-        localUserData.removeIf(i -> i.equals(user));
-    }
-
-    @Override
     public void clear() throws ResponseException {
         localUserData.clear();
     }
-
-
 }

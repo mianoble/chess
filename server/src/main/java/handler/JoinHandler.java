@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
 import dataaccess.ResponseException;
-import model.CreateRequest;
+import model.EmptyResult;
 import model.JoinRequest;
-import model.JoinResult;
 import service.GameService;
 import spark.Request;
 import spark.Response;
@@ -31,7 +30,7 @@ public class JoinHandler implements Route {
 
             JoinRequest joinRequest = new JoinRequest(authToken, tempReq.playerColor(), tempReq.gameID());
 
-            JoinResult joinResult = gameService.join(joinRequest);
+            EmptyResult joinResult = gameService.join(joinRequest);
 
             res.status(200);
             return gson.toJson(joinResult);

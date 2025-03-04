@@ -4,15 +4,14 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class localGameDAO implements GameDAO {
+public class localGameDao implements GameDAO {
 
     private HashSet<GameData> localGameData;
     Set<Integer> gameIDs;
 
-    public localGameDAO() {
+    public localGameDao() {
         localGameData = new HashSet<>();
         gameIDs = new HashSet<>();
     }
@@ -40,29 +39,6 @@ public class localGameDAO implements GameDAO {
     @Override
     public Set<Integer> getGameIDs() throws ResponseException {
         return gameIDs;
-    }
-
-    @Override
-    public void updateGame(GameData newGame) throws ResponseException {
-        if (newGame == null) {
-            throw new ResponseException(500, "Error: New game is null");
-        }
-
-        GameData thisGame = null;
-        for (GameData i : localGameData) {
-            if (i.gameID() == newGame.gameID()) {
-                thisGame = i;
-                break;
-            }
-        }
-
-        if (thisGame == null) {
-            throw new ResponseException(500, "Error: No game (ID: " + newGame.gameID() + ") found");
-        }
-        else {
-            localGameData.remove(thisGame);
-            localGameData.add(newGame);
-        }
     }
 
     @Override

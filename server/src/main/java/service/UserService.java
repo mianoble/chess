@@ -26,7 +26,7 @@ public class UserService {
 
         // check that username, password, and email are all filled out
         if (registerRequest.username() == null || registerRequest.username().isEmpty()) {
-            throw new ResponseException(400, "Error: Username cannot be null or empty"); // TODO: or do i send a failure response?
+            throw new ResponseException(400, "Error: Username cannot be null or empty");
         } else if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
             throw new ResponseException(400, "Error: Password cannot be null or empty");
         } else if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
