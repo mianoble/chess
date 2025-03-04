@@ -6,15 +6,27 @@ import java.util.ArrayList;
 public class RookMovesCalc extends PieceMovesCalculator {
     public RookMovesCalc() {
     }
-    @Override
-    public Collection<ChessMove> pieceMovesCalc (ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleMoves = new ArrayList<>();
+
+    private void makingAMove(ChessBoard board, ChessPosition myPosition, String direction,
+                             Collection<ChessMove> possibleMoves) {
+        //Collection<ChessMove> possibleMoves = new ArrayList<>();
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece myPiece = board.getPiece(myPosition);
         // going up, row++ col
         while (true) {
-            row++;
+            if(direction.equals("up")){
+                row++;
+            }
+            else if (direction.equals("down")) {
+                row--;
+            }
+            else if (direction.equals("left")) {
+                col--;
+            }
+            else if (direction.equals("right")) {
+                col++;
+            }
             if (row <= 0 || row > 8 || col <= 0 || col > 8)
                 break;
             ChessPosition checkPos = new ChessPosition(row, col);
@@ -30,68 +42,24 @@ public class RookMovesCalc extends PieceMovesCalculator {
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
         }
-        row = myPosition.getRow();
-        col = myPosition.getColumn();
+    }
+
+    @Override
+    public Collection<ChessMove> pieceMovesCalc (ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+
+        // going up, row++ col
+        makingAMove(board, myPosition, "up", possibleMoves);
+
         // going down, row-- col
-        while (true) {
-            row--;
-            if (row <= 0 || row > 8 || col <= 0 || col > 8)
-                break;
-            ChessPosition checkPos = new ChessPosition(row, col);
-            if (board.getPiece(checkPos) != null) { //if there is something in the position
-                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, checkPos);
-                    possibleMoves.add(move);
-                    break;
-                } else
-                    break;
-            }
-            ChessPosition newPosition = new ChessPosition(row, col);
-            ChessMove move = new ChessMove(myPosition, newPosition);
-            possibleMoves.add(move);
-        }
-        row = myPosition.getRow();
-        col = myPosition.getColumn();
+        makingAMove(board, myPosition, "down", possibleMoves);
+
         // going left, row col--
-        while (true) {
-            col--;
-            if (row <= 0 || row > 8 || col <= 0 || col > 8)
-                break;
-            ChessPosition checkPos = new ChessPosition(row, col);
-            if (board.getPiece(checkPos) != null) { //if there is something in the position
-                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, checkPos);
-                    possibleMoves.add(move);
-                    break;
-                } else
-                    break;
-            }
-            ChessPosition newPosition = new ChessPosition(row, col);
-            ChessMove move = new ChessMove(myPosition, newPosition);
-            possibleMoves.add(move);
-        }
-        row = myPosition.getRow();
-        col = myPosition.getColumn();
+        makingAMove(board, myPosition, "left", possibleMoves);
+
         // going right, row col++
-        while (true) {
-            col++;
-            if (row <= 0 || row > 8 || col <= 0 || col > 8)
-                break;
-            ChessPosition checkPos = new ChessPosition(row, col);
-            if (board.getPiece(checkPos) != null) { //if there is something in the position
-                if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, checkPos);
-                    possibleMoves.add(move);
-                    break;
-                } else
-                    break;
-            }
-            ChessPosition newPosition = new ChessPosition(row, col);
-            ChessMove move = new ChessMove(myPosition, newPosition);
-            possibleMoves.add(move);
-        }
-        row = myPosition.getRow();
-        col = myPosition.getColumn();
+        makingAMove(board, myPosition, "right", possibleMoves);
+
         return possibleMoves;
     }
 }
