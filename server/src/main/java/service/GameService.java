@@ -51,7 +51,7 @@ public class GameService {
         // if not yet in db, create it/ add it
         // create new ChessGame first
         ChessGame newGame = new ChessGame();
-        GameData newGameData = new GameData(randomID, "", "",
+        GameData newGameData = new GameData(randomID, null, null,
                 r.gameName(), newGame); // TODO: how to pull usernames? and from where?
 
         gameDAO.addGame(newGameData);

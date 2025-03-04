@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 public class BishopMovesCalc extends PieceMovesCalculator {
-    public BishopMovesCalc() {
-
-    }
+    public BishopMovesCalc() {}
 
     @Override
     public Collection<ChessMove> pieceMovesCalc(ChessBoard board, ChessPosition myPosition) {
@@ -14,105 +12,80 @@ public class BishopMovesCalc extends PieceMovesCalculator {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece myPiece = board.getPiece(myPosition);
-
         // going left and up (row++, col++)
         while (true) {
             row++; col++;
-            // check within board bounds
             if (row <= 0 || row > 8 || col <= 0 || col > 8) {
                 break;
             }
-            // check for obstacles
             ChessPosition checkPos = new ChessPosition(row, col);
             if (board.getPiece(checkPos) != null) { //if there is something in the position
                 if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, checkPos);
                     possibleMoves.add(move);
                     break;
-                }
-                else
+                } else
                     break;
             }
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
         }
-
-        // reset row and col
         row = myPosition.getRow();
         col = myPosition.getColumn();
         // going right and up (row++, col--)
         while (true) {
             row++; col--;
-            // check within board bounds
             if (row <= 0 || row > 8 || col <= 0 || col > 8) {
                 break;
             }
-            // check for obstacles
             ChessPosition checkPos = new ChessPosition(row, col);
             if (board.getPiece(checkPos) != null) { //if there is something in the position
-
                 if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, checkPos);
                     possibleMoves.add(move);
                     break;
-                }
-                else
+                } else
                     break;
             }
-
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
         }
-
-        // reset row and col
         row = myPosition.getRow();
         col = myPosition.getColumn();
         // going left and down (row--, col++)
         while (true) {
             row--; col++;
-            // check within board bounds
-            if (row <= 0 || row > 8 || col <= 0 || col > 8) {
+            if (row <= 0 || row > 8 || col <= 0 || col > 8)
                 break;
-            }
-            // check for obstacles
             ChessPosition checkPos = new ChessPosition(row, col);
             if (board.getPiece(checkPos) != null) { //if there is something in the position
-
                 if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, checkPos);
                     possibleMoves.add(move);
                     break;
-                }
-                else
+                } else
                     break;
             }
             ChessPosition newPosition = new ChessPosition(row, col);
             ChessMove move = new ChessMove(myPosition, newPosition);
             possibleMoves.add(move);
         }
-
-        // reset row and col
         row = myPosition.getRow();
         col = myPosition.getColumn();
         // going right and down (row--, col--)
         while (true) {
             row--; col--;
-            // check within board bounds
-            if (row <= 0 || row > 8 || col <= 0 || col > 8) {
+            if (row <= 0 || row > 8 || col <= 0 || col > 8)
                 break;
-            }
-            // check for obstacles
             ChessPosition checkPos = new ChessPosition(row, col);
             if (board.getPiece(checkPos) != null) { //if there is something in the position
-
                 if (myPiece.getTeamColor() != board.getPiece(checkPos).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, checkPos);
                     possibleMoves.add(move);
                     break;
-                }
-                else
+                } else
                     break;
             }
             ChessPosition newPosition = new ChessPosition(row, col);
