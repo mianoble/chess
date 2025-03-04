@@ -30,13 +30,13 @@ public class ClearHandler implements Route {
             res.status(200);
             return gson.toJson(result);
         } catch (ResponseException re) {
-            res.status(re.status());
+            res.status(401);
             String json = gson.toJson(Map.of("message", re.getMessage()));
             res.body(json);
             return json;
         }
         catch (Exception e) {
-            res.status(500);
+            res.status(401);
             String json = gson.toJson(Map.of("message", e.getMessage()));
             res.body(json);
             return json;

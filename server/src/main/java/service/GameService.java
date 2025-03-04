@@ -106,7 +106,7 @@ public class GameService {
 
         // verify authtoken is in db
         if (!authDAO.authExists(r.authToken())) {
-            throw new ResponseException(500, "Error: authToken does not exist");
+            throw new ResponseException(401, "Error: unauthorized, authToken does not exist");
         }
 
         // return a collection / list of all the games and info (gameID, whiteuser, blackuser, and gamename)

@@ -23,9 +23,6 @@ public class ClearService {
             gameDAO.clear();
 
             return new ClearResult ();
-
-
-
     }
 
 
