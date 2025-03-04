@@ -36,7 +36,8 @@ public class PawnMovesCalc extends PieceMovesCalculator{
         checkDiagonals(board, myPosition, possibleMoves, row, col, myPiece);
     }
 
-    private void checkDiagonals(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece) {
+    private void checkDiagonals(ChessBoard board, ChessPosition myPosition,
+                                Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece) {
         col--; // down to the left
         ChessPosition checkPos = new ChessPosition(row, col);
         if (row > 0 && row <= 8 && col > 0 && col <= 8) {
@@ -98,7 +99,9 @@ public class PawnMovesCalc extends PieceMovesCalculator{
         addPromotedPiece(board, myPosition, possibleMoves, row, col, myPiece, checkPos3);
     }
 
-    private void addPromotedPiece(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece, ChessPosition checkPos3) {
+    private void addPromotedPiece(ChessBoard board, ChessPosition myPosition,
+                                  Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece,
+                                  ChessPosition checkPos3) {
         if (row > 0 && row <= 8 && col > 0 && col <= 8) {
             if (board.getPiece(checkPos3) != null) {
                 if (myPiece.getTeamColor() != board.getPiece(checkPos3).getTeamColor()) {
