@@ -26,11 +26,11 @@ public class UserService {
 
         // check that username, password, and email are all filled out
         if (registerRequest.username() == null || registerRequest.username().isEmpty()) {
-            throw new ResponseException(400, "Username cannot be null or empty"); // TODO: or do i send a failure response?
+            throw new ResponseException(400, "Error: Username cannot be null or empty"); // TODO: or do i send a failure response?
         } else if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
-            throw new ResponseException(400, "Password cannot be null or empty");
+            throw new ResponseException(400, "Error: Password cannot be null or empty");
         } else if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
-            throw new ResponseException(400, "Email cannot be null or empty");
+            throw new ResponseException(400, "Error: Email cannot be null or empty");
         }
 
         UserData newUser = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
@@ -72,6 +72,10 @@ public class UserService {
     public LogoutResult logout(String authID) throws ResponseException {
         if (authID == null) {
             throw new ResponseException(500, "Error: AuthToken cannot be null or empty");
+        }
+        // verify authtoken is in db
+        if (!authTokenDAO.authExists(authID)) {
+            throw new ResponseException(401, "Error: authToken does not exist");
         }
 
         authTokenDAO.deleteAuth(authID);

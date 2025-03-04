@@ -27,6 +27,15 @@ public class ListHandler implements Route {
     public Object handle(Request req, Response res) throws Exception {
         try {
             String authToken = req.headers("authorization");
+
+            //idk if i need this
+            if (authToken == null || authToken.isEmpty()) { //make sure authToken is not null
+                res.status(401);
+                String json = gson.toJson(Map.of("message", "Error: authToken cannot be null"));
+                res.body(json);
+                return json;
+            }
+
             ListRequest listRequest = new ListRequest(authToken);
 
             ListResult listResult = gameService.list(listRequest);

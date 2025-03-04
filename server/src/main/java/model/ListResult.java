@@ -3,5 +3,5 @@ package model;
 import java.util.Collection;
 
 public record ListResult (
-        Collection<GameData> allGames) {
+        Collection<GameDataForListing> allGames) {
 }

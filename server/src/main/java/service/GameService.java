@@ -32,7 +32,7 @@ public class GameService {
 
         // verify authtoken is in db
         if (!authDAO.authExists(r.authToken())) {
-            throw new ResponseException(500, "Error: authToken does not exist");
+            throw new ResponseException(401, "Error: authToken does not exist");
         }
 
         // check if game name is already in db
@@ -51,7 +51,7 @@ public class GameService {
         // if not yet in db, create it/ add it
         // create new ChessGame first
         ChessGame newGame = new ChessGame();
-        GameData newGameData = new GameData(randomID, null, null,
+        GameData newGameData = new GameData(randomID, "", "",
                 r.gameName(), newGame); // TODO: how to pull usernames? and from where?
 
         gameDAO.addGame(newGameData);
@@ -64,24 +64,34 @@ public class GameService {
         if (!gameDAO.getGameIDs().contains(r.gameID())) {
             throw new ResponseException(400, "Error: bad request, gameID does not exist");
         }
+        // verify authtoken is in db
+        if (!authDAO.authExists(r.authID())) {
+            throw new ResponseException(401, "Error: authToken does not exist");
+        }
 
         GameData thisGame = gameDAO.getGame(r.gameID());
 
         // if it exists, add player to the game as requested color (use the username attached to the authtoken)
         AuthData authData = authDAO.getAuth(r.authID());
         String playerName = authData.username();
-        if (r.playerColor().equals("WHITE")) {
+        if (r.playerColor() == null || r.playerColor().isEmpty()) {
+            throw new ResponseException(400, "Error: bad request, color cannot be null");
+        } else if (!r.playerColor().equals("WHITE") && !r.playerColor().equals("BLACK")) {
+            throw new ResponseException(400, "Error: bad request");
+        } else if (r.playerColor().equals("WHITE") &&
+                ( thisGame.whiteUsername() == null || thisGame.whiteUsername().isEmpty())) {
             GameData newGame = new GameData(r.gameID(), playerName, thisGame.blackUsername(),
                                 thisGame.gameName(), thisGame.game());
             gameDAO.deleteGame(thisGame);
             gameDAO.addGame(newGame);
-        } else if (r.playerColor().equals("BLACK")) {
+        } else if (r.playerColor().equals("BLACK") &&
+                ( thisGame.blackUsername() == null || thisGame.blackUsername().isEmpty())) {
             GameData newGame = new GameData(r.gameID(), thisGame.whiteUsername(), playerName,
                     thisGame.gameName(), thisGame.game());
             gameDAO.deleteGame(thisGame);
             gameDAO.addGame(newGame);
         } else {
-            throw new ResponseException(400, "Error: bad request");
+            throw new ResponseException(403, "Error: already taken");
         }
 
         return new JoinResult();
@@ -100,7 +110,14 @@ public class GameService {
         }
 
         // return a collection / list of all the games and info (gameID, whiteuser, blackuser, and gamename)
-        Collection<GameData> allGames = gameDAO.getAllGames();
+        Collection<GameData> games = gameDAO.getAllGames();
+        Collection<GameDataForListing> allGames = new java.util.ArrayList<>(List.of());
+
+        for (GameData i: games) {
+            GameDataForListing newGameData = new GameDataForListing(i.gameID(), i.whiteUsername(), 
+                                                                    i.blackUsername(), i.gameName());
+            allGames.add(newGameData);
+        }
 
         return new ListResult(allGames);
     }
