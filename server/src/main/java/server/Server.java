@@ -30,7 +30,7 @@ public class Server {
         // join game
         Spark.put("/game", new JoinHandler(gameDAO, authDAO));
         // list games
-//        Spark.get("/game", new ListHandler(...,...));
+        Spark.get("/game", new ListHandler(gameDAO, authDAO));
 
         // ClearService
         Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));

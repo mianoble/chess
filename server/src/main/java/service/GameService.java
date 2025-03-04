@@ -6,6 +6,8 @@ import dataaccess.ResponseException;
 import dataaccess.AuthTokenDAO;
 import model.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public class GameService {
@@ -84,6 +86,23 @@ public class GameService {
 
         return new JoinResult();
 
+    }
+
+    public ListResult list(ListRequest r) throws ResponseException{
+        // check authtoken first, not null and in db
+        if (r.authToken() == null || r.authToken().isEmpty()) {
+            throw new ResponseException(500, "Error: authToken cannot be null");
+        }
+
+        // verify authtoken is in db
+        if (!authDAO.authExists(r.authToken())) {
+            throw new ResponseException(500, "Error: authToken does not exist");
+        }
+
+        // return a collection / list of all the games and info (gameID, whiteuser, blackuser, and gamename)
+        Collection<GameData> allGames = gameDAO.getAllGames();
+
+        return new ListResult(allGames);
     }
 
 }
