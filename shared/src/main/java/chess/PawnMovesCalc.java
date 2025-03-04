@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class PawnMovesCalc extends PieceMovesCalculator{
     public PawnMovesCalc() {}
     
-    public void makeStartingMove(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves) {
+    private void makeStartingMove(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece myPiece = board.getPiece(myPosition);
@@ -32,7 +32,12 @@ public class PawnMovesCalc extends PieceMovesCalculator{
         }
         // check two diagonals
         row = myPosition.getRow();
-        row+=increment; col--; // down to the left
+        row+=increment;
+        checkDiagonals(board, myPosition, possibleMoves, row, col, myPiece);
+    }
+
+    private void checkDiagonals(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece) {
+        col--; // down to the left
         ChessPosition checkPos = new ChessPosition(row, col);
         if (row > 0 && row <= 8 && col > 0 && col <= 8) {
             if (board.getPiece(checkPos) != null) {
@@ -55,7 +60,7 @@ public class PawnMovesCalc extends PieceMovesCalculator{
         }
     }
 
-    public void moveAtEndOfBoard(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves) {
+    private void moveAtEndOfBoard(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece myPiece = board.getPiece(myPosition);
@@ -86,23 +91,14 @@ public class PawnMovesCalc extends PieceMovesCalculator{
         col--;
         ChessPosition checkPos2 = new ChessPosition(row, col);
         // check within board bounds
-        if (row > 0 && row <= 8 && col > 0 && col <= 8) {
-            if (board.getPiece(checkPos2) != null) {
-                if (myPiece.getTeamColor() != board.getPiece(checkPos2).getTeamColor()) {
-                    ChessMove moveR = new ChessMove(myPosition, checkPos2, ChessPiece.PieceType.ROOK);
-                    possibleMoves.add(moveR);
-                    ChessMove moveN = new ChessMove(myPosition, checkPos2, ChessPiece.PieceType.KNIGHT);
-                    possibleMoves.add(moveN);
-                    ChessMove moveB = new ChessMove(myPosition, checkPos2, ChessPiece.PieceType.BISHOP);
-                    possibleMoves.add(moveB);
-                    ChessMove moveQ = new ChessMove(myPosition, checkPos2, ChessPiece.PieceType.QUEEN);
-                    possibleMoves.add(moveQ);
-                }
-            }
-        }
+        addPromotedPiece(board, myPosition, possibleMoves, row, col, myPiece, checkPos2);
         col += 2;
         ChessPosition checkPos3 = new ChessPosition(row, col);
         // check within board bounds
+        addPromotedPiece(board, myPosition, possibleMoves, row, col, myPiece, checkPos3);
+    }
+
+    private void addPromotedPiece(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> possibleMoves, int row, int col, ChessPiece myPiece, ChessPosition checkPos3) {
         if (row > 0 && row <= 8 && col > 0 && col <= 8) {
             if (board.getPiece(checkPos3) != null) {
                 if (myPiece.getTeamColor() != board.getPiece(checkPos3).getTeamColor()) {
@@ -136,36 +132,13 @@ public class PawnMovesCalc extends PieceMovesCalculator{
             possibleMoves.add(move);
         }
 
-        col--;
-        ChessPosition checkPos2 = new ChessPosition(row, col);
-        // check within board bounds
-        if (row > 0 && row <= 8 && col > 0 && col <= 8) {
-            if (board.getPiece(checkPos2) != null) {
-                if (myPiece.getTeamColor() != board.getPiece(checkPos2).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, checkPos2);
-                    possibleMoves.add(move);
-                }
-            }
-        }
-        col+=2;
-        ChessPosition checkPos3 = new ChessPosition(row, col);
-        if (row > 0 && row <= 8 && col > 0 && col <= 8) {
-            if (board.getPiece(checkPos3) != null) {
-                if (myPiece.getTeamColor() != board.getPiece(checkPos3).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, checkPos3);
-                    possibleMoves.add(move);
-                }
-            }
-        }
+        checkDiagonals(board, myPosition, possibleMoves, row, col, myPiece);
     }
 
     @Override
     public Collection<ChessMove> pieceMovesCalc (ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         int row = myPosition.getRow();
-        int col = myPosition.getColumn();
-        ChessPiece myPiece = board.getPiece(myPosition);
-        
         // white pawns
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
             if (row == 2) { // starting position
