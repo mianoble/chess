@@ -4,10 +4,10 @@ import model.UserData;
 
 import java.util.HashSet;
 
-public class localUserDao implements UserDAO {
+public class LocalUserDao implements UserDAO {
     private final HashSet<UserData> localUserData;
 
-    public localUserDao() {
+    public LocalUserDao() {
         this.localUserData = new HashSet<>();
     }
 

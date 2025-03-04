@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class localGameDao implements GameDAO {
+public class LocalGameDao implements GameDAO {
 
     private HashSet<GameData> localGameData;
     Set<Integer> gameIDs;
 
-    public localGameDao() {
+    public LocalGameDao() {
         localGameData = new HashSet<>();
         gameIDs = new HashSet<>();
     }

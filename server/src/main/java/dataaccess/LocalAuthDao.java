@@ -4,11 +4,11 @@ import model.AuthData;
 
 import java.util.HashSet;
 
-public class localAuthDao implements AuthTokenDAO {
+public class LocalAuthDao implements AuthTokenDAO {
 
     private HashSet<AuthData> localAuthData;
 
-    public localAuthDao() {
+    public LocalAuthDao() {
         localAuthData = new HashSet<>();
     }
 

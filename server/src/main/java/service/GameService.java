@@ -13,7 +13,7 @@ import java.util.Random;
 public class GameService {
     private GameDAO gameDAO;
     private AuthTokenDAO authDAO;
-    private static final Random rand = new Random();
+    private static final Random RANDOM = new Random();
 
     public GameService (GameDAO gameDAO, AuthTokenDAO authDAO) {
         this.gameDAO = gameDAO;
@@ -38,7 +38,7 @@ public class GameService {
         // make a random gameID & make sure it is not in the set of IDs already
         int randomID = 0;
         do {
-            randomID = rand.nextInt(1_000_000);
+            randomID = RANDOM.nextInt(1_000_000);
         } while (gameDAO.getGameIDs().contains(randomID));
 
         gameDAO.getGameIDs().add(randomID);
