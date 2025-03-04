@@ -23,13 +23,6 @@ public class RegisterHandler implements Route {
         userService = new UserService(userDAO, authTokenDAO);
     }
 
-    /*
-    The server handler classes serve as a translator between HTTP and Java.
-    Your handlers will convert an HTTP request into Java usable objects & data.
-    The handler then calls the appropriate service.
-    When the service responds, the handler converts the response object back to JSON and sends the HTTP response.
-    This could include converting thrown exception types into the appropriate HTTP status codes if necessary.
-     */
 
     @Override
     public Object handle(Request req, Response res) throws Exception {

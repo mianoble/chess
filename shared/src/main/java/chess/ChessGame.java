@@ -118,8 +118,9 @@ public class ChessGame {
                     thisBoard.addPiece(endPosition, promotionPiece);
                 }
             }
-            else
+            else {
                 throw new InvalidMoveException("Invalid move");
+            }
         }
         if (this.currentTeam == TeamColor.WHITE) {
             currentTeam = TeamColor.BLACK;
@@ -177,8 +178,9 @@ public class ChessGame {
         if (!anyMoves.isEmpty()) {
             return false;
         }
-        else
+        else {
             return true;
+        }
     }
 
     /**
@@ -192,8 +194,9 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return noValidMoves(teamColor);
         }
-        else
+        else {
             return false;
+        }
     }
 
     /**
