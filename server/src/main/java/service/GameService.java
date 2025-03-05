@@ -24,7 +24,6 @@ public class GameService {
         if (r.authToken() == null || r.authToken().isEmpty()) {
             throw new ResponseException(500, "Error: authToken cannot be null");
         }
-
         // verify authtoken is in db
         if (!authDAO.authExists(r.authToken())) {
             throw new ResponseException(401, "Error: authToken does not exist");
@@ -48,9 +47,7 @@ public class GameService {
         ChessGame newGame = new ChessGame();
         GameData newGameData = new GameData(randomID, null, null,
                 r.gameName(), newGame);
-
         gameDAO.addGame(newGameData);
-
         return new CreateResult(randomID);
     }
 
@@ -106,7 +103,6 @@ public class GameService {
 
         // return a collection / list of all the games and info (gameID, whiteuser, blackuser, and gamename)
         Collection<GameData> games = gameDAO.getAllGames();
-
         return new ListResult(games);
     }
 
