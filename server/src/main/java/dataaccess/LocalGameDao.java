@@ -4,15 +4,16 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class LocalGameDao implements GameDAO {
 
-    private HashSet<GameData> localGameData;
+    private LinkedHashSet<GameData> localGameData;
     Set<Integer> gameIDs;
 
     public LocalGameDao() {
-        localGameData = new HashSet<>();
+        localGameData = new LinkedHashSet<>();
         gameIDs = new HashSet<>();
     }
 
