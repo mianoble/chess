@@ -80,7 +80,6 @@ public class UserService {
 
         authTokenDAO.deleteAuth(authID);
         return new LogoutResult();
-
     }
 
 }
