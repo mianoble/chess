@@ -24,7 +24,6 @@ public class LoginHandler extends MasterHandler {
         this.userService = new UserService(userDAO, authTokenDAO);
     }
 
-
     @Override
     public Object specificHandler(Request req, Response res) throws Exception {
         LoginRequest loginRequest = gson.fromJson(req.body(), LoginRequest.class);

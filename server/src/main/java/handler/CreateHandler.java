@@ -24,7 +24,6 @@ public class CreateHandler extends MasterHandler {
         this.gameService = new GameService(gameDAO, authTokenDAO);
     }
 
-
     @Override
     public Object specificHandler(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");

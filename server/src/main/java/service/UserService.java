@@ -67,13 +67,10 @@ public class UserService {
         return new LoginResult(loginRequest.username(), authID);
     }
 
-
-
     public LogoutResult logout(String authID) throws ResponseException {
         if (authID == null) {
             throw new ResponseException(500, "Error: AuthToken cannot be null or empty");
         }
-        // verify authtoken is in db
         if (!authTokenDAO.authExists(authID)) {
             throw new ResponseException(401, "Error: authToken does not exist");
         }
