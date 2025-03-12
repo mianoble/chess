@@ -41,7 +41,7 @@ public class LocalAuthDao implements AuthTokenDAO {
     @Override
     public void clear() throws ResponseException {
         localAuthData.clear();
-    }
+    } 
 
     public boolean authExists(String auth) throws ResponseException {
         for (AuthData i : localAuthData) {
