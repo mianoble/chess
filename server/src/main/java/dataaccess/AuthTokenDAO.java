@@ -18,6 +18,6 @@ public interface AuthTokenDAO {
 
     void clear() throws ResponseException;
 
-    public boolean authExists(String gameName) throws ResponseException;
+    public boolean authExists(String auth) throws ResponseException;
 
 }

@@ -10,4 +10,5 @@ public interface UserDAO {
 
     void clear() throws ResponseException;
 
+//    boolean userExists(String username);
 }
