@@ -15,15 +15,15 @@ public class MySQLUserDAO implements UserDAO{
     public void createUser(UserData user) throws ResponseException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
-            ps.setString(1, user.username());
-            ps.setString(2, user.password());
-            ps.setString(3, user.email());
-
-            ps.executeUpdate();
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, user.username());
+                ps.setString(2, user.password());
+                ps.setString(3, user.email());
+                ps.executeUpdate();
+            }
         }
         catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to update database: %s, %s",
+            throw new ResponseException(200, String.format("unable to update database: %s, %s",
                     statement, e.getMessage()));
         }
     }
@@ -35,7 +35,7 @@ public class MySQLUserDAO implements UserDAO{
             ps.setString(1, username);
 
             var res = ps.executeQuery();
-            return true;
+            return res.next();
         } catch (SQLException | ResponseException e) {
             return false;
         }
@@ -45,20 +45,21 @@ public class MySQLUserDAO implements UserDAO{
     public UserData getUser(String username) throws ResponseException {
         var statement = "SELECT * FROM user WHERE username=?";
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
-            ps.setString(1, username);
-
-            var res = ps.executeQuery();
-            String resUsername = res.getNString("username");
-            String resPassword = res.getNString("password");
-            String resEmail = res.getString("email");
-
-            UserData thisUser = new UserData(resUsername, resPassword, resEmail);
-            return thisUser;
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var res = ps.executeQuery()) {
+                    if (res.next()) {
+                        var resPassword = res.getString("password");
+                        var resEmail = res.getString("email");
+                        return new UserData(username, resPassword, resEmail);
+                    }
+                }
+            }
         } catch (SQLException e) {
             throw new ResponseException(500, String.format("unable to get user: %s, %s",
                 statement, e.getMessage()));
         }
+        return null;
     }
 
 
@@ -77,9 +78,9 @@ public class MySQLUserDAO implements UserDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS user  (
-                `username` varchar(256) NOT NULL,
-                `password` varchar(256) NOT NULL,
-                `email` varchar(256) NOT NULL,
+                `username` VARCHAR(256) NOT NULL,
+                `password` VARCHAR(256) NOT NULL,
+                `email` VARCHAR(256) NOT NULL,
                 PRIMARY KEY(username)
             )
             """

@@ -22,7 +22,7 @@ public class MySQLAuthDAO implements AuthTokenDAO{
             ps.executeUpdate();
         }
         catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to update database: %s, %s",
+            throw new ResponseException(200, String.format("unable to update database: %s, %s",
                     statement, e.getMessage()));
         }
     }
@@ -34,16 +34,19 @@ public class MySQLAuthDAO implements AuthTokenDAO{
             var ps = conn.prepareStatement(statement);
             ps.setString(1, authToken);
 
-            var res = ps.executeQuery();
-            String resAuthID = res.getNString("authID");
-            String resUsername = res.getNString("username");
+            try (var res = ps.executeQuery()) {
+                while (res.next()) {
+                    String resAuthID = res.getString("authID");
+                    String resUsername = res.getString("username");
 
-            AuthData thisAuth = new AuthData(resAuthID, resUsername);
-            return thisAuth;
+                    return new AuthData(resAuthID, resUsername);
+                }
+            }
         } catch (SQLException e) {
             throw new ResponseException(500, String.format("unable to get auth token: %s, %s",
                     statement, e.getMessage()));
         }
+        return null;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class MySQLAuthDAO implements AuthTokenDAO{
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to clear auth"));
+            throw new ResponseException(500, "unable to clear auth");
         }
     }
 
@@ -79,7 +82,7 @@ public class MySQLAuthDAO implements AuthTokenDAO{
             var ps = conn.prepareStatement(statement);
             ps.setString(1, auth);
             var res = ps.executeQuery();
-            return true;
+            return res.next();
         } catch (SQLException | ResponseException e) {
             return false;
         }
