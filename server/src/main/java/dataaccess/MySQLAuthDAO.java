@@ -21,7 +21,7 @@ public class MySQLAuthDAO implements AuthTokenDAO{
                 ps.executeUpdate();
         }
         catch (SQLException e) {
-            throw new ResponseException(200, String.format("unable to update database: %s, %s",
+            throw new ResponseException(500, String.format("unable to update database: %s, %s",
                     statement, e.getMessage()));
         }
     }

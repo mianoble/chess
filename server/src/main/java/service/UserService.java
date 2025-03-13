@@ -59,7 +59,7 @@ public class UserService {
 //        else if (!thisUser.password().equals(loginRequest.password())) {
 //            throw new ResponseException(401, "Error: unauthorized login, incorrect password");
 //        }
-        else if (!userDAO.verifyUser(thisUser.username(), thisUser.password())) {
+        else if (!userDAO.verifyUser(thisUser.username(), loginRequest.password())) {
             throw new ResponseException(401, "Error: unauthorized login, incorrect password");
         }
 

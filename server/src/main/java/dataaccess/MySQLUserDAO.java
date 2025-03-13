@@ -26,7 +26,7 @@ public class MySQLUserDAO implements UserDAO{
             }
         }
         catch (SQLException e) {
-            throw new ResponseException(200, String.format("unable to update database: %s, %s",
+            throw new ResponseException(401, String.format("unable to update database: %s, %s",
                     statement, e.getMessage()));
         }
     }
@@ -60,7 +60,7 @@ public class MySQLUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new ResponseException(200, String.format("unable to get user: %s, %s",
+            throw new ResponseException(401, String.format("unable to get user: %s, %s",
                 statement, e.getMessage()));
         }
         return null;
@@ -97,7 +97,8 @@ public class MySQLUserDAO implements UserDAO{
 //
 //    }
     public String hashPassword(String clearTextPassword) {
-        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+        String ans = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+        return ans;
     }
 //
 //    boolean verifyUser(String hashedPassword, String providedClearTextPassword) {
@@ -121,11 +122,12 @@ public class MySQLUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new ResponseException(200, String.format("unable to get user: %s, %s",
+            throw new ResponseException(401, String.format("unable to get user: %s, %s",
                     statement, e.getMessage()));
         }
 
-        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+        boolean ans = BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+        return ans;
     }
 
     private final String[] createStatements = {

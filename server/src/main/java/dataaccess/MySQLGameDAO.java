@@ -96,7 +96,7 @@ public class MySQLGameDAO implements GameDAO{
                     gameIDs.add(resGameID);
                 }
         } catch (SQLException e) {
-            throw new ResponseException(200, String.format("unable to get gameIDs: %s, %s",
+            throw new ResponseException(500, String.format("unable to get gameIDs: %s, %s",
                     statement, e.getMessage()));
         }
         return gameIDs;
