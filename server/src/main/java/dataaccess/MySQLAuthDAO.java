@@ -14,12 +14,11 @@ public class MySQLAuthDAO implements AuthTokenDAO{
     @Override
     public void createAuth(AuthData authData) throws ResponseException {
         var statement = "INSERT INTO auth (authID, username) VALUES (?, ?)";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement)) {
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authData.authID());
                 ps.setString(2, authData.username());
                 ps.executeUpdate();
-            }
         }
         catch (SQLException e) {
             throw new ResponseException(200, String.format("unable to update database: %s, %s",
