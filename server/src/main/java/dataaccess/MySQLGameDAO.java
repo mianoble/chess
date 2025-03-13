@@ -4,11 +4,10 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
 
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MySQLGameDAO implements GameDAO{
     public MySQLGameDAO() throws ResponseException {
@@ -31,7 +30,7 @@ public class MySQLGameDAO implements GameDAO{
             ps.executeUpdate();
         }
         catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to update database: %s, %s",
+            throw new ResponseException(500, String.format("unable to add game: %s, %s",
                     statement, e.getMessage()));
         }
     }
@@ -56,7 +55,7 @@ public class MySQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to get auth token: %s, %s",
+            throw new ResponseException(500, String.format("unable to get game: %s, %s",
                     statement, e.getMessage()));
         }
         return null;
@@ -64,12 +63,46 @@ public class MySQLGameDAO implements GameDAO{
 
     @Override
     public Collection<GameData> getAllGames() throws ResponseException {
-        return List.of();
+        LinkedHashSet<GameData> games = new LinkedHashSet<>();
+        var statement = "SELECT * FROM games";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var res = ps.executeQuery()) {
+                    while (res.next()) {
+                        var resGameID = res.getInt("gameID");
+                        var resWhiteUser = res.getString("whiteUsername");
+                        var resBlackUser = res.getString("blackUsername");
+                        var resGameName = res.getString("gameName");
+                        var resGame = res.getString("game");
+                        var gameObj = new Gson().fromJson(resGame, ChessGame.class);
+
+                        games.add(new GameData(resGameID, resWhiteUser, resBlackUser, resGameName, gameObj));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new ResponseException(500, String.format("unable to get all games: %s, %s",
+                    statement, e.getMessage()));
+        }
+        return games;
     }
 
     @Override
     public Set<Integer> getGameIDs() throws ResponseException {
-        return Set.of();
+        Set<Integer> gameIDs = new HashSet<>();
+        var statement = "SELECT gameID FROM games";
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(statement);
+             var res = ps.executeQuery()) {
+                while (res.next()) {
+                    var resGameID = res.getInt("gameID");
+                    gameIDs.add(resGameID);
+                }
+        } catch (SQLException e) {
+            throw new ResponseException(200, String.format("unable to get gameIDs: %s, %s",
+                    statement, e.getMessage()));
+        }
+        return gameIDs;
     }
 
     @Override

@@ -56,7 +56,7 @@ public class MySQLUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to get user: %s, %s",
+            throw new ResponseException(200, String.format("unable to get user: %s, %s",
                 statement, e.getMessage()));
         }
         return null;

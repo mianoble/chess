@@ -15,7 +15,7 @@ public class Server {
             // Register your endpoints and handle exceptions here.
             MySQLUserDAO userDAO = new MySQLUserDAO();
             MySQLAuthDAO authDAO = new MySQLAuthDAO();
-            LocalGameDao gameDAO = new LocalGameDao();
+            MySQLGameDAO gameDAO = new MySQLGameDAO();
 
             // UserService
             // register
