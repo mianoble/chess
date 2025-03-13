@@ -11,7 +11,7 @@ import java.util.*;
 
 public class MySQLGameDAO implements GameDAO{
     public MySQLGameDAO() throws ResponseException {
-        configureDatabase();
+        MySQLUtility.configureDatabase(createStatements);
     }
 
     @Override
@@ -152,17 +152,4 @@ public class MySQLGameDAO implements GameDAO{
             )
             """
     };
-
-    private void configureDatabase() throws ResponseException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

@@ -6,10 +6,12 @@ import org.mindrot.jbcrypt.BCrypt;
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
+import static dataaccess.MySQLUtility.configureDatabase;
+
 public class MySQLUserDAO implements UserDAO{
 
     public MySQLUserDAO() throws ResponseException {
-        configureDatabase();
+        MySQLUtility.configureDatabase(createStatements);
     }
 
     @Override
@@ -115,17 +117,4 @@ public class MySQLUserDAO implements UserDAO{
             )
             """
     };
-
-    private void configureDatabase() throws ResponseException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }
