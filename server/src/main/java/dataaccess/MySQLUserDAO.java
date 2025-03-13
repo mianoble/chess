@@ -69,7 +69,6 @@ public class MySQLUserDAO implements UserDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new ResponseException(500, "unable to clear user");
         }
