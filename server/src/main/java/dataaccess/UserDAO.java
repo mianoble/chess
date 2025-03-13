@@ -11,4 +11,6 @@ public interface UserDAO {
     void clear() throws ResponseException;
 
 //    boolean userExists(String username);
+    boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException;
+
 }

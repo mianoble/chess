@@ -56,7 +56,10 @@ public class UserService {
         if (thisUser == null) {
             throw new ResponseException(401, "Error: username not found");
         }
-        else if (!thisUser.password().equals(loginRequest.password())) {
+//        else if (!thisUser.password().equals(loginRequest.password())) {
+//            throw new ResponseException(401, "Error: unauthorized login, incorrect password");
+//        }
+        else if (!userDAO.verifyUser(thisUser.username(), thisUser.password())) {
             throw new ResponseException(401, "Error: unauthorized login, incorrect password");
         }
 

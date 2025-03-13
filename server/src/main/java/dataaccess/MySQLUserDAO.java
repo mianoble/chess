@@ -15,13 +15,14 @@ public class MySQLUserDAO implements UserDAO{
     @Override
     public void createUser(UserData user) throws ResponseException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        var hashedPassword = hashPassword(user.password());
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, user.username());
-                ps.setString(2, user.password());
+                ps.setString(2, hashedPassword);
                 ps.setString(3, user.email());
                 ps.executeUpdate();
-                storeUserPassword(user.username(), user.password());
+                //storeUserPassword(user.username(), user.password());
             }
         }
         catch (SQLException e) {
@@ -52,6 +53,7 @@ public class MySQLUserDAO implements UserDAO{
                 try (var res = ps.executeQuery()) {
                     if (res.next()) {
                         var resPassword = res.getString("password");
+
                         var resEmail = res.getString("email");
                         return new UserData(username, resPassword, resEmail);
                     }
@@ -76,28 +78,27 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
-    void storeUserPassword(String username, String clearTextPassword) throws ResponseException {
-        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-
-        var statement = "INSERT INTO user (hashedPassword) VALUES (?)";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, hashedPassword);
-                ps.executeUpdate();
-            }
-        }
-        catch (SQLException | ResponseException e) {
-            throw new ResponseException(200, String.format("unable to update hashedpassword: %s, %s",
-                    statement, e.getMessage()));
-        }
-        // write the hashed password in database along with the user's other information
-        // writeHashedPasswordToDatabase(username, hashedPassword);
-
-    }
-//    public String hashPassword(String clearTextPassword) {
+//    void storeUserPassword(String username, String clearTextPassword) throws ResponseException {
 //        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-//        return hashedPassword;
+//
+//        var statement = "INSERT INTO user (password) VALUES (?)";
+//        try (var conn = DatabaseManager.getConnection()) {
+//            try (var ps = conn.prepareStatement(statement)) {
+//                ps.setString(1, hashedPassword);
+//                ps.executeUpdate();
+//            }
+//        }
+//        catch (SQLException | ResponseException e) {
+//            throw new ResponseException(200, String.format("unable to update hashedpassword: %s, %s",
+//                    statement, e.getMessage()));
+//        }
+//        // write the hashed password in database along with the user's other information
+//        // writeHashedPasswordToDatabase(username, hashedPassword);
+//
 //    }
+    public String hashPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
 //
 //    boolean verifyUser(String hashedPassword, String providedClearTextPassword) {
 //        // read the previously hashed password from the database
@@ -105,16 +106,17 @@ public class MySQLUserDAO implements UserDAO{
 //    }
 
 
-    boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException{
+    @Override
+    public boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException{
         // read the previously hashed password from the database
         var hashedPassword = "Error: hashed password not initialized";
-        var statement = "SELECT hashedPassword FROM user WHERE username=?";
+        var statement = "SELECT password FROM user WHERE username=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var res = ps.executeQuery()) {
                     if (res.next()) {
-                        hashedPassword = res.getString("hashedPassword");
+                        hashedPassword = res.getString("password");
                     }
                 }
             }
@@ -132,10 +134,10 @@ public class MySQLUserDAO implements UserDAO{
                 `username` VARCHAR(256) NOT NULL,
                 `password` VARCHAR(256) NOT NULL,
                 `email` VARCHAR(256) NOT NULL,
-                `hashedPassword` VARCHAR(256) NOT NULL,
                 PRIMARY KEY(username)
             )
             """
+            //                `hashedPassword` VARCHAR(256) NOT NULL,
     };
 
     private void configureDatabase() throws ResponseException {

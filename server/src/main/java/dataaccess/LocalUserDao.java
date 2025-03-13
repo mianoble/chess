@@ -43,4 +43,15 @@ public class LocalUserDao implements UserDAO {
     public void clear() throws ResponseException {
         localUserData.clear();
     }
+
+    @Override
+    public boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException {
+        UserData user = getUser(username);
+        if (user.password().equals(providedClearTextPassword)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
