@@ -41,7 +41,6 @@ public class MySQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             ps.setInt(1, id);
-
             try (var res = ps.executeQuery()) {
                 while (res.next()) {
                     int resGameID = res.getInt("gameID");
@@ -65,21 +64,19 @@ public class MySQLGameDAO implements GameDAO{
     public Collection<GameData> getAllGames() throws ResponseException {
         LinkedHashSet<GameData> games = new LinkedHashSet<>();
         var statement = "SELECT * FROM game";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement)) {
-                try (var res = ps.executeQuery()) {
-                    while (res.next()) {
-                        var resGameID = res.getInt("gameID");
-                        var resWhiteUser = res.getString("whiteUsername");
-                        var resBlackUser = res.getString("blackUsername");
-                        var resGameName = res.getString("gameName");
-                        var resGame = res.getString("game");
-                        var gameObj = new Gson().fromJson(resGame, ChessGame.class);
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(statement);
+             var res = ps.executeQuery()) {
+                while (res.next()) {
+                    var resGameID = res.getInt("gameID");
+                    var resWhiteUser = res.getString("whiteUsername");
+                    var resBlackUser = res.getString("blackUsername");
+                    var resGameName = res.getString("gameName");
+                    var resGame = res.getString("game");
+                    var gameObj = new Gson().fromJson(resGame, ChessGame.class);
 
-                        games.add(new GameData(resGameID, resWhiteUser, resBlackUser, resGameName, gameObj));
-                    }
+                    games.add(new GameData(resGameID, resWhiteUser, resBlackUser, resGameName, gameObj));
                 }
-            }
         } catch (SQLException e) {
             throw new ResponseException(500, String.format("unable to get all games: %s, %s",
                     statement, e.getMessage()));
