@@ -54,7 +54,7 @@ public class UserService {
         UserData thisUser;
         thisUser = userDAO.getUser(loginRequest.username());
         if (thisUser == null) {
-            throw new ResponseException(200, "Error: username not found");
+            throw new ResponseException(401, "Error: username not found");
         }
         else if (!thisUser.password().equals(loginRequest.password())) {
             throw new ResponseException(401, "Error: unauthorized login, incorrect password");

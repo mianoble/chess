@@ -71,7 +71,7 @@ public class MySQLUserDAO implements UserDAO{
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new ResponseException(500, String.format("unable to clear user"));
+            throw new ResponseException(500, "unable to clear user");
         }
     }
 

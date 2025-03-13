@@ -13,13 +13,13 @@ public class MySQLAuthDAO implements AuthTokenDAO{
 
     @Override
     public void createAuth(AuthData authData) throws ResponseException {
-        var statement = "INSERT INTO user (authID, username) VALUES (?, ?)";
+        var statement = "INSERT INTO auth (authID, username) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
-            ps.setString(1, authData.authID());
-            ps.setString(2, authData.username());
-
-            ps.executeUpdate();
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authData.authID());
+                ps.setString(2, authData.username());
+                ps.executeUpdate();
+            }
         }
         catch (SQLException e) {
             throw new ResponseException(200, String.format("unable to update database: %s, %s",
@@ -31,22 +31,23 @@ public class MySQLAuthDAO implements AuthTokenDAO{
     public AuthData getAuth(String authToken) throws ResponseException {
         var statement = "SELECT * FROM auth WHERE authID=?";
         try (var conn = DatabaseManager.getConnection()) {
-            var ps = conn.prepareStatement(statement);
-            ps.setString(1, authToken);
-
-            try (var res = ps.executeQuery()) {
-                while (res.next()) {
-                    String resAuthID = res.getString("authID");
-                    String resUsername = res.getString("username");
-
-                    return new AuthData(resAuthID, resUsername);
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var res = ps.executeQuery()) {
+                    if (res.next()) {
+                        String resAuthID = res.getString("authID");
+                        String resUsername = res.getString("username");
+                        return new AuthData(resAuthID, resUsername);
+                    }
+                    else {
+                        return null;
+                    }
                 }
             }
         } catch (SQLException e) {
             throw new ResponseException(500, String.format("unable to get auth token: %s, %s",
                     statement, e.getMessage()));
         }
-        return null;
     }
 
     @Override
@@ -91,8 +92,8 @@ public class MySQLAuthDAO implements AuthTokenDAO{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth  (
-                `authID` varchar(256) NOT NULL,
-                `username` varchar(256) NOT NULL,
+                `authID` VARCHAR(256) NOT NULL,
+                `username` VARCHAR(256) NOT NULL,
                 PRIMARY KEY(authID)
             )
             """
