@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ public class MySQLUserDAO implements UserDAO{
                 ps.setString(2, user.password());
                 ps.setString(3, user.email());
                 ps.executeUpdate();
+                storeUserPassword(user.username(), user.password());
             }
         }
         catch (SQLException e) {
@@ -74,12 +76,49 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
+    void storeUserPassword(String username, String clearTextPassword) throws ResponseException {
+        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+
+        var statement = "INSERT INTO user (hashedPassword) VALUES (?)";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, hashedPassword);
+                ps.executeUpdate();
+            }
+        }
+        catch (SQLException | ResponseException e) {
+            throw new ResponseException(200, String.format("unable to update hashedpassword: %s, %s",
+                    statement, e.getMessage()));
+        }
+        // write the hashed password in database along with the user's other information
+        // writeHashedPasswordToDatabase(username, hashedPassword);
+
+    }
+//    public String hashPassword(String clearTextPassword) {
+//        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+//        return hashedPassword;
+//    }
+//
+//    boolean verifyUser(String hashedPassword, String providedClearTextPassword) {
+//        // read the previously hashed password from the database
+//        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+//    }
+
+
+    boolean verifyUser(String username, String providedClearTextPassword) {
+        // read the previously hashed password from the database
+        var hashedPassword = readHashedPasswordFromDatabase(username);
+
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+    }
+
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS user  (
                 `username` VARCHAR(256) NOT NULL,
                 `password` VARCHAR(256) NOT NULL,
                 `email` VARCHAR(256) NOT NULL,
+                `hashedPassword` VARCHAR(256) NOT NULL,
                 PRIMARY KEY(username)
             )
             """
