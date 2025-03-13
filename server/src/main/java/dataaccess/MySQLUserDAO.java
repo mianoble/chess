@@ -22,7 +22,6 @@ public class MySQLUserDAO implements UserDAO{
                 ps.setString(2, hashedPassword);
                 ps.setString(3, user.email());
                 ps.executeUpdate();
-                //storeUserPassword(user.username(), user.password());
             }
         }
         catch (SQLException e) {
@@ -78,34 +77,10 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
-//    void storeUserPassword(String username, String clearTextPassword) throws ResponseException {
-//        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-//
-//        var statement = "INSERT INTO user (password) VALUES (?)";
-//        try (var conn = DatabaseManager.getConnection()) {
-//            try (var ps = conn.prepareStatement(statement)) {
-//                ps.setString(1, hashedPassword);
-//                ps.executeUpdate();
-//            }
-//        }
-//        catch (SQLException | ResponseException e) {
-//            throw new ResponseException(200, String.format("unable to update hashedpassword: %s, %s",
-//                    statement, e.getMessage()));
-//        }
-//        // write the hashed password in database along with the user's other information
-//        // writeHashedPasswordToDatabase(username, hashedPassword);
-//
-//    }
     public String hashPassword(String clearTextPassword) {
         String ans = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
         return ans;
     }
-//
-//    boolean verifyUser(String hashedPassword, String providedClearTextPassword) {
-//        // read the previously hashed password from the database
-//        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-//    }
-
 
     @Override
     public boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException{
@@ -139,7 +114,6 @@ public class MySQLUserDAO implements UserDAO{
                 PRIMARY KEY(username)
             )
             """
-            //                `hashedPassword` VARCHAR(256) NOT NULL,
     };
 
     private void configureDatabase() throws ResponseException {
