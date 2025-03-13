@@ -108,7 +108,6 @@ public class MySQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             ps.executeUpdate();
-
         } catch (SQLException e) {
             throw new ResponseException(500, "unable to clear auth");
         }
