@@ -64,7 +64,7 @@ public class MySQLGameDAO implements GameDAO{
     @Override
     public Collection<GameData> getAllGames() throws ResponseException {
         LinkedHashSet<GameData> games = new LinkedHashSet<>();
-        var statement = "SELECT * FROM games";
+        var statement = "SELECT * FROM game";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 try (var res = ps.executeQuery()) {
@@ -90,7 +90,7 @@ public class MySQLGameDAO implements GameDAO{
     @Override
     public Set<Integer> getGameIDs() throws ResponseException {
         Set<Integer> gameIDs = new HashSet<>();
-        var statement = "SELECT gameID FROM games";
+        var statement = "SELECT gameID FROM game";
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement(statement);
              var res = ps.executeQuery()) {
