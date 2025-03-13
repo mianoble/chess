@@ -105,9 +105,23 @@ public class MySQLUserDAO implements UserDAO{
 //    }
 
 
-    boolean verifyUser(String username, String providedClearTextPassword) {
+    boolean verifyUser(String username, String providedClearTextPassword) throws ResponseException{
         // read the previously hashed password from the database
-        var hashedPassword = readHashedPasswordFromDatabase(username);
+        var hashedPassword = "Error: hashed password not initialized";
+        var statement = "SELECT hashedPassword FROM user WHERE username=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var res = ps.executeQuery()) {
+                    if (res.next()) {
+                        hashedPassword = res.getString("hashedPassword");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new ResponseException(200, String.format("unable to get user: %s, %s",
+                    statement, e.getMessage()));
+        }
 
         return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
