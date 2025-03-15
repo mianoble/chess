@@ -42,9 +42,9 @@ public class BishopMovesCalc extends PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMovesCalc(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
-        ChessPiece myPiece = board.getPiece(myPosition);
+//        int row = myPosition.getRow();
+//        int col = myPosition.getColumn();
+//        ChessPiece myPiece = board.getPiece(myPosition);
         // going left and up (row++, col++)
         findMoves(board, myPosition, possibleMoves, "left and up");
 
