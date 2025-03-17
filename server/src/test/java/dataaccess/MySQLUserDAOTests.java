@@ -10,12 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MySQLUserDAOTests {
     static MySQLUserDAO mySQLUserDAO = null;
 
-    /*
-    private static UserDAO userDAO;
-    private static AuthTokenDAO authTokenDAO;
-    private static GameDAO gameDAO;
-     */
-
     @BeforeAll
     static void init() throws ResponseException {
         mySQLUserDAO = new MySQLUserDAO();
@@ -62,4 +56,30 @@ public class MySQLUserDAOTests {
         assertNull(mySQLUserDAO.getUser("thisUserDoesNotExist"));
     }
 
+    @Test
+    void verifyUserPass() throws ResponseException {
+        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        mySQLUserDAO.createUser(myUser);
+        assertTrue(mySQLUserDAO.verifyUser(myUser.username(), myUser.password()));
+    }
+
+    @Test
+    void verifyUserFail() throws ResponseException {
+        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        mySQLUserDAO.createUser(myUser);
+        assertFalse(mySQLUserDAO.verifyUser(myUser.username(), "wrongPassword"));
+    }
+
+    @Test
+    void userExistsPass() throws ResponseException {
+        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        mySQLUserDAO.createUser(myUser);
+
+        assertTrue(mySQLUserDAO.userExists(myUser.username()));
+    }
+
+    @Test
+    void userExistsFail() throws ResponseException {
+        assertFalse(mySQLUserDAO.userExists("randomUser"));
+    }
 }

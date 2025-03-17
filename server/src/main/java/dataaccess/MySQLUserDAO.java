@@ -79,7 +79,7 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
-    public String hashPassword(String clearTextPassword) {
+    private String hashPassword(String clearTextPassword) {
         String ans = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
         return ans;
     }

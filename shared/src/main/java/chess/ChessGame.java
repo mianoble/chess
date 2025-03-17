@@ -10,7 +10,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor currentTeam = TeamColor.WHITE;
+    TeamColor currentTeam = TeamColor.WHITE;
     private ChessBoard thisBoard;
 
     public ChessGame() {
@@ -106,7 +106,7 @@ public class ChessGame {
             Collection<ChessMove> validMovesArray = validMoves(startPosition);
             if (validMovesArray.contains(move)) {
                 // execute the move
-                // check if theres a promotion
+                // check if there's a promotion
                 if (move.getPromotionPiece() == null) {
                     thisBoard.addPiece(startPosition, null);
                     thisBoard.addPiece(endPosition, currPiece);
