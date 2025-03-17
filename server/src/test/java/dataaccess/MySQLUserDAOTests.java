@@ -39,9 +39,27 @@ public class MySQLUserDAOTests {
 
     @Test
     void createUserFail() throws ResponseException {
+        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        mySQLUserDAO.createUser(myUser);
 
+        UserData myUser2 = new UserData("mia", "second password", "mia@email.com");
+        assertThrows(ResponseException.class, () -> mySQLUserDAO.createUser(myUser2));
     }
 
+    @Test
+    void getUserPass() throws ResponseException {
+        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        mySQLUserDAO.createUser(myUser);
 
+        UserData res = mySQLUserDAO.getUser(myUser.username());
+        assertEquals(res.username(), myUser.username());
+        assertEquals(res.email(), myUser.email());
+        assertTrue(mySQLUserDAO.verifyUser(myUser.username(), myUser.password()));
+    }
+
+    @Test
+    void getUserFail() throws ResponseException {
+        assertNull(mySQLUserDAO.getUser("thisUserDoesNotExist"));
+    }
 
 }
