@@ -20,6 +20,7 @@ public class MySQLUserDAOTests {
         mySQLUserDAO.clear();
     }
 
+
     @Test
     void createUserPass() throws ResponseException {
         UserData myUser = new UserData("mia", "secret", "mia@email.com");
@@ -42,13 +43,13 @@ public class MySQLUserDAOTests {
 
     @Test
     void getUserPass() throws ResponseException {
-        UserData myUser = new UserData("mia", "secret", "mia@email.com");
+        UserData myUser = new UserData("me", "secret", "my@email.com");
         mySQLUserDAO.createUser(myUser);
 
         UserData res = mySQLUserDAO.getUser(myUser.username());
-        assertEquals(res.username(), myUser.username());
-        assertEquals(res.email(), myUser.email());
         assertTrue(mySQLUserDAO.verifyUser(myUser.username(), myUser.password()));
+        assertEquals(res.email(), myUser.email());
+        assertEquals(res.username(), myUser.username());
     }
 
     @Test

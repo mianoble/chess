@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class MySQLGameDAO implements GameDAO{
+
     public MySQLGameDAO() throws ResponseException {
         MySQLUtility.configureDatabase(createStatements);
     }
@@ -132,8 +133,11 @@ public class MySQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var ps = conn.prepareStatement(statement);
             ps.setInt(1, game.gameID());
+            int rowsAffected = ps.executeUpdate();
 
-            ps.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new ResponseException(404, "Game not found, unable to delete.");
+            }
         } catch (SQLException e) {
             throw new ResponseException(500, String.format("unable to delete auth token: %s, %s",
                     statement, e.getMessage()));
