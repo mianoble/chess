@@ -57,7 +57,7 @@ public class MySQLGameDAOTests {
                 "fun game", game);
         mySQLGameDAO.addGame(newGame);
 
-        GameData res = mySQLGameDAO.getGame(123);
+        GameData res = mySQLGameDAO.getGame(321);
         assertEquals(res.gameName(), newGame.gameName());
         assertEquals(res.whiteUsername(), newGame.whiteUsername());
         assertEquals(res.blackUsername(), newGame.blackUsername());
