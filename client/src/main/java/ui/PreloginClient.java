@@ -38,7 +38,7 @@ public class PreloginClient {
         if (params.length == 2) {
             LoginRequest request = new LoginRequest(params[0], params[1]);
             LoginResult result = server.login(request);
-
+            System.out.println("You've ")
         }
     }
 

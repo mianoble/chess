@@ -1,9 +1,12 @@
 package ui;
 
 import java.util.Scanner;
+import facade.ServerFacade;
 import static ui.EscapeSequences.*;
 
 public class Repl {
+    private final ServerFacade server;
+
     private final PreloginClient preloginClient;
 //    private final PostloginClient postloginClient;
 //    private final GameplayClient gameplayClient;
@@ -17,7 +20,8 @@ public class Repl {
     private State state;
 
     public Repl(String serverUrl) {
-        preloginClient = new PreloginClient(serverUrl);
+        server = new ServerFacade(serverUrl);
+        preloginClient = new PreloginClient(server);
         state = State.prelogin;
     }
 
