@@ -1,7 +1,8 @@
+package facade;
+
 import com.google.gson.Gson;
 import dataaccess.ResponseException;
 import model.*;
-import spark.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
