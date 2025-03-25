@@ -4,6 +4,8 @@ import dataaccess.ResponseException;
 
 import java.util.Arrays;
 import facade.ServerFacade;
+import model.LoginRequest;
+import model.LoginResult;
 
 public class PreloginClient {
 
@@ -30,10 +32,14 @@ public class PreloginClient {
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length != 3) {
+        if (params.length != 2) {
             printLoginMessage();
         }
-        else if ()
+        if (params.length == 2) {
+            LoginRequest request = new LoginRequest(params[0], params[1]);
+            LoginResult result = server.login(request);
+
+        }
     }
 
     private void printLoginMessage() {
