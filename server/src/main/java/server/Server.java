@@ -4,7 +4,8 @@ import dataaccess.*;
 import handler.*;
 import spark.*;
 
-public class Server {
+public class
+Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
