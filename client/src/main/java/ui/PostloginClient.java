@@ -16,39 +16,36 @@ public class PostloginClient {
     }
 
     public String eval (String input, String authToken) {
-        try {
-            var tokens = input.split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch(cmd) {
-                case "logout" -> logout(authToken);
-                case "create" -> create(params, authToken);
-                case "help" -> help();
-                case "list" -> list();
-                case "join" -> join(params);
-                case "spectate" -> spectate(params);
-                case "quit" -> "quit";
-                default -> help();
-            };
-        } catch (ResponseException e) {
-            return e.getMessage();
-        }
+        var tokens = input.split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        return switch(cmd) {
+            case "logout" -> logout(authToken);
+            case "create" -> create(authToken, params);
+            case "help" -> help();
+            case "list" -> list(authToken);
+            case "join" -> join(authToken, params);
+            case "spectate" -> spectate(params);
+            case "quit" -> "quit";
+            default -> help();
+        };
     }
 
     public String logout(String authToken) {
         try {
             server.logout(authToken); // todo: get TA help
+            return "loggedout";
         } catch (ResponseException e) {
             System.out.println("Error occurred in logging out. Try again");
             return "failed";
         }
     }
 
-    public String create (String... params) {
+    public String create (String authToken, String... params) {
         if (params.length != 1) {
             return "Type \"create\" and the name of your new game.\n";
         }
-        CreateRequest createRequest = new CreateRequest(currentAuth, params[0]); // todo: need help too
+        CreateRequest createRequest = new CreateRequest(authToken, params[0]); // todo: need help too
         try {
             CreateResult result = server.create(createRequest);
             System.out.println("You've created a new game! " + params[0]);
@@ -59,7 +56,7 @@ public class PostloginClient {
         }
     }
 
-    public String list () {
+    public String list (String authToken) {
         ListRequest listRequest = new ListRequest(authToken); // todo: need help too
         try {
             server.list(listRequest);
@@ -69,11 +66,17 @@ public class PostloginClient {
         }
     }
 
-    public String join (String... params) {
+    public String join (String authToken, String... params) {
         if (params.length != 2) {
             return "Type \"join\" and the game ID and your player color to join.\n";
         }
-        JoinRequest joinRequest = new JoinRequest(authToken, params[1], params[0]); // todo: need help too
+        int id = 0;
+        try {
+            id = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid game ID format!");
+        }
+        JoinRequest joinRequest = new JoinRequest(authToken, params[1], id); // todo: need help too
         try {
             server.join(joinRequest);
             System.out.println("You've join this game! " + params[0]);
