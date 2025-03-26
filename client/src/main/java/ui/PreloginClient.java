@@ -6,12 +6,16 @@ import java.util.Arrays;
 import facade.ServerFacade;
 import model.LoginRequest;
 import model.LoginResult;
+import model.RegisterRequest;
+import model.RegisterResult;
 
 public class PreloginClient {
+    private String currentAuth;
 
     ServerFacade server;
     public PreloginClient(ServerFacade serverFacade) {
         this.server = serverFacade;
+        currentAuth = "";
     }
 
     public String eval (String input) {
@@ -23,7 +27,7 @@ public class PreloginClient {
                 case "login" -> login(params);
                 case "register" -> register(params);
                 case "help" -> help();
-                case "quite" -> "Quitting... goodbye.";
+                case "quit" -> "quit";
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -33,18 +37,36 @@ public class PreloginClient {
 
     public String login(String... params) throws ResponseException {
         if (params.length != 2) {
-            printLoginMessage();
+            return "Type \"login\" and your username and password to log in.\n";
         }
-        if (params.length == 2) {
-            LoginRequest request = new LoginRequest(params[0], params[1]);
+        LoginRequest request = new LoginRequest(params[0], params[1]);
+        try {
             LoginResult result = server.login(request);
-            System.out.println("You've ")
+            System.out.println("You've signed in! Welcome " + params[0]);
+            currentAuth = result.authToken();
+            return "loggedin " + currentAuth;
+        } catch (ResponseException e) {
+            System.out.println("Incorrect username or password. Try again");
+            return "failed";
         }
     }
 
-    private void printLoginMessage() {
-        System.out.println("Type \"login\" and your username and password to log in.\n");
+    public String register(String... params) throws ResponseException {
+        if (params.length != 3) {
+            return "Type \"register\" and a username, password, and email to register.\n";
+        }
+        RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+        try {
+            RegisterResult result = server.register(request);
+            System.out.println("You've been registered! Welcome " + params[0]);
+            currentAuth = result.authToken();
+            return "registered " + currentAuth;
+        } catch (ResponseException e) {
+            System.out.println("Invalid username, password, or email. Try again");
+            return "failed";
+        }
     }
+
 
     public String help() {
         return """

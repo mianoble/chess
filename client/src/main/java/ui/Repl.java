@@ -6,10 +6,11 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final ServerFacade server;
+    private String currentAuth;
 
     private final PreloginClient preloginClient;
-//    private final PostloginClient postloginClient;
-//    private final GameplayClient gameplayClient;
+    private final PostloginClient postloginClient;
+    private final GameplayClient gameplayClient;
 
     public enum State {
         prelogin, // 1
@@ -22,7 +23,10 @@ public class Repl {
     public Repl(String serverUrl) {
         server = new ServerFacade(serverUrl);
         preloginClient = new PreloginClient(server);
+        postloginClient = new PostloginClient(server);
+        gameplayClient = new GameplayClient(server);
         state = State.prelogin;
+        currentAuth = "";
     }
 
     public void run() {
@@ -40,13 +44,59 @@ public class Repl {
                 try {
                     result = preloginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
-
+                    var tokens = result.split(" ");
+                    if (tokens[0].equals("loggedin") || tokens[0].equals("registered")) {
+                        state = State.postlogin;
+                        currentAuth = tokens[0];
+                    }
                 } catch (Throwable e) {
                     var msg = e.toString();
                     System.out.print(msg);
                 }
             }
+
+            if (state == State.postlogin) {
+                try {
+                    result = postloginClient.eval(line, currentAuth);
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
+                    var board = result.split(" ");
+                    if (result.equals("loggedout")) {
+                        state = State.prelogin;
+                    }
+                    else if (result.equals("newgame") || board[0].equals("joinedgame") || result.equals("spectating")) {
+                        state = State.gameplay;
+                    }
+                } catch (Throwable e) {
+                    var msg = e.toString();
+                    System.out.println(msg);
+                }
+            }
+
+            if (state == State.gameplay) {
+                try {
+                    var board = result.split(" ");
+                    if (board.length < 2) { //spectating only
+                        gameplayClient.printBoardWhiteView();
+                    }
+                    else {
+                        if (board[1].equals("WHITE")) { // white board
+                            gameplayClient.printBoardWhiteView();
+                        }
+                        else { // black board
+                            gameplayClient.printBoardBlackView();
+                        }
+                    }
+                } catch (Throwable e) {
+                    var msg = e.toString();
+                    System.out.println(msg);
+                }
+                // todo: go back to other states?
+            }
         }
+
+
+
+
         System.out.println();
     }
 

@@ -36,13 +36,6 @@ public class ServerFacade {
 
     }
 
-    /*
-            - create game
-			- join game
-			- list games
-			- clear
-     */
-
     public CreateResult create(CreateRequest req) throws ResponseException {
         var path = "/game";
         return this.makeRequest("POST", path, req, CreateResult.class);
