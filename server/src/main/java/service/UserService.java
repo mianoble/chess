@@ -75,11 +75,4 @@ public class UserService {
             authID = authID.substring(1, authID.length() - 1);
         }
         if (!authTokenDAO.authExists(authID)) {
-            throw new ResponseException(401, "Error: authToken does not exist");
-        }
-
-        authTokenDAO.deleteAuth(authID);
-        return new LogoutResult();
-    }
-
-}
+            throw new ResponseException(

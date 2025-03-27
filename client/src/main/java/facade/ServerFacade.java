@@ -100,34 +100,4 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
                 if (reqData.startsWith("\"") && reqData.endsWith("\"")) {
-                    reqData = reqData.substring(1, reqData.length() - 1);
-                }
-            }
-        }
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
-        }
-    }
-
-    private boolean isSuccessful(int status) {
-        return status / 100 == 2;
-    }
-
-    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
-        T response = null;
-        if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
-            }
-        }
-        return response;
-    }
-
-}
+                    reqData = reqData.subst
