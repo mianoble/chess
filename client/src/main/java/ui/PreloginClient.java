@@ -10,12 +10,10 @@ import model.RegisterRequest;
 import model.RegisterResult;
 
 public class PreloginClient {
-    private String currentAuth;
 
     ServerFacade server;
     public PreloginClient(ServerFacade serverFacade) {
         this.server = serverFacade;
-        currentAuth = "";
     }
 
     public String eval (String input) {
@@ -41,7 +39,7 @@ public class PreloginClient {
         }
         LoginRequest request = new LoginRequest(params[0], params[1]);
         try {
-            LoginResult result = server.login(request);
+            server.login(request);
             System.out.println("You've signed in! Welcome " + params[0]);
             return "loggedin";
         } catch (ResponseException e) {
@@ -56,7 +54,7 @@ public class PreloginClient {
         }
         RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
         try {
-            RegisterResult result = server.register(request);
+            server.register(request);
             System.out.println("You've been registered! Welcome " + params[0]);
             return "registered";
         } catch (ResponseException e) {
@@ -68,11 +66,11 @@ public class PreloginClient {
 
     public String help() {
         return """
-                What do you want to do?
-                    Login as an existing user: type "login" <USERNAME> <PASSWORD>
-                    Register as a new user: type "register" <USERNAME> <PASSWORD> <EMAIL>
-                    Print a list of possible actions: type "help"
-                    Quit the game: type "quit"
-                """;
+                 What do you want to do?
+                     Login as an existing user: type "login" <USERNAME> <PASSWORD>
+                     Register as a new user: type "register" <USERNAME> <PASSWORD> <EMAIL>
+                     Print a list of possible actions: type "help"
+                     Quit the game: type "quit"
+                 """;
     }
 }
