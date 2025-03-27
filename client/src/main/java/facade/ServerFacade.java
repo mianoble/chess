@@ -11,44 +11,53 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 
 public class ServerFacade {
 
     private final String serverURL;
+    private String authToken;
 
     public ServerFacade(String url) {
         serverURL = url;
+        authToken = "";
     }
 
     public RegisterResult register(RegisterRequest req) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, req, RegisterResult.class);
+        RegisterResult result = this.makeRequest("POST", path, req, RegisterResult.class);
+        authToken = result.authToken();
+        return result;
     }
 
     public LoginResult login(LoginRequest req) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, req, LoginResult.class);
+        LoginResult result = this.makeRequest("POST", path, req, LoginResult.class);
+        authToken = result.authToken();
+        return result;
     }
 
-    public LogoutResult logout(String id) throws ResponseException {
+    public LogoutResult logout() throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, id, LogoutResult.class);
-
+        return this.makeRequest("DELETE", path, authToken, LogoutResult.class);
     }
 
     public CreateResult create(CreateRequest req) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, req, CreateResult.class);
+        CreateRequest realReq = new CreateRequest(authToken, req.gameName());
+        return this.makeRequest("POST", path, realReq, CreateResult.class);
     }
 
     public EmptyResult join(JoinRequest req) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("PUT", path, req, EmptyResult.class);
+        JoinRequest realReq = new JoinRequest(authToken, req.playerColor(), req.gameID());
+        return this.makeRequest("PUT", path, realReq, EmptyResult.class);
     }
 
-    public ListResult list(ListRequest req) throws ResponseException {
+    public ListResult list() throws ResponseException {
         var path = "/game";
-        return this.makeRequest("GET", path, req, ListResult.class);
+        ListRequest realReq = new ListRequest(authToken);
+        return this.makeRequest("GET", path, realReq, ListResult.class);
     }
 
     public EmptyResult clear() throws ResponseException {
@@ -63,13 +72,24 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            writeHeader(obj, http);
             writeBody(obj, http);
-            http.connect();
+
+            //http.connect();
             throwIfNotSuccessful(http);
 
             return readBody(http, responseClass);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ResponseException(500, e.getMessage());
+        }
+    }
+
+    private static void writeHeader(Object obj, HttpURLConnection http) throws IOException {
+        if (obj != null) {
+            http.addRequestProperty("Content-Type", "application/json");
+            String reqData = new Gson().toJson(obj);
+            http.addRequestProperty("authorization", reqData);
         }
     }
 
@@ -77,8 +97,11 @@ public class ServerFacade {
         if (obj != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(obj);
-            try (OutputStream reqBody = http.getOutputStream()) { // failing here
+            try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
+                if (reqData.startsWith("\"") && reqData.endsWith("\"")) {
+                    reqData = reqData.substring(1, reqData.length() - 1);
+                }
             }
         }
     }

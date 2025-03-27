@@ -71,6 +71,9 @@ public class UserService {
         if (authID == null) {
             throw new ResponseException(500, "Error: AuthToken cannot be null or empty");
         }
+        if (authID.startsWith("\"") && authID.endsWith("\"")) {
+            authID = authID.substring(1, authID.length() - 1);
+        }
         if (!authTokenDAO.authExists(authID)) {
             throw new ResponseException(401, "Error: authToken does not exist");
         }

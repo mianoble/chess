@@ -6,7 +6,6 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final ServerFacade server;
-    private String currentAuth;
 
     private final PreloginClient preloginClient;
     private final PostloginClient postloginClient;
@@ -26,7 +25,6 @@ public class Repl {
         postloginClient = new PostloginClient(server);
         gameplayClient = new GameplayClient(server);
         state = State.prelogin;
-        currentAuth = "";
     }
 
     public void run() {
@@ -43,11 +41,9 @@ public class Repl {
             if(state == State.prelogin) {
                 try {
                     result = preloginClient.eval(line);
-                    System.out.print(SET_TEXT_COLOR_BLUE + result);
-                    var tokens = result.split(" ");
-                    if (tokens[0].equals("loggedin") || tokens[0].equals("registered")) {
+                    System.out.println(SET_TEXT_COLOR_BLUE + result);
+                    if (result.equals("loggedin") || result.equals("registered")) {
                         state = State.postlogin;
-                        currentAuth = tokens[0];
                     }
                 } catch (Throwable e) {
                     var msg = e.toString();
@@ -57,7 +53,7 @@ public class Repl {
 
             if (state == State.postlogin) {
                 try {
-                    result = postloginClient.eval(line, currentAuth);
+                    result = postloginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
                     if (result.equals("loggedout")) {
@@ -93,10 +89,6 @@ public class Repl {
                 // todo: go back to other states?
             }
         }
-
-
-
-
         System.out.println();
     }
 
