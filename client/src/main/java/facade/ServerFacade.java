@@ -16,7 +16,7 @@ import java.util.List;
 public class ServerFacade {
 
     private final String serverURL;
-    private String authToken;
+    private static String authToken;
 
     public ServerFacade(String url) {
         serverURL = url;
@@ -89,19 +89,20 @@ public class ServerFacade {
         if (obj != null) {
             http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(obj);
-            http.addRequestProperty("authorization", reqData);
+            http.addRequestProperty("authorization", authToken);
         }
     }
 
     private static void writeBody(Object obj, HttpURLConnection http) throws IOException {
         if (obj != null) {
-            http.addRequestProperty("Content-Type", "application/json");
+//            http.addRequestProperty("Content-Type", "application/json");
+            http.setRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(obj);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
-                if (reqData.startsWith("\"") && reqData.endsWith("\"")) {
-                    reqData = reqData.substring(1, reqData.length() - 1);
-                }
+//                if (reqData.startsWith("\"") && reqData.endsWith("\"")) {
+//                    reqData = reqData.substring(1, reqData.length() - 1);
+//                }
             }
         }
     }

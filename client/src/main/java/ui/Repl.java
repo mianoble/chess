@@ -59,7 +59,7 @@ public class Repl {
                     if (result.equals("loggedout")) {
                         state = State.prelogin;
                     }
-                    else if (result.equals("newgame") || board[0].equals("joinedgame") || result.equals("spectating")) {
+                    else if (board[0].equals("joinedgame") || result.equals("spectating")) {
                         state = State.gameplay;
                     }
                 } catch (Throwable e) {

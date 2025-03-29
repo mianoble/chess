@@ -2,10 +2,7 @@ package ui;
 
 import dataaccess.ResponseException;
 import facade.ServerFacade;
-import model.CreateRequest;
-import model.CreateResult;
-import model.JoinRequest;
-import model.ListRequest;
+import model.*;
 
 import java.util.Arrays;
 
@@ -49,7 +46,7 @@ public class PostloginClient {
         CreateRequest createRequest = new CreateRequest(tempAuth, params[0]); // todo: need help too
         try {
             CreateResult result = server.create(createRequest);
-            System.out.println("You've created a new game! " + params[0]);
+            System.out.println("You've created a new game called: " + params[0]);
             return "newgame";
         } catch (ResponseException e) {
             System.out.println("Invalid entry to create a game. Try again");
@@ -59,7 +56,13 @@ public class PostloginClient {
 
     public String list () {
         try {
-            server.list();
+            ListResult res = server.list();
+            for (GameData game : res.games()) {
+                System.out.println(game.toString());
+            }
+//            for (String item : list) {
+//                System.out.println(item);
+//            }
             return "listed";
         } catch (ResponseException e) {
             return "failed";
