@@ -233,7 +233,6 @@ public class GameplayClient {
 
             out.println();
         }
-
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             out.print(cols[boardCol] + "  ");
