@@ -71,7 +71,7 @@ public class Repl {
             if (state == State.gameplay) {
                 try {
                     result = gameplayClient.eval(line);
-                    //System.out.print(SET_TEXT_COLOR_BLUE + result);
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
                     if (board.length < 2) { // spectating or quitting
                         if (board[0].equals("exit")) {

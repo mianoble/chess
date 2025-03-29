@@ -5,9 +5,12 @@ import facade.ServerFacade;
 import model.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class PostloginClient {
     ServerFacade server;
+    HashMap<Integer, Integer> gameNumbers = new HashMap<>();
+
     public PostloginClient(ServerFacade server) {
         this.server = server;
     }
@@ -59,6 +62,7 @@ public class PostloginClient {
             ListResult res = server.list();
             int i = 1;
             for (GameData game : res.games()) {
+                gameNumbers.put(i, game.gameID());
                 System.out.print(i + ": ");
                 System.out.print(game.gameName() + " - " + game.gameID() + " (white player: " + game.whiteUsername() +
                         ", black player: " + game.blackUsername() + ") \n");
@@ -74,12 +78,13 @@ public class PostloginClient {
         if (params.length != 2) {
             return "Type \"join\" and the game ID and your player color to join.\n";
         }
-        int id = 0;
+        int gameNum = 0;
         try {
-            id = Integer.parseInt(params[0]);
+            gameNum = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
             System.out.println("Invalid game ID format!");
         }
+        int id = gameNumbers.get(gameNum);
         String tempAuth = "none";
         JoinRequest joinRequest = new JoinRequest(tempAuth, params[1], id); // todo: need help too
         try {

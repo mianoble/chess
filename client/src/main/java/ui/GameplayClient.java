@@ -29,7 +29,7 @@ public class GameplayClient {
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch(cmd) {
-            case "spectate" -> printBoardBlackView();
+            case "spectate" -> printBoardWhiteView();
             case "join" -> joinGame(tokens[2]);
             case "help" -> help();
             case "exit" -> "exit";
