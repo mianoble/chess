@@ -57,12 +57,13 @@ public class PostloginClient {
     public String list () {
         try {
             ListResult res = server.list();
+            int i = 1;
             for (GameData game : res.games()) {
-                System.out.println(game.toString());
+                System.out.print(i + ": ");
+                System.out.print(game.gameName() + " - " + game.gameID() + " (white player: " + game.whiteUsername() +
+                        ", black player: " + game.blackUsername() + ") \n");
+                i++;
             }
-//            for (String item : list) {
-//                System.out.println(item);
-//            }
             return "listed";
         } catch (ResponseException e) {
             return "failed";
@@ -83,7 +84,7 @@ public class PostloginClient {
         JoinRequest joinRequest = new JoinRequest(tempAuth, params[1], id); // todo: need help too
         try {
             server.join(joinRequest);
-            System.out.println("You've join this game! " + params[0]);
+            System.out.println("You've joined this game! " + params[0]);
             if (params[1].equals("WHITE")) {
                 return "joinedgame " + params[1];
             }

@@ -16,6 +16,7 @@ public class GameplayClient {
     public String printBoardWhiteView() {
         // todo: print board for white player view and spectating
         System.out.println("temporary white board print");
+        
         return "temp whiteboard!!";
     }
 

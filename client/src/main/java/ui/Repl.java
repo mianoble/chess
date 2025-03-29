@@ -75,12 +75,16 @@ public class Repl {
                         gameplayClient.printBoardWhiteView();
                     }
                     else {
-                        if (board[1].equals("WHITE")) { // white board
+                        board[1].toLowerCase();
+                        if (board[1].equals("white")) { // white board
                             gameplayClient.printBoardWhiteView();
                         }
-                        else { // black board
+                        else if (board[1].equals("black")) { // black board
                             gameplayClient.printBoardBlackView();
                         }
+                        else
+                            System.out.println("Invalid player choice");
+                            state = State.postlogin;
                     }
                 } catch (Throwable e) {
                     var msg = e.toString();

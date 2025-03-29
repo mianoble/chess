@@ -57,7 +57,8 @@ public class ServerFacade {
     public ListResult list() throws ResponseException {
         var path = "/game";
         ListRequest realReq = new ListRequest(authToken);
-        return this.makeRequest("GET", path, realReq, ListResult.class);
+        ListResult res = this.makeRequest("GET", path, realReq, ListResult.class);
+        return res;
     }
 
     public EmptyResult clear() throws ResponseException {
@@ -70,10 +71,14 @@ public class ServerFacade {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
+//            http.setDoOutput(true);
+            http.setDoOutput(!method.equals("GET"));
 
             writeHeader(obj, http);
-            writeBody(obj, http);
+//            writeBody(obj, http);
+            if (!method.equals("GET")) { // Only write body for non-GET requests
+                writeBody(obj, http);
+            }
 
             //http.connect();
             throwIfNotSuccessful(http);
