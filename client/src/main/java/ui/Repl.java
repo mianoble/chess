@@ -70,27 +70,25 @@ public class Repl {
 
             if (state == State.gameplay) {
                 try {
+                    result = gameplayClient.eval(line);
+                    //System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
-                    if (board.length < 2) { //spectating only
-                        gameplayClient.printBoardWhiteView();
+                    if (board.length < 2) { // spectating or quitting
+                        if (board[0].equals("exit")) {
+                            state = State.postlogin;
+                        }
                     }
                     else {
-                        board[1].toLowerCase();
-                        if (board[1].equals("white")) { // white board
-                            gameplayClient.printBoardWhiteView();
-                        }
-                        else if (board[1].equals("black")) { // black board
-                            gameplayClient.printBoardBlackView();
-                        }
-                        else
+                        if (result.equals("invalidcolor")) {
                             System.out.println("Invalid player choice");
                             state = State.postlogin;
+                        }
                     }
                 } catch (Throwable e) {
                     var msg = e.toString();
                     System.out.println(msg);
                 }
-                // todo: go back to other states?
+
             }
         }
         System.out.println();

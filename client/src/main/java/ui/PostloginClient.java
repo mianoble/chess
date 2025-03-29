@@ -100,7 +100,6 @@ public class PostloginClient {
     }
 
     public String spectate (String... params) {
-        // todo: ask here
         return "spectating";
     }
 
