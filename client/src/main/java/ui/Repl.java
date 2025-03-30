@@ -73,16 +73,12 @@ public class Repl {
                     result = gameplayClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
-                    if (board.length < 2) { // spectating or quitting
-                        if (board[0].equals("exit")) {
-                            state = State.postlogin;
-                        }
+                    if (board.length < 2 && board[0].equals("exit")) { // spectating or quitting
+                        state = State.postlogin;
                     }
-                    else {
-                        if (result.equals("invalidcolor")) {
-                            System.out.println("Invalid player choice");
-                            state = State.postlogin;
-                        }
+                    if (result.equals("invalidcolor")) {
+                        System.out.println("Invalid player choice");
+                        state = State.postlogin;
                     }
                 } catch (Throwable e) {
                     var msg = e.toString();

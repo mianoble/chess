@@ -78,27 +78,31 @@ public class GameplayClient {
         out.println();
 
         for (int squareRow = BOARD_SIZE_IN_SQUARES; squareRow > 0; --squareRow) {
-            out.print(SET_TEXT_COLOR_GREEN);
-            out.print(squareRow + " ");
-            if (squareRow %2 == 0) {
-                for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    addWPawnsAndBPieces(out, squareRow, boardCol);
-                }
-            }
-            else {
-                for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    addBPawnsAndWPieces(out, squareRow, boardCol);
-                }
-            }
-            out.print(SET_TEXT_COLOR_GREEN);
-            out.print(" " + squareRow);
-            out.println();
+            addPieces(out, squareRow);
         }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             out.print(cols[boardCol] + "  ");
         }
         resetBG(out);
+    }
+
+    private static void addPieces(PrintStream out, int squareRow) {
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(squareRow + " ");
+        if (squareRow %2 == 0) {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                addWPawnsAndBPieces(out, squareRow, boardCol);
+            }
+        }
+        else {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                addBPawnsAndWPieces(out, squareRow, boardCol);
+            }
+        }
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(" " + squareRow);
+        out.println();
     }
 
     private static void drawBlackView(PrintStream out) {
@@ -112,22 +116,7 @@ public class GameplayClient {
         out.println();
 
         for (int squareRow = 1; squareRow <= BOARD_SIZE_IN_SQUARES; ++squareRow) {
-            out.print(SET_TEXT_COLOR_GREEN);
-            out.print(squareRow + " ");
-            if (squareRow %2 == 0) {
-                for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    addWPawnsAndBPieces(out, squareRow, boardCol);
-                }
-            }
-            else {
-                for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    addBPawnsAndWPieces(out, squareRow, boardCol);
-                }
-            }
-            out.print(SET_TEXT_COLOR_GREEN);
-            out.print(" " + squareRow);
-
-            out.println();
+            addPieces(out, squareRow);
         }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
