@@ -4,10 +4,8 @@ import dataaccess.ResponseException;
 
 import java.util.Arrays;
 import facade.ServerFacade;
-import model.LoginRequest;
-import model.LoginResult;
-import model.RegisterRequest;
-import model.RegisterResult;
+import model.LoginReq;
+import model.RegisterReq;
 
 public class PreloginClient {
 
@@ -37,7 +35,7 @@ public class PreloginClient {
         if (params.length != 2) {
             return "Type \"login\" and your username and password to log in.\n";
         }
-        LoginRequest request = new LoginRequest(params[0], params[1]);
+        LoginReq request = new LoginReq(params[0], params[1]);
         try {
             server.login(request);
             System.out.println("You've signed in! Welcome " + params[0]);
@@ -52,7 +50,7 @@ public class PreloginClient {
         if (params.length != 3) {
             return "Type \"register\" and a username, password, and email to register.\n";
         }
-        RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+        RegisterReq request = new RegisterReq(params[0], params[1], params[2]);
         try {
             server.register(request);
             System.out.println("You've been registered! Welcome " + params[0]);

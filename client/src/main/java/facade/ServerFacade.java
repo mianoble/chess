@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
+import java.util.Map;
 
 public class ServerFacade {
 
@@ -23,41 +23,66 @@ public class ServerFacade {
         authToken = "";
     }
 
-    public RegisterResult register(RegisterRequest req) throws ResponseException {
+    public void register(RegisterReq req) throws ResponseException {
         var path = "/user";
-        RegisterResult result = this.makeRequest("POST", path, req, RegisterResult.class);
+        RegisterRes result = this.makeRequest("POST", path, req, RegisterRes.class);
         authToken = result.authToken();
-        return result;
     }
 
-    public LoginResult login(LoginRequest req) throws ResponseException {
+    public void login(LoginReq req) throws ResponseException {
         var path = "/session";
-        LoginResult result = this.makeRequest("POST", path, req, LoginResult.class);
+        LoginRes result = this.makeRequest("POST", path, req, LoginRes.class);
         authToken = result.authToken();
-        return result;
     }
 
-    public LogoutResult logout() throws ResponseException {
+    public void logout() throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, authToken, LogoutResult.class);
+        this.makeRequest("DELETE", path, authToken, LogoutResult.class);
     }
 
-    public CreateResult create(CreateRequest req) throws ResponseException {
+    public void create(String gameName) throws ResponseException {
         var path = "/game";
-        CreateRequest realReq = new CreateRequest(authToken, req.gameName());
-        return this.makeRequest("POST", path, realReq, CreateResult.class);
+        this.makeCreateRequest("POST", path, gameName);
+    }
+    private void makeCreateRequest(String method, String path, String gameName)
+            throws ResponseException {
+        try {
+            URL url = (new URI(serverURL + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(!method.equals("GET"));
+
+            writeHeader(http);
+            if (!method.equals("GET")) { // Only write body for non-GET requests
+                writeCreateBody(gameName, http);
+            }
+
+            throwIfNotSuccessful(http);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
-    public EmptyResult join(JoinRequest req) throws ResponseException {
-        var path = "/game";
-        JoinRequest realReq = new JoinRequest(authToken, req.playerColor(), req.gameID());
-        return this.makeRequest("PUT", path, realReq, EmptyResult.class);
+    private static void writeCreateBody(String obj, HttpURLConnection http) throws IOException {
+        if (obj != null) {
+            http.setRequestProperty("Content-Type", "application/json");
+            String jsonBody = new Gson().toJson(Map.of("gameName", obj));
+            try (OutputStream reqBody = http.getOutputStream()) {
+                reqBody.write(jsonBody.getBytes());
+            }
+        }
     }
 
-    public ListResult list() throws ResponseException {
+    public void join(JoinReq req) throws ResponseException {
         var path = "/game";
-        ListRequest realReq = new ListRequest(authToken);
-        ListResult res = this.makeRequest("GET", path, realReq, ListResult.class);
+        JoinReq realReq = new JoinReq(authToken, req.playerColor(), req.gameID());
+        this.makeRequest("PUT", path, realReq, EmptyResult.class);
+    }
+
+    public ListRes list() throws ResponseException {
+        var path = "/game";
+        ListRes res = this.makeRequest("GET", path, authToken, ListRes.class);
         return res;
     }
 
@@ -71,16 +96,13 @@ public class ServerFacade {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-//            http.setDoOutput(true);
             http.setDoOutput(!method.equals("GET"));
 
-            writeHeader(obj, http);
-//            writeBody(obj, http);
+            writeHeader(http);
             if (!method.equals("GET")) { // Only write body for non-GET requests
                 writeBody(obj, http);
             }
 
-            //http.connect();
             throwIfNotSuccessful(http);
 
             return readBody(http, responseClass);
@@ -90,24 +112,17 @@ public class ServerFacade {
         }
     }
 
-    private static void writeHeader(Object obj, HttpURLConnection http) throws IOException {
-        if (obj != null) {
-            http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(obj);
-            http.addRequestProperty("authorization", authToken);
-        }
+    private static void writeHeader(HttpURLConnection http) throws IOException {
+        http.addRequestProperty("Content-Type", "application/json");
+        http.addRequestProperty("authorization", authToken);
     }
 
     private static void writeBody(Object obj, HttpURLConnection http) throws IOException {
         if (obj != null) {
-//            http.addRequestProperty("Content-Type", "application/json");
             http.setRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(obj);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
-//                if (reqData.startsWith("\"") && reqData.endsWith("\"")) {
-//                    reqData = reqData.substring(1, reqData.length() - 1);
-//                }
             }
         }
     }

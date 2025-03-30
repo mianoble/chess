@@ -2,7 +2,10 @@ package ui;
 
 import dataaccess.ResponseException;
 import facade.ServerFacade;
-import model.*;
+import model.GameData;
+import model.JoinReq;
+import model.ListRes;
+
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,10 +48,8 @@ public class PostloginClient {
         if (params.length != 1) {
             return "Type \"create\" and the name of your new game.\n";
         }
-        String tempAuth = "none";
-        CreateRequest createRequest = new CreateRequest(tempAuth, params[0]); // todo: need help too
         try {
-            CreateResult result = server.create(createRequest);
+            server.create(params[0]);
             System.out.println("You've created a new game called: " + params[0]);
             return "newgame";
         } catch (ResponseException e) {
@@ -59,7 +60,7 @@ public class PostloginClient {
 
     public String list () {
         try {
-            ListResult res = server.list();
+            ListRes res = server.list();
             int i = 1;
             for (GameData game : res.games()) {
                 gameNumbers.put(i, game.gameID());
@@ -86,7 +87,7 @@ public class PostloginClient {
         }
         int id = gameNumbers.get(gameNum);
         String tempAuth = "none";
-        JoinRequest joinRequest = new JoinRequest(tempAuth, params[1], id); // todo: need help too
+        JoinReq joinRequest = new JoinReq(tempAuth, params[1], id);
         try {
             server.join(joinRequest);
             System.out.println("You've joined this game! " + params[0]);
