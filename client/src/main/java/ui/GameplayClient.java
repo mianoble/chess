@@ -1,12 +1,10 @@
 package ui;
 
-import model.ResponseException;
 import facade.ServerFacade;
 import static ui.EscapeSequences.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class GameplayClient {
     ServerFacade server;
@@ -27,7 +25,6 @@ public class GameplayClient {
     public String eval (String input) {
         var tokens = input.split(" ");
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
-        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch(cmd) {
             case "spectate" -> printBoardWhiteView();
             case "join" -> joinGame(tokens[2]);
@@ -60,18 +57,18 @@ public class GameplayClient {
         out.print(ERASE_SCREEN);
         out.println();
         drawWhiteView(out);
-        return "whiteboard";
+        return "";
     }
 
-    public String printBoardBlackView() {
+    public void printBoardBlackView() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         out.println();
         drawBlackView(out);
-        return "blackboard";
     }
 
     private static void drawWhiteView(PrintStream out) {
+        setBlack(out);
         String[] cols = {"a", "b", "c", "d", "e", "f", "g", "h"};
         out.print(SET_TEXT_COLOR_GREEN);
         out.print("   ");
@@ -85,161 +82,27 @@ public class GameplayClient {
             out.print(squareRow + " ");
             if (squareRow %2 == 0) {
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    if (squareRow == 2) { // print white pawns
-                        if (boardCol % 2 == 0) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_PAWN);
-                        }
-                        else {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_PAWN);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
-                    else if (squareRow == 8) {
-                        if (boardCol == 0) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_ROOK);
-                        }
-                        else if (boardCol == 1) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KNIGHT);
-                        }
-                        else if (boardCol == 2) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_BISHOP);
-                        }
-                        else if (boardCol == 3) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_QUEEN);
-                        }
-                        else if (boardCol == 4) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KING);
-                        }
-                        else if (boardCol == 5) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_BISHOP);
-                        }
-                        else if (boardCol == 6) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KNIGHT);
-                        }
-                        else if (boardCol == 7) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_ROOK);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
-                    else {
-                        if (boardCol % 2 == 0) {
-                            setTan(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        } else {
-                            setDarkGreen(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
+                    addWPawnsAndBPieces(out, squareRow, boardCol);
                 }
             }
             else {
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                     if (squareRow == 1) {
-                        if (boardCol == 0) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_ROOK);
-                        } else if (boardCol == 1) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KNIGHT);
-                        } else if (boardCol == 2) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_BISHOP);
-                        } else if (boardCol == 3) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_QUEEN);
-                        } else if (boardCol == 4) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KING);
-                        } else if (boardCol == 5) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_BISHOP);
-                        } else if (boardCol == 6) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KNIGHT);
-                        } else if (boardCol == 7) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_ROOK);
-                        }
-                         if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                             setBlack(out);
-                         }
-                    }
-                     else if (squareRow == 7) {
-                         if (boardCol % 2 == 0) {
-                             setDarkGreen(out);
-                             out.print(SET_TEXT_COLOR_BLACK);
-                             out.print(BLACK_PAWN);
-                         }
-                         else {
-                             setTan(out);
-                             out.print(SET_TEXT_COLOR_BLACK);
-                             out.print(BLACK_PAWN);
-                         }
-                         if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                             setBlack(out);
-                         }
-                     }
-                     else {
-                         if (boardCol % 2 == 0) {
-                             setDarkGreen(out);
-                             out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                         } else {
-                             setTan(out);
-                             out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                         }
-                         if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                             setBlack(out);
-                         }
-                     }
+                    addBPawnsAndWPieces(out, squareRow, boardCol);
                 }
             }
             out.print(SET_TEXT_COLOR_GREEN);
             out.print(" " + squareRow);
-
             out.println();
         }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             out.print(cols[boardCol] + "  ");
         }
+        resetBG(out);
     }
 
     private static void drawBlackView(PrintStream out) {
+        setBlack(out);
         String[] cols = {"h", "g", "f", "e", "d", "c", "b", "a"};
         out.print(SET_TEXT_COLOR_GREEN);
         out.print("   ");
@@ -253,144 +116,12 @@ public class GameplayClient {
             out.print(squareRow + " ");
             if (squareRow %2 == 0) {
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    if (squareRow == 2) { // print white pawns
-                        if (boardCol % 2 == 0) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_PAWN);
-                        }
-                        else {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_PAWN);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
-                    else if (squareRow == 8) {
-                        if (boardCol == 0) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_ROOK);
-                        }
-                        else if (boardCol == 1) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KNIGHT);
-                        }
-                        else if (boardCol == 2) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_BISHOP);
-                        }
-                        else if (boardCol == 3) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_QUEEN);
-                        }
-                        else if (boardCol == 4) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KING);
-                        }
-                        else if (boardCol == 5) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_BISHOP);
-                        }
-                        else if (boardCol == 6) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_KNIGHT);
-                        }
-                        else if (boardCol == 7) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_ROOK);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
-                    else {
-                        if (boardCol % 2 == 0) {
-                            setTan(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        } else {
-                            setDarkGreen(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        }
-                    }
-                    if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                        setBlack(out);
-                    }
+                    addWPawnsAndBPieces(out, squareRow, boardCol);
                 }
             }
             else {
                 for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                    if (squareRow == 1) {
-                        if (boardCol == 0) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_ROOK);
-                        } else if (boardCol == 1) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KNIGHT);
-                        } else if (boardCol == 2) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_BISHOP);
-                        } else if (boardCol == 3) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_QUEEN);
-                        } else if (boardCol == 4) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KING);
-                        } else if (boardCol == 5) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_BISHOP);
-                        } else if (boardCol == 6) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_KNIGHT);
-                        } else if (boardCol == 7) {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(WHITE_ROOK);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    } else if (squareRow == 7) {
-                        if (boardCol % 2 == 0) {
-                            setDarkGreen(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_PAWN);
-                        } else {
-                            setTan(out);
-                            out.print(SET_TEXT_COLOR_BLACK);
-                            out.print(BLACK_PAWN);
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    } else {
-                        if (boardCol % 2 == 0) {
-                            setDarkGreen(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        } else {
-                            setTan(out);
-                            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                        }
-                        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                            setBlack(out);
-                        }
-                    }
+                    addBPawnsAndWPieces(out, squareRow, boardCol);
                 }
             }
             out.print(SET_TEXT_COLOR_GREEN);
@@ -398,26 +129,165 @@ public class GameplayClient {
 
             out.println();
         }
+        out.print("   ");
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            out.print(cols[boardCol] + "  ");
+        }
     }
 
-//    private static void printHeaderText(PrintStream out, String player) {
-//        out.print(SET_BG_COLOR_BLACK);
-//        out.print(SET_TEXT_COLOR_GREEN);
-//
-//        out.print(player);
-//
-//        setBlack(out);
-//    }
-//
-//    private static void setWhite(PrintStream out) {
-//        out.print(SET_BG_COLOR_WHITE);
-//        out.print(SET_TEXT_COLOR_WHITE);
-//    }
+    private static void addWPawnsAndBPieces(PrintStream out, int squareRow, int boardCol) {
+        if (squareRow == 2) { // print white pawns
+            if (boardCol % 2 == 0) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_PAWN);
+            }
+            else {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_PAWN);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else if (squareRow == 8) {
+            if (boardCol == 0) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_ROOK);
+            }
+            else if (boardCol == 1) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KNIGHT);
+            }
+            else if (boardCol == 2) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_BISHOP);
+            }
+            else if (boardCol == 3) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_QUEEN);
+            }
+            else if (boardCol == 4) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KING);
+            }
+            else if (boardCol == 5) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_BISHOP);
+            }
+            else if (boardCol == 6) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KNIGHT);
+            }
+            else if (boardCol == 7) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_ROOK);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else {
+            if (boardCol % 2 == 0) {
+                setTan(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            } else {
+                setDarkGreen(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+    }
+
+    private static void addBPawnsAndWPieces(PrintStream out, int squareRow, int boardCol) {
+        if (squareRow == 1) {
+            if (boardCol == 0) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_ROOK);
+            } else if (boardCol == 1) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KNIGHT);
+            } else if (boardCol == 2) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_BISHOP);
+            } else if (boardCol == 3) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_QUEEN);
+            } else if (boardCol == 4) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KING);
+            } else if (boardCol == 5) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_BISHOP);
+            } else if (boardCol == 6) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KNIGHT);
+            } else if (boardCol == 7) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_ROOK);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else if (squareRow == 7) {
+            if (boardCol % 2 == 0) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_PAWN);
+            }
+            else {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_PAWN);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else {
+            if (boardCol % 2 == 0) {
+                setDarkGreen(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            } else {
+                setTan(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+    }
 
     private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_BLACK);
     }
+
+    private static void resetBG(PrintStream out) {
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_BG_COLOR);
+    }
+
 
     private static void setDarkGreen(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREEN);
