@@ -1,9 +1,8 @@
 package facade;
 
 import com.google.gson.Gson;
-import dataaccess.ResponseException;
 import model.*;
-
+import model.ResponseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

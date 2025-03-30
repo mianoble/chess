@@ -1,6 +1,6 @@
 package ui;
 
-import dataaccess.ResponseException;
+import model.ResponseException;
 
 import java.util.Arrays;
 import facade.ServerFacade;
