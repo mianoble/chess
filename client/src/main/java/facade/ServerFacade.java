@@ -22,6 +22,10 @@ public class ServerFacade {
         authToken = "";
     }
 
+    public String getAuthID() {
+        return authToken;
+    }
+
     public void register(RegisterReq req) throws ResponseException {
         var path = "/user";
         RegisterRes result = this.makeRequest("POST", path, req, RegisterRes.class);
@@ -43,6 +47,7 @@ public class ServerFacade {
         var path = "/game";
         this.makeCreateRequest("POST", path, gameName);
     }
+
     private void makeCreateRequest(String method, String path, String gameName)
             throws ResponseException {
         try {
