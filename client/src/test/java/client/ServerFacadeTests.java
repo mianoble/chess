@@ -5,6 +5,9 @@ import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
+import java.awt.image.RescaleOp;
+import java.util.UUID;
+
 
 public class ServerFacadeTests {
 
@@ -14,12 +17,18 @@ public class ServerFacadeTests {
 
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws ResponseException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        var url = "http://localhost:0";
+        var url = "http://localhost:" + port;
         facade = new ServerFacade(url);
+        facade.clear();
+    }
+
+    @BeforeEach
+    void clearStuff() throws ResponseException {
+        facade.clear();
     }
 
     @AfterAll
@@ -33,16 +42,9 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
 
-    /*
-    - logout
-    - join
-    - list
-    - clear
-     */
-
     @Test
     public void registerPass() throws ResponseException {
-        String user = "me123";
+        String user = UUID.randomUUID().toString();
         String pass = "me123";
         String email = "me123";
         RegisterReq req = new RegisterReq(user,pass,email);
@@ -59,8 +61,24 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> facade.register(req));
     }
 
+    private void registerSame() throws ResponseException {
+        String user = "me123";
+        String pass = "me123";
+        String email = "me123";
+        RegisterReq req = new RegisterReq(user,pass,email);
+        facade.register(req);
+    }
+
+    private void loginSame() throws ResponseException {
+        String user = "me123";
+        String pass = "me123";
+        LoginReq req = new LoginReq(user,pass);
+        facade.login(req);
+    }
+
     @Test
     public void loginPass() throws ResponseException {
+        registerSame();
         String user = "me123";
         String pass = "me123";
         LoginReq req = new LoginReq(user,pass);
@@ -78,25 +96,24 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutPass() throws ResponseException {
-        String user = "me123";
-        String pass = "me123";
-        LoginReq req = new LoginReq(user,pass);
-        facade.login(req);
+        registerSame();
+        loginSame();
         Assertions.assertDoesNotThrow(() -> facade.logout());
     }
 
     @Test
     public void logoutFail() throws ResponseException {
+        registerSame();
+        loginSame();
+        facade.logout();
         Assertions.assertThrows(ResponseException.class, () -> facade.logout());
     }
 
     @Test
     public void createPass() throws ResponseException {
-        String user = "me123";
-        String pass = "me123";
-        LoginReq req = new LoginReq(user,pass);
-        facade.login(req);
-        String gameName = "game123";
+        registerSame();
+        loginSame();
+        String gameName = UUID.randomUUID().toString();
         Assertions.assertDoesNotThrow(() -> facade.create(gameName));
     }
 
@@ -108,13 +125,36 @@ public class ServerFacadeTests {
 
     @Test
     public void joinPass() throws ResponseException {
-        String user = "me123";
-        String pass = "me123";
-        LoginReq req = new LoginReq(user,pass);
-        facade.login(req);
         String gameName = "game123";
+        Assertions.assertThrows(ResponseException.class, () -> facade.create(gameName));
+    }
+
+    @Test
+    public void joinFail() throws ResponseException {
+        registerSame();
+        loginSame();
+
+        String gameName = UUID.randomUUID().toString();
         facade.create(gameName);
         JoinReq req1 = new JoinReq(authID, "BLACK", 1);
-
+        Assertions.assertThrows(ResponseException.class, () -> facade.join(req1));
     }
+
+    @Test
+    public void listPass() throws ResponseException {
+        registerSame();
+        loginSame();
+        Assertions.assertDoesNotThrow(() -> facade.list());
+    }
+
+    @Test
+    public void listFail() throws ResponseException {
+        Assertions.assertThrows(ResponseException.class, () -> facade.list());
+    }
+
+    @Test
+    public void clearPass() throws ResponseException {
+        Assertions.assertDoesNotThrow(() -> facade.clear());
+    }
+
 }
