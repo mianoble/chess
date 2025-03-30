@@ -76,7 +76,7 @@ public class ServerFacade {
     public void join(JoinReq req) throws ResponseException {
         var path = "/game";
         JoinReq realReq = new JoinReq(authToken, req.playerColor(), req.gameID());
-        this.makeRequest("PUT", path, realReq, EmptyResult.class);
+        this.makeRequest("PUT", path, realReq, LogoutRes.class);
     }
 
     public ListRes list() throws ResponseException {
@@ -85,9 +85,9 @@ public class ServerFacade {
         return res;
     }
 
-    public EmptyResult clear() throws ResponseException {
+    public LogoutRes clear() throws ResponseException {
         var path = "/db";
-        return this.makeRequest("DELETE", path, null, EmptyResult.class);
+        return this.makeRequest("DELETE", path, null, LogoutRes.class);
     }
 
     private <T> T makeRequest(String method, String path, Object obj, Class<T> responseClass) throws ResponseException {

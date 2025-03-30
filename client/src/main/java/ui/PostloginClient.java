@@ -2,7 +2,7 @@ package ui;
 
 import model.ResponseException;
 import facade.ServerFacade;
-import model.GameData;
+import model.GameDataClient;
 import model.JoinReq;
 import model.ListRes;
 
@@ -62,7 +62,7 @@ public class PostloginClient {
         try {
             ListRes res = server.list();
             int i = 1;
-            for (GameData game : res.games()) {
+            for (GameDataClient game : res.games()) {
                 gameNumbers.put(i, game.gameID());
                 System.out.print(i + ": ");
                 System.out.print(game.gameName() + " - " + game.gameID() + " (white player: " + game.whiteUsername() +
