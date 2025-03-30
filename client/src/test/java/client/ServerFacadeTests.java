@@ -60,7 +60,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void LoginPass() throws ResponseException {
+    public void loginPass() throws ResponseException {
         String user = "me123";
         String pass = "me123";
         LoginReq req = new LoginReq(user,pass);
@@ -108,6 +108,13 @@ public class ServerFacadeTests {
 
     @Test
     public void joinPass() throws ResponseException {
-        
+        String user = "me123";
+        String pass = "me123";
+        LoginReq req = new LoginReq(user,pass);
+        facade.login(req);
+        String gameName = "game123";
+        facade.create(gameName);
+        JoinReq req1 = new JoinReq(authID, "BLACK", 1);
+
     }
 }
