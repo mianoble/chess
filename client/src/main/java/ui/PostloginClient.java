@@ -65,8 +65,18 @@ public class PostloginClient {
             for (GameDataClient game : res.games()) {
                 gameNumbers.put(i, game.gameID());
                 System.out.print(i + ": ");
-                System.out.print(game.gameName() + " - " + game.gameID() + " (white player: " + game.whiteUsername() +
-                        ", black player: " + game.blackUsername() + ") \n");
+                if (game.whiteUsername() == null) {
+
+                }
+                else if (game.blackUsername() == null) {
+
+                }
+
+                System.out.print(game.gameName() + " - (white player: " +
+                        (game.whiteUsername() != null ? game.whiteUsername() : "empty") +
+                        ", black player: " +
+                        (game.blackUsername() != null ? game.blackUsername() : "empty") +
+                        ") \n");
                 i++;
             }
             return "listed";

@@ -46,7 +46,7 @@ public class Repl {
                         state = State.postlogin;
                     }
                 } catch (Throwable e) {
-                    var msg = e.toString();
+                    var msg = e.getMessage();
                     System.out.print(msg);
                 }
             }

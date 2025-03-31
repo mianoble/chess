@@ -80,7 +80,7 @@ public class GameplayClient {
         out.println();
 
         for (int squareRow = BOARD_SIZE_IN_SQUARES; squareRow > 0; --squareRow) {
-            addPieces(out, squareRow);
+            addPiecesForWhite(out, squareRow);
         }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -89,17 +89,17 @@ public class GameplayClient {
         resetBG(out);
     }
 
-    private static void addPieces(PrintStream out, int squareRow) {
+    private static void addPiecesForWhite(PrintStream out, int squareRow) {
         out.print(SET_TEXT_COLOR_GREEN);
         out.print(squareRow + " ");
         if (squareRow %2 == 0) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                addWPawnsAndBPieces(out, squareRow, boardCol);
+                addWPawnsAndBPiecesForWhite(out, squareRow, boardCol);
             }
         }
         else {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                addBPawnsAndWPieces(out, squareRow, boardCol);
+                addBPawnsAndWPiecesForWhite(out, squareRow, boardCol);
             }
         }
         out.print(SET_TEXT_COLOR_GREEN);
@@ -118,7 +118,7 @@ public class GameplayClient {
         out.println();
 
         for (int squareRow = 1; squareRow <= BOARD_SIZE_IN_SQUARES; ++squareRow) {
-            addPieces(out, squareRow);
+            addPiecesForBlack(out, squareRow);
         }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -126,7 +126,25 @@ public class GameplayClient {
         }
     }
 
-    private static void addWPawnsAndBPieces(PrintStream out, int squareRow, int boardCol) {
+    private static void addPiecesForBlack(PrintStream out, int squareRow) {
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(squareRow + " ");
+        if (squareRow %2 == 0) {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                addWPawnsAndBPiecesForBlack(out, squareRow, boardCol);
+            }
+        }
+        else {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                addBPawnsAndWPiecesForBlack(out, squareRow, boardCol);
+            }
+        }
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(" " + squareRow);
+        out.println();
+    }
+
+    private static void addWPawnsAndBPiecesForWhite(PrintStream out, int squareRow, int boardCol) {
         if (squareRow == 2) { // print white pawns
             if (boardCol % 2 == 0) {
                 setTan(out);
@@ -201,7 +219,82 @@ public class GameplayClient {
         }
     }
 
-    private static void addBPawnsAndWPieces(PrintStream out, int squareRow, int boardCol) {
+    private static void addWPawnsAndBPiecesForBlack(PrintStream out, int squareRow, int boardCol) {
+        if (squareRow == 2) { // print white pawns
+            if (boardCol % 2 == 0) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_PAWN);
+            }
+            else {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_PAWN);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else if (squareRow == 8) {
+            if (boardCol == 0) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_ROOK);
+            }
+            else if (boardCol == 1) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KNIGHT);
+            }
+            else if (boardCol == 2) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_BISHOP);
+            }
+            else if (boardCol == 3) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KING);
+            }
+            else if (boardCol == 4) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_QUEEN);
+            }
+            else if (boardCol == 5) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_BISHOP);
+            }
+            else if (boardCol == 6) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_KNIGHT);
+            }
+            else if (boardCol == 7) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_ROOK);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else {
+            if (boardCol % 2 == 0) {
+                setDarkGreen(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            } else {
+                setTan(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+    }
+
+    private static void addBPawnsAndWPiecesForWhite(PrintStream out, int squareRow, int boardCol) {
         if (squareRow == 1) {
             if (boardCol == 0) {
                 setDarkGreen(out);
@@ -261,6 +354,74 @@ public class GameplayClient {
                 out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
             } else {
                 setTan(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+    }
+
+    private static void addBPawnsAndWPiecesForBlack(PrintStream out, int squareRow, int boardCol) {
+        if (squareRow == 1) {
+            if (boardCol == 0) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_ROOK);
+            } else if (boardCol == 1) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KNIGHT);
+            } else if (boardCol == 2) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_BISHOP);
+            } else if (boardCol == 3) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KING);
+            } else if (boardCol == 4) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_QUEEN);
+            } else if (boardCol == 5) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_BISHOP);
+            } else if (boardCol == 6) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_KNIGHT);
+            } else if (boardCol == 7) {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(WHITE_ROOK);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else if (squareRow == 7) {
+            if (boardCol % 2 == 0) {
+                setTan(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_PAWN);
+            }
+            else {
+                setDarkGreen(out);
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BLACK_PAWN);
+            }
+            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+                setBlack(out);
+            }
+        }
+        else {
+            if (boardCol % 2 == 0) {
+                setTan(out);
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            } else {
+                setDarkGreen(out);
                 out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
             }
             if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {

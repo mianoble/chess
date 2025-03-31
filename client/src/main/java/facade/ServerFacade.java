@@ -111,7 +111,6 @@ public class ServerFacade {
 
             return readBody(http, responseClass);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new ResponseException(500, e.getMessage());
         }
     }
