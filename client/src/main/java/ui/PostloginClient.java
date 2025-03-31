@@ -93,7 +93,11 @@ public class PostloginClient {
         try {
             gameNum = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
-            System.out.println("Invalid game ID format!");
+//            System.out.println("Invalid game ID format!");
+            return "Invalid game ID format!";
+        }
+        if (gameNum <= 0 || gameNum > gameNumbers.size()) {
+            return "Invalid game ID. Type \"join\" and the game ID and your player color to join.\n";
         }
         int id = gameNumbers.get(gameNum);
         String tempAuth = "none";
