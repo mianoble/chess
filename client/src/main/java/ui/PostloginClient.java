@@ -121,6 +121,18 @@ public class PostloginClient {
     }
 
     public String spectate (String... params) {
+        if (params.length != 1) {
+            return "Type \"spectate\" and the game ID to spectate.\n";
+        }
+        int gameNum = 0;
+        try {
+            gameNum = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return "Invalid game ID format!";
+        }
+        if (gameNum <= 0 || gameNum > gameNumbers.size()) {
+            return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
+        }
         return "spectating";
     }
 
