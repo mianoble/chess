@@ -146,19 +146,7 @@ public class GameplayClient {
 
     private static void addWPawnsAndBPiecesForWhite(PrintStream out, int squareRow, int boardCol) {
         if (squareRow == 2) { // print white pawns
-            if (boardCol % 2 == 0) {
-                setTan(out);
-                out.print(SET_TEXT_COLOR_BLACK);
-                out.print(WHITE_PAWN);
-            }
-            else {
-                setDarkGreen(out);
-                out.print(SET_TEXT_COLOR_BLACK);
-                out.print(WHITE_PAWN);
-            }
-            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                setBlack(out);
-            }
+            blackPawns(out, boardCol, WHITE_PAWN);
         }
         else if (squareRow == 8) {
             if (boardCol == 0) {
@@ -206,16 +194,20 @@ public class GameplayClient {
             }
         }
         else {
-            if (boardCol % 2 == 0) {
-                setTan(out);
-                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-            } else {
-                setDarkGreen(out);
-                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-            }
-            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                setBlack(out);
-            }
+            emptySquares(out, boardCol);
+        }
+    }
+
+    private static void emptySquares(PrintStream out, int boardCol) {
+        if (boardCol % 2 == 0) {
+            setTan(out);
+            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+        } else {
+            setDarkGreen(out);
+            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+        }
+        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+            setBlack(out);
         }
     }
 
@@ -389,31 +381,26 @@ public class GameplayClient {
             }
         }
         else if (squareRow == 7) {
-            if (boardCol % 2 == 0) {
-                setTan(out);
-                out.print(SET_TEXT_COLOR_BLACK);
-                out.print(BLACK_PAWN);
-            }
-            else {
-                setDarkGreen(out);
-                out.print(SET_TEXT_COLOR_BLACK);
-                out.print(BLACK_PAWN);
-            }
-            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                setBlack(out);
-            }
+            blackPawns(out, boardCol, BLACK_PAWN);
         }
         else {
-            if (boardCol % 2 == 0) {
-                setTan(out);
-                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-            } else {
-                setDarkGreen(out);
-                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-            }
-            if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
-                setBlack(out);
-            }
+            emptySquares(out, boardCol);
+        }
+    }
+
+    private static void blackPawns(PrintStream out, int boardCol, String blackPawn) {
+        if (boardCol % 2 == 0) {
+            setTan(out);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(blackPawn);
+        }
+        else {
+            setDarkGreen(out);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(blackPawn);
+        }
+        if (boardCol == BOARD_SIZE_IN_SQUARES - 1) {
+            setBlack(out);
         }
     }
 
