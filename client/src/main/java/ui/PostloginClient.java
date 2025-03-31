@@ -87,15 +87,16 @@ public class PostloginClient {
         }
         int id = gameNumbers.get(gameNum);
         String tempAuth = "none";
-        JoinReq joinRequest = new JoinReq(tempAuth, params[1], id);
+        String playerColor = params[1].toUpperCase();
+        JoinReq joinRequest = new JoinReq(tempAuth, playerColor, id);
         try {
             server.join(joinRequest);
-            System.out.println("You've joined this game! " + params[0]);
-            if (params[1].equals("WHITE")) {
-                return "joinedgame " + params[1];
+            System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
+            if (playerColor.equals("WHITE")) {
+                return "joinedgame " + playerColor;
             }
-            else if (params[1].equals("BLACK")) {
-                return "joinedgame " + params[1];
+            else if (playerColor.equals("BLACK")) {
+                return "joinedgame " + playerColor;
             }
             else {
                 return "failed";

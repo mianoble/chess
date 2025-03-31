@@ -45,9 +45,11 @@ public class GameplayClient {
         playerColor = playerColor.toLowerCase();
         if (playerColor.equals("white")) {
             printBoardWhiteView();
+            return "";
         }
         else if (playerColor.equals("black")) {
             printBoardBlackView();
+            return "";
         }
         return "invalidcolor";
     }
