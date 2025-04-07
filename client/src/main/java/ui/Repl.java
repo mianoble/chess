@@ -1,7 +1,7 @@
 package ui;
 
 import java.util.Scanner;
-import facade.ServerFacade;
+import client.ServerFacade;
 import static ui.EscapeSequences.*;
 
 public class Repl {

@@ -1,6 +1,6 @@
 package ui;
 
-import facade.ServerFacade;
+import client.ServerFacade;
 import static ui.EscapeSequences.*;
 
 import java.io.PrintStream;

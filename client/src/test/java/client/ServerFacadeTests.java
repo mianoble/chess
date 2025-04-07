@@ -1,11 +1,9 @@
 package client;
 
-import facade.ServerFacade;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import java.awt.image.RescaleOp;
 import java.util.UUID;
 
 

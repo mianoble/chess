@@ -1,7 +1,7 @@
 package ui;
 
 import model.ResponseException;
-import facade.ServerFacade;
+import client.ServerFacade;
 import model.GameDataClient;
 import model.JoinReq;
 import model.ListRes;

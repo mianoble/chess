@@ -3,7 +3,7 @@ package ui;
 import model.ResponseException;
 
 import java.util.Arrays;
-import facade.ServerFacade;
+import client.ServerFacade;
 import model.LoginReq;
 import model.RegisterReq;
 
