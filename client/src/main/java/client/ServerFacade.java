@@ -16,6 +16,8 @@ public class ServerFacade {
 
     private final String serverURL;
     private static String authToken;
+    WebsocketCommunicator ws;
+    HttpCommunicator http;
 
     public ServerFacade(String url) {
         serverURL = url;
@@ -111,7 +113,7 @@ public class ServerFacade {
 
             return readBody(http, responseClass);
         } catch (Exception e) {
-            throw new ResponseException(500, e.getMessage());
+             throw new ResponseException(500, e.getMessage());
         }
     }
 

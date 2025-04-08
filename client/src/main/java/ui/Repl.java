@@ -1,10 +1,16 @@
 package ui;
 
 import java.util.Scanner;
+
+import client.NotificationHandler;
 import client.ServerFacade;
+import com.sun.nio.sctp.Notification;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ServerFacade server;
 
     private final PreloginClient preloginClient;
@@ -88,6 +94,16 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage message) {
+        if (message instanceof NotificationMessage notificationMessage) {
+            System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
+        } else {
+            System.out.println(SET_TEXT_COLOR_RED + "[Non-notification message]");
+        }
+
+        printPrompt();
     }
 
     private void printPrompt() {
