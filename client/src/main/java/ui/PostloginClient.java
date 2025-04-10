@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import client.NotificationHandler;
 import client.WebsocketCommunicator;
 import model.*;
@@ -104,11 +105,12 @@ public class PostloginClient {
             server.join(joinRequest);
             System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
             ws = new WebsocketCommunicator(serverUrl, notificationHandler);
-            ws.userJoinedAGame
             if (playerColor.equals("WHITE")) {
+                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, ChessGame.TeamColor.WHITE);
                 return "joinedgame " + playerColor + id;
             }
             else if (playerColor.equals("BLACK")) {
+                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, ChessGame.TeamColor.BLACK);
                 return "joinedgame " + playerColor + id;
             }
             else {
@@ -138,6 +140,7 @@ public class PostloginClient {
             return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
         }
         int id = gameNumbers.get(gameNum);
+        ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, null);
         return "spectating" + id;
     }
 

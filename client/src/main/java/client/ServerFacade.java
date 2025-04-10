@@ -16,12 +16,14 @@ public class ServerFacade {
 
     private final String serverURL;
     private static String authToken;
+    private static String username;
     WebsocketCommunicator ws;
     HttpCommunicator http;
 
     public ServerFacade(String url) {
         serverURL = url;
         authToken = "";
+        username = "";
     }
 
     public String getAuthID() {
@@ -32,16 +34,22 @@ public class ServerFacade {
         return serverURL;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void register(RegisterReq req) throws ResponseException {
         var path = "/user";
         RegisterRes result = this.makeRequest("POST", path, req, RegisterRes.class);
         authToken = result.authToken();
+        username = result.username();;
     }
 
     public void login(LoginReq req) throws ResponseException {
         var path = "/session";
         LoginRes result = this.makeRequest("POST", path, req, LoginRes.class);
         authToken = result.authToken();
+        username = result.username();
     }
 
     public void logout() throws ResponseException {

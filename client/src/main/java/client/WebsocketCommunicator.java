@@ -60,7 +60,7 @@ public class WebsocketCommunicator extends Endpoint {
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
             ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
-            printNotif(error.getMessage());
+            printNotif(error.getErrorMessage());
         }
         else if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
             NotificationMessage notif = new Gson().fromJson(message, NotificationMessage.class);
@@ -77,6 +77,8 @@ public class WebsocketCommunicator extends Endpoint {
     private void printGame(ChessGame game) {
         // System.out.print(ERASE_LINE + '\r');
         // todo: finish this, change to gameplayclient add methods or whateverrrr
+        gameplayClient.getBoardPrintUpdater().boardUpdate(game);
+        gameplayClient.getBoardPrintUpdater().boardPrint( , null);
 
 //        GameplayClient.boardPrinter.updateGame(game);
 //        GameplayClient.boardPrinter.printBoard(GameplayREPL.color, null);
@@ -89,14 +91,27 @@ public class WebsocketCommunicator extends Endpoint {
 
     // sendMessage class (called every time necessary -
     //  join game, spectate game, make move, resign, leave game, in check?, etc.)
-    public void userJoinedAGame(String username, int gameID, ChessGame.TeamColor color) {
+    public void userJoinedAGame(String auth, String username, int gameID, ChessGame.TeamColor color) {
+        ConnectCommand con;
         if (color.equals(ChessGame.TeamColor.WHITE)) {
-            ConnectCommand con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
+            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
                     ConnectCommand.Color.WHITE);
-        } else {
-            ConnectCommand con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
+        } else if (color.equals(ChessGame.TeamColor.BLACK)){
+            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
                     ConnectCommand.Color.BLACK);
+        } else {
+            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.SPECTATOR,
+                    ConnectCommand.Color.WHITE);
+        }
+        String json = new Gson().toJson(con);
+
+        try {
+            session.getBasicRemote().sendText(json);
+        } catch (IOException e) {
+            System.out.println("failed to send connect command (userJoinedAGame");
         }
     }
+
+    public void
 
 }
