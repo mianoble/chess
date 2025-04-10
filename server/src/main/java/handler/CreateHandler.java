@@ -3,17 +3,11 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
-import dataaccess.ResponseException;
-import dataaccess.UserDAO;
 import model.CreateRequest;
 import model.CreateResult;
 import service.GameService;
-import service.UserService;
 import spark.Request;
 import spark.Response;
-import spark.Route;
-
-import java.util.Map;
 
 public class CreateHandler extends MasterHandler {
     private final Gson gson;

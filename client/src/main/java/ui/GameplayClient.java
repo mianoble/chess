@@ -1,13 +1,22 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
+import model.GameData;
+import model.ListRes;
+import model.ResponseException;
+
 import static ui.EscapeSequences.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GameplayClient {
     ServerFacade server;
+    BoardPrintUpdater boardPrintUpdater;
+
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
@@ -15,11 +24,11 @@ public class GameplayClient {
 
     // Padded characters.
     private static final String EMPTY = "   ";
-    private static final String X = " X ";
-    private static final String O = " O ";
 
     public GameplayClient(ServerFacade server) {
         this.server = server;
+        ChessGame tempGame = new ChessGame();
+        boardPrintUpdater = new BoardPrintUpdater(tempGame);
     }
 
     public String eval (String input) {
@@ -27,7 +36,7 @@ public class GameplayClient {
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         return switch(cmd) {
             case "spectate" -> printBoardWhiteView();
-            case "join" -> joinGame(tokens[2]);
+            case "join" -> joinGame(tokens[1], tokens[2]);
             case "help" -> help();
             case "exit" -> "exit";
             default -> help();
@@ -41,18 +50,38 @@ public class GameplayClient {
                 """;
     }
 
-    public String joinGame(String playerColor) {
+    public String joinGame(String gameID, String playerColor) throws ResponseException {
+        ListRes res = server.list();
+        Collection<ChessGame> games = new ArrayList<>();
+
+        for (GameData g : res.games()) {
+            games.add(g.game());
+        }
+
         playerColor = playerColor.toLowerCase();
         if (playerColor.equals("white")) {
-            printBoardWhiteView();
+            boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
             return "";
         }
         else if (playerColor.equals("black")) {
-            printBoardBlackView();
+            boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
             return "";
         }
         return "invalidcolor";
     }
+
+//    public String joinGame(String playerColor) {
+//        playerColor = playerColor.toLowerCase();
+//        if (playerColor.equals("white")) {
+//            printBoardWhiteView();
+//            return "";
+//        }
+//        else if (playerColor.equals("black")) {
+//            printBoardBlackView();
+//            return "";
+//        }
+//        return "invalidcolor";
+//    }
 
     public String printBoardWhiteView() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);

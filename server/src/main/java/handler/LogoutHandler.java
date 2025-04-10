@@ -2,15 +2,11 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
-import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.LogoutResult;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-import spark.Route;
-
-import java.util.Map;
 
 public class LogoutHandler extends MasterHandler{
     private final Gson gson;

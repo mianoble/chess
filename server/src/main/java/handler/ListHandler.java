@@ -3,15 +3,11 @@ package handler;
 import com.google.gson.Gson;
 import dataaccess.AuthTokenDAO;
 import dataaccess.GameDAO;
-import dataaccess.ResponseException;
 import model.ListRequest;
 import model.ListResult;
 import service.GameService;
 import spark.Request;
 import spark.Response;
-import spark.Route;
-
-import java.util.Map;
 
 
 public class ListHandler extends MasterHandler {

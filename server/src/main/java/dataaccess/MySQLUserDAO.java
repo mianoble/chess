@@ -3,10 +3,7 @@ package dataaccess;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
-
-import static dataaccess.MySQLUtility.configureDatabase;
 
 public class MySQLUserDAO implements UserDAO{
 

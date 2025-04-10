@@ -1,12 +1,10 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import spark.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -73,7 +73,7 @@ public class WebsocketCommunicator extends Endpoint {
         // System.out.print(ERASE_LINE + '\r');
         //todo: finish this, change to gameplayclient add methods or whateverrrr
 //        GameplayClient.boardPrinter.updateGame(game);
-//        GameplayREPL.boardPrinter.printBoard(GameplayREPL.color, null);
+//        GameplayClient.boardPrinter.printBoard(GameplayREPL.color, null);
         System.out.print(" >>> ");
     }
 

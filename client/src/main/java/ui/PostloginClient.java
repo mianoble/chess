@@ -1,10 +1,7 @@
 package ui;
 
-import model.ResponseException;
+import model.*;
 import client.ServerFacade;
-import model.GameDataClient;
-import model.JoinReq;
-import model.ListRes;
 
 
 import java.util.Arrays;
@@ -62,7 +59,7 @@ public class PostloginClient {
         try {
             ListRes res = server.list();
             int i = 1;
-            for (GameDataClient game : res.games()) {
+            for (GameData game : res.games()) {
                 gameNumbers.put(i, game.gameID());
                 System.out.print(i + ": ");
                 if (game.whiteUsername() == null) {
@@ -93,7 +90,6 @@ public class PostloginClient {
         try {
             gameNum = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
-//            System.out.println("Invalid game ID format!");
             return "Invalid game ID format!";
         }
         if (gameNum <= 0 || gameNum > gameNumbers.size()) {

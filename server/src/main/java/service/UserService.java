@@ -3,7 +3,6 @@ package service;
 import java.util.UUID;
 
 import dataaccess.AuthTokenDAO;
-import dataaccess.DataAccessException;
 import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.*;

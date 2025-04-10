@@ -1,18 +1,13 @@
 package handler;
 
 import dataaccess.AuthTokenDAO;
-import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
 import dataaccess.UserDAO;
 import model.RegisterRequest;
 import model.RegisterResult;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import com.google.gson.Gson;
-
-import java.util.Map;
 
 public class RegisterHandler extends MasterHandler {
     private final Gson gson;
