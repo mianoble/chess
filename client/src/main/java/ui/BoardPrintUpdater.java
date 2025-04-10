@@ -43,8 +43,9 @@ public class BoardPrintUpdater {
             }
         }
 
+        out.println();
         // print letter headers above board
-        out.print(printLetters(teamColor));
+        printLetters(teamColor);
 
 
         // print perspective based on color (must be white or black)
@@ -56,22 +57,21 @@ public class BoardPrintUpdater {
             int row = white ? (9 - i) : i;
             out.print(row + " ");
 
-            out.print(printRows(row, highlightSquares, highlightPos));
+            printRows(row, highlightSquares, highlightPos, teamColor);
 
             // print row number again
             out.print(SET_BG_COLOR_BLACK);
             out.print(SET_TEXT_COLOR_GREEN);
-            out.print(" " + row);
+            out.println(" " + row);
         }
 
-
-
         // print letter headers under board
-        out.print(printLetters(teamColor));
+        printLetters(teamColor);
+        out.println();
     }
 
     // method for printing letter headers
-    private String printLetters(ChessGame.TeamColor teamColor) {
+    private void printLetters(ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_GREEN);
@@ -81,25 +81,37 @@ public class BoardPrintUpdater {
             out.print("   h  g  f  e  d  c  b  a ");
         }
         out.print("\n");
-        return out.toString();
+
     }
 
-    private String printRows(int row, Collection<ChessPosition> highlightSquares, ChessPosition highlightPos) {
+    private void printRows(int row, Collection<ChessPosition> highlightSquares, ChessPosition highlightPos, ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
+        out.print(SET_TEXT_COLOR_BLACK);
 
         // print each square with correct color and piece
-        for (int col = 1; col < 9; col++) {
-            ChessPosition current = new ChessPosition(row, col);
-            // set bg color based on current pos
-            out.print(findColor(current, highlightSquares, highlightPos));
-            out.print(findPiece(current));
+        if (teamColor.equals(ChessGame.TeamColor.WHITE)) {
+            for (int col = 1; col < 9; col++) {
+                ChessPosition current = new ChessPosition(row, col);
+                // set bg color based on current pos
+                out.print(findColor(current, highlightSquares, highlightPos));
+                out.print(findPiece(current));
+            }
         }
-        return out.toString();
+        else {
+            for (int col = 8; col > 0; col--) {
+                ChessPosition current = new ChessPosition(row, col);
+                // set bg color based on current pos
+                out.print(findColor(current, highlightSquares, highlightPos));
+                out.print(findPiece(current));
+            }
+        }
     }
 
     private String findPiece(ChessPosition current) {
         ChessPiece currPiece = game.getBoard().getPiece(current);
+        if (currPiece == null) {
+            return "   ";
+        }
         // check color
         if (currPiece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
             ChessPiece.PieceType type = currPiece.getPieceType();

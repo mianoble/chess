@@ -17,6 +17,8 @@ public class Repl implements NotificationHandler {
     private final PostloginClient postloginClient;
     private final GameplayClient gameplayClient;
 
+    private int gameID;
+
     public enum State {
         prelogin, // 1
         postlogin, // 2
@@ -60,6 +62,22 @@ public class Repl implements NotificationHandler {
             if (state == State.postlogin) {
                 try {
                     result = postloginClient.eval(line);
+                    if (result.length() >= 10 && result.substring(0, 10).equals("joinedgame")) {
+                        // get gameID
+                        String idString = result.substring(16);
+                        gameID = Integer.parseInt(idString);
+
+                        result = result.substring(0, 16);
+                    }
+
+                    if (result.length() >= 10 && result.substring(0, 10).equals("spectating")) {
+                        // get gameID
+                        String idString = result.substring(10);
+                        gameID = Integer.parseInt(idString);
+
+                        result = result.substring(0, 10);
+                    }
+
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
                     if (result.equals("loggedout")) {
@@ -76,7 +94,7 @@ public class Repl implements NotificationHandler {
 
             if (state == State.gameplay) {
                 try {
-                    result = gameplayClient.eval(line);
+                    result = gameplayClient.eval(line, gameID);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
                     if (board.length < 2 && board[0].equals("exit")) { // spectating or quitting

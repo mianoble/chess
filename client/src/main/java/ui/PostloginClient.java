@@ -103,10 +103,10 @@ public class PostloginClient {
             server.join(joinRequest);
             System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
             if (playerColor.equals("WHITE")) {
-                return "joinedgame " + playerColor;
+                return "joinedgame " + playerColor + id;
             }
             else if (playerColor.equals("BLACK")) {
-                return "joinedgame " + playerColor;
+                return "joinedgame " + playerColor + id;
             }
             else {
                 return "failed";
@@ -120,6 +120,7 @@ public class PostloginClient {
         if (params.length != 1) {
             return "Type \"spectate\" and the game ID to spectate.\n";
         }
+
         int gameNum = 0;
         try {
             gameNum = Integer.parseInt(params[0]);
@@ -129,7 +130,8 @@ public class PostloginClient {
         if (gameNum <= 0 || gameNum > gameNumbers.size()) {
             return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
         }
-        return "spectating";
+        int id = gameNumbers.get(gameNum);
+        return "spectating" + id;
     }
 
     public String help() {

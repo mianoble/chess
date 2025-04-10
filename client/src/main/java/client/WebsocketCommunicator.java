@@ -4,6 +4,8 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.ResponseException;
 import org.eclipse.jetty.io.EndPoint;
+import ui.BoardPrintUpdater;
+import ui.GameplayClient;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -20,6 +22,7 @@ import static ui.EscapeSequences.ERASE_LINE;
 public class WebsocketCommunicator extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
+    GameplayClient gameplayClient;
 
     public WebsocketCommunicator(String url, NotificationHandler notificationHandler) throws Exception {
         try {
@@ -71,7 +74,8 @@ public class WebsocketCommunicator extends Endpoint {
 
     private void printGame(ChessGame game) {
         // System.out.print(ERASE_LINE + '\r');
-        //todo: finish this, change to gameplayclient add methods or whateverrrr
+        // todo: finish this, change to gameplayclient add methods or whateverrrr
+
 //        GameplayClient.boardPrinter.updateGame(game);
 //        GameplayClient.boardPrinter.printBoard(GameplayREPL.color, null);
         System.out.print(" >>> ");

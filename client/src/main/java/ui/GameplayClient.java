@@ -31,12 +31,17 @@ public class GameplayClient {
         boardPrintUpdater = new BoardPrintUpdater(tempGame);
     }
 
-    public String eval (String input) {
+    public BoardPrintUpdater getBoardPrintUpdater() {
+        return boardPrintUpdater;
+    }
+
+
+    public String eval (String input, int gameID) {
         var tokens = input.split(" ");
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         return switch(cmd) {
-            case "spectate" -> printBoardWhiteView();
-            case "join" -> joinGame(tokens[1], tokens[2]);
+            case "spectate" -> spectate(gameID);
+            case "join" -> joinGame(gameID, tokens[2]);
             case "help" -> help();
             case "exit" -> "exit";
             default -> help();
@@ -50,24 +55,55 @@ public class GameplayClient {
                 """;
     }
 
-    public String joinGame(String gameID, String playerColor) throws ResponseException {
-        ListRes res = server.list();
-        Collection<ChessGame> games = new ArrayList<>();
+    public String spectate(int gameID) {
 
-        for (GameData g : res.games()) {
-            games.add(g.game());
+        ChessGame game = findGame(gameID);
+        boardPrintUpdater = new BoardPrintUpdater(game);
+
+        boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
+        return "";
+
+    }
+
+    public ChessGame findGame(int gameID) {
+        try {
+            ListRes res = server.list();
+
+            GameData thisGame = null;
+            for (GameData g : res.games()) {
+                if (g.gameID() == gameID) {
+                    thisGame = g;
+                    break;
+                }
+            }
+
+            if (thisGame != null) {
+                ChessGame game = thisGame.game();
+                return game;
+            } else {
+                return null;
+            }
+        } catch (ResponseException e) {
+            return null;
         }
+    }
+
+    public String joinGame(int gameID, String playerColor) {
+
+        ChessGame game = findGame(gameID);
+        boardPrintUpdater = new BoardPrintUpdater(game);
+
 
         playerColor = playerColor.toLowerCase();
         if (playerColor.equals("white")) {
             boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
             return "";
-        }
-        else if (playerColor.equals("black")) {
+        } else if (playerColor.equals("black")) {
             boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
             return "";
         }
         return "invalidcolor";
+
     }
 
 //    public String joinGame(String playerColor) {
