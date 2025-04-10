@@ -28,6 +28,10 @@ public class ServerFacade {
         return authToken;
     }
 
+    public String getServerURL() {
+        return serverURL;
+    }
+
     public void register(RegisterReq req) throws ResponseException {
         var path = "/user";
         RegisterRes result = this.makeRequest("POST", path, req, RegisterRes.class);

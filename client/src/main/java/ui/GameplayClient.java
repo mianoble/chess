@@ -1,7 +1,9 @@
 package ui;
 
 import chess.ChessGame;
+import client.NotificationHandler;
 import client.ServerFacade;
+import client.WebsocketCommunicator;
 import model.GameData;
 import model.ListRes;
 import model.ResponseException;
@@ -14,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameplayClient {
-    ServerFacade server;
-    BoardPrintUpdater boardPrintUpdater;
+    private final ServerFacade server;
+    private BoardPrintUpdater boardPrintUpdater;
+    private final NotificationHandler notificationHandler;
+    private WebsocketCommunicator ws;
 
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
@@ -25,10 +29,11 @@ public class GameplayClient {
     // Padded characters.
     private static final String EMPTY = "   ";
 
-    public GameplayClient(ServerFacade server) {
+    public GameplayClient(ServerFacade server, NotificationHandler nh) {
         this.server = server;
         ChessGame tempGame = new ChessGame();
         boardPrintUpdater = new BoardPrintUpdater(tempGame);
+        this.notificationHandler = nh;
     }
 
     public BoardPrintUpdater getBoardPrintUpdater() {
@@ -55,20 +60,9 @@ public class GameplayClient {
                 """;
     }
 
-    public String spectate(int gameID) {
-
-        ChessGame game = findGame(gameID);
-        boardPrintUpdater = new BoardPrintUpdater(game);
-
-        boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
-        return "";
-
-    }
-
     public ChessGame findGame(int gameID) {
         try {
             ListRes res = server.list();
-
             GameData thisGame = null;
             for (GameData g : res.games()) {
                 if (g.gameID() == gameID) {
@@ -76,10 +70,8 @@ public class GameplayClient {
                     break;
                 }
             }
-
             if (thisGame != null) {
-                ChessGame game = thisGame.game();
-                return game;
+                return thisGame.game();
             } else {
                 return null;
             }
@@ -88,11 +80,16 @@ public class GameplayClient {
         }
     }
 
-    public String joinGame(int gameID, String playerColor) {
-
+    public String spectate(int gameID) {
         ChessGame game = findGame(gameID);
         boardPrintUpdater = new BoardPrintUpdater(game);
+        boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
+        return "";
+    }
 
+    public String joinGame(int gameID, String playerColor) {
+        ChessGame game = findGame(gameID);
+        boardPrintUpdater = new BoardPrintUpdater(game);
 
         playerColor = playerColor.toLowerCase();
         if (playerColor.equals("white")) {
@@ -103,8 +100,9 @@ public class GameplayClient {
             return "";
         }
         return "invalidcolor";
-
     }
+
+
 
 //    public String joinGame(String playerColor) {
 //        playerColor = playerColor.toLowerCase();
@@ -478,7 +476,6 @@ public class GameplayClient {
         out.print(RESET_BG_COLOR);
         out.print(RESET_BG_COLOR);
     }
-
 
     private static void setDarkGreen(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREEN);

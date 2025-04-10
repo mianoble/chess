@@ -1,5 +1,7 @@
 package ui;
 
+import client.NotificationHandler;
+import client.WebsocketCommunicator;
 import model.*;
 import client.ServerFacade;
 
@@ -8,11 +10,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class PostloginClient {
-    ServerFacade server;
-    HashMap<Integer, Integer> gameNumbers = new HashMap<>();
+    private ServerFacade server;
+    private HashMap<Integer, Integer> gameNumbers = new HashMap<>();
+    private final NotificationHandler notificationHandler;
+    private WebsocketCommunicator ws;
+    private String serverUrl;
 
-    public PostloginClient(ServerFacade server) {
+    public PostloginClient(ServerFacade server, NotificationHandler nh) {
         this.server = server;
+        this.notificationHandler = nh;
+        serverUrl = server.getServerURL();
     }
 
     public String eval (String input) {
@@ -62,12 +69,6 @@ public class PostloginClient {
             for (GameData game : res.games()) {
                 gameNumbers.put(i, game.gameID());
                 System.out.print(i + ": ");
-                if (game.whiteUsername() == null) {
-
-                }
-                else if (game.blackUsername() == null) {
-
-                }
 
                 System.out.print(game.gameName() + " - (white player: " +
                         (game.whiteUsername() != null ? game.whiteUsername() : "empty") +
@@ -102,6 +103,8 @@ public class PostloginClient {
         try {
             server.join(joinRequest);
             System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
+            ws = new WebsocketCommunicator(serverUrl, notificationHandler);
+            ws.userJoinedAGame
             if (playerColor.equals("WHITE")) {
                 return "joinedgame " + playerColor + id;
             }
@@ -111,8 +114,12 @@ public class PostloginClient {
             else {
                 return "failed";
             }
-        } catch (ResponseException e) {
-            return "failed";
+        }
+//        catch (ResponseException e) {
+//            return "failed";
+//        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

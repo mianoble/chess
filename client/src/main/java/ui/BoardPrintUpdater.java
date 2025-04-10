@@ -22,10 +22,7 @@ public class BoardPrintUpdater {
 
     public void boardPrint(ChessGame.TeamColor teamColor, ChessPosition highlightPos) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        boolean white = false;
-        if (teamColor.equals(ChessGame.TeamColor.WHITE)) {
-            white = true;
-        }
+        boolean white = teamColor.equals(ChessGame.TeamColor.WHITE);
 
         // if there is a desired highlightPos, get all the valid moves from .validMoves
             // store it because we will use it later to highlight the boxes
@@ -42,14 +39,11 @@ public class BoardPrintUpdater {
                 highlightSquares.add(m.getEndPosition());
             }
         }
-
         out.println();
         // print letter headers above board
         printLetters(teamColor);
 
-
         // print perspective based on color (must be white or black)
-
         for (int i = 1; i < 9; i++) {
             // print row number
             out.print(SET_BG_COLOR_BLACK);
@@ -81,7 +75,6 @@ public class BoardPrintUpdater {
             out.print("   h  g  f  e  d  c  b  a ");
         }
         out.print("\n");
-
     }
 
     private void printRows(int row, Collection<ChessPosition> highlightSquares, ChessPosition highlightPos, ChessGame.TeamColor teamColor) {
@@ -187,9 +180,7 @@ public class BoardPrintUpdater {
                 color = SET_BG_COLOR_TAN;
             }
         }
-
         return color;
     }
-
 
 }

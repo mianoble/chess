@@ -30,8 +30,8 @@ public class Repl implements NotificationHandler {
     public Repl(String serverUrl) {
         server = new ServerFacade(serverUrl);
         preloginClient = new PreloginClient(server);
-        postloginClient = new PostloginClient(server);
-        gameplayClient = new GameplayClient(server);
+        postloginClient = new PostloginClient(server, this);
+        gameplayClient = new GameplayClient(server, this);
         state = State.prelogin;
     }
 
@@ -120,7 +120,6 @@ public class Repl implements NotificationHandler {
         } else {
             System.out.println(SET_TEXT_COLOR_RED + "[Non-notification message]");
         }
-
         printPrompt();
     }
 

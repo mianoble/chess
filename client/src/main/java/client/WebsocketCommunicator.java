@@ -6,6 +6,7 @@ import model.ResponseException;
 import org.eclipse.jetty.io.EndPoint;
 import ui.BoardPrintUpdater;
 import ui.GameplayClient;
+import websocket.commands.ConnectCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static ui.EscapeSequences.ERASE_LINE;
+import static websocket.commands.ConnectCommand.Role.PLAYER;
 //import javax.websocket.Endpoint;
 
 public class WebsocketCommunicator extends Endpoint {
@@ -87,5 +89,14 @@ public class WebsocketCommunicator extends Endpoint {
 
     // sendMessage class (called every time necessary -
     //  join game, spectate game, make move, resign, leave game, in check?, etc.)
+    public void userJoinedAGame(String username, int gameID, ChessGame.TeamColor color) {
+        if (color.equals(ChessGame.TeamColor.WHITE)) {
+            ConnectCommand con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
+                    ConnectCommand.Color.WHITE);
+        } else {
+            ConnectCommand con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
+                    ConnectCommand.Color.BLACK);
+        }
+    }
 
 }
