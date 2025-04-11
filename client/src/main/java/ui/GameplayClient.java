@@ -20,6 +20,11 @@ public class GameplayClient {
     private BoardPrintUpdater boardPrintUpdater;
     private final NotificationHandler notificationHandler;
     private WebsocketCommunicator ws;
+    private String serverUrl;
+
+    private ChessGame.TeamColor currColor;
+    private String currUser;
+    //private int currGameID;
 
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
@@ -31,6 +36,7 @@ public class GameplayClient {
 
     public GameplayClient(ServerFacade server, NotificationHandler nh) {
         this.server = server;
+        serverUrl = server.getServerURL();
         ChessGame tempGame = new ChessGame();
         boardPrintUpdater = new BoardPrintUpdater(tempGame);
         this.notificationHandler = nh;
@@ -41,13 +47,21 @@ public class GameplayClient {
     }
 
 
-    public String eval (String input, int gameID) {
+    public String eval (String input, int gameID, ChessGame.TeamColor color, String user) throws Exception {
+        currColor = color;
+        //currGameID = gameID;
+        currUser = user;
         var tokens = input.split(" ");
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         return switch(cmd) {
             case "spectate" -> spectate(gameID);
             case "join" -> joinGame(gameID, tokens[2]);
             case "help" -> help();
+            case "redraw" -> redraw();
+            case "leave" -> leave(gameID);
+//            case "move" -> makeMove(tokens[1]);
+//            case "resign" -> resign();
+//            case "highlight" -> highlight(tokens[1]);
             case "exit" -> "exit";
             default -> help();
         };
@@ -56,7 +70,12 @@ public class GameplayClient {
     public String help() {
         return """
                 What do you want to do?
-                    Exit the game: type "exit"
+                    Redraw the chess board: type "redraw"
+                    Leave the game: type "leave"
+                    Make a move: type "move" <ChessMove>
+                    Forfeit the game: type "resign"
+                    Highlight legal moves: type "highlight" <ChessPiece>
+                    Print a list of possible actions: type "help"
                 """;
     }
 
@@ -100,6 +119,19 @@ public class GameplayClient {
             return "";
         }
         return "invalidcolor";
+    }
+
+    public String redraw() {
+        boardPrintUpdater.boardPrint(currColor, null);
+        return "redrawn";
+    }
+
+    public String leave(int gameID) throws Exception {
+
+        ws = new WebsocketCommunicator(serverUrl, notificationHandler);
+        ws.userLeftAGame(server.getAuthID(), gameID, currUser);
+        server.playerLeave(server.getAuthID(), gameID);
+        return "left";
     }
 
 

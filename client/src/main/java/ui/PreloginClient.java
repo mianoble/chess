@@ -39,7 +39,7 @@ public class PreloginClient {
         try {
             server.login(request);
             System.out.println("You've signed in! Welcome " + params[0]);
-            return "loggedin";
+            return "loggedin " + params[0];
         } catch (ResponseException e) {
             System.out.println("Incorrect username or password. Try again");
             return "failed";
@@ -54,7 +54,7 @@ public class PreloginClient {
         try {
             server.register(request);
             System.out.println("You've been registered! Welcome " + params[0]);
-            return "registered";
+            return "registered " + params[0];
         } catch (ResponseException e) {
             System.out.println("Invalid username, password, or email. Try again");
             return "failed";

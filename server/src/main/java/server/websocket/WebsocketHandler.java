@@ -41,7 +41,7 @@ public class WebsocketHandler {
                 }
                 String user = auth.username();
 
-                connections.add(user, session, com.getGameID()); // add new session for this new player
+                // connections.add(user, session, com.getGameID()); // add new session for this new player
                 connectPlayer(session, com);
             } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
                 MakeMoveCommand com = new Gson().fromJson(message, MakeMoveCommand.class);
@@ -55,10 +55,12 @@ public class WebsocketHandler {
                 //todo double check this
                 var authDAO = new MySQLAuthDAO();
                 AuthData auth = authDAO.getAuth(com.getAuthToken());
-                String user = auth.username();
+                if (auth == null) return;
 
+                String user = auth.username();
+                playerLeave(session, com, user);
+                Thread.sleep(50);
                 connections.remove(user);
-                playerLeave(session, com);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -66,26 +68,18 @@ public class WebsocketHandler {
     }
 
     private void connectPlayer(Session session, ConnectCommand com) throws IOException {
-        // check if connect is valid
-
-
         try {
-
-
             var authDAO = new MySQLAuthDAO();
             AuthData auth = authDAO.getAuth(com.getAuthToken());
-
             if (auth == null) {
                 var error = new ErrorMessage("Invalid auth token.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             String user = auth.username();
 
             var gameDAO = new dataaccess.MySQLGameDAO();
             var game = gameDAO.getGame(com.getGameID());
-
             ChessGame.TeamColor color = null;
 
             if (user.equals(game.whiteUsername())) {
@@ -94,22 +88,21 @@ public class WebsocketHandler {
                 color = ChessGame.TeamColor.BLACK;
             }
 
+            connections.add(user, session, com.getGameID());
+
+            NotificationMessage notif;
             if (color == null) {
-                NotificationMessage notif = new NotificationMessage(user + " has joined the game as a " +
-                        "spectator.");
-                connections.broadcast(user, notif);
+                notif = new NotificationMessage(user + " has joined the game as a " + "spectator.");
             }
             else {
             // send message to everyone in game that player joined
-            NotificationMessage notif = new NotificationMessage(user + " has joined the game on the " +
-                    color + " side.");
-                connections.broadcast(user, notif);
+                notif = new NotificationMessage(user + " has joined the game on the " + color + " side.");
             }
+            connections.broadcast(user, com.getGameID(), notif);
 
             // send board to the current user
             LoadGameMessage gameMessage = new LoadGameMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(gameMessage));
-
         } catch (Exception e) {
             e.printStackTrace();
             try {
@@ -145,34 +138,32 @@ public class WebsocketHandler {
             if (turn == ChessGame.TeamColor.WHITE) {
                 ChessGame.TeamColor opponent = ChessGame.TeamColor.BLACK;
                 if (game.isInCheckmate(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Checkmate! " +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Checkmate! " +
                             gameData.blackUsername() + " lost the game."));
                 } else if (game.isInStalemate(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Stalemate! It's a tie."));
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Stalemate! It's a tie."));
                 } else if (game.isInCheck(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Look out! " +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.blackUsername() + " is in check."));
                 } else {
-                    connections.broadcast(null, new NotificationMessage(gameData.blackUsername() +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage(gameData.blackUsername() +
                             " made a move."));
                 }
             } else {
                 ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
                 if (game.isInCheckmate(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Checkmate! " +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Checkmate! " +
                             gameData.whiteUsername() + " lost the game."));
                 } else if (game.isInStalemate(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Stalemate! It's a tie."));
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Stalemate! It's a tie."));
                 } else if (game.isInCheck(opponent)) {
-                    connections.broadcast(null, new NotificationMessage("Look out! " +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.whiteUsername() + " is in check."));
                 } else {
-                    connections.broadcast(null, new NotificationMessage(gameData.whiteUsername() +
+                    connections.broadcast(null, com.getGameID(), new NotificationMessage(gameData.whiteUsername() +
                             " made a move."));
                 }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             try {
@@ -188,11 +179,12 @@ public class WebsocketHandler {
         //todo
     }
 
-    private void playerLeave(Session session, LeaveCommand com) {
+    private void playerLeave(Session session, LeaveCommand com, String user) {
         try {
             // send message to everyone in game that player left
-            NotificationMessage notif = new NotificationMessage(com.getUsername() + " has left the game.");
-            connections.broadcast(com.getUsername(), notif);
+            NotificationMessage notif = new NotificationMessage(user + " has left the game.");
+            connections.broadcast(user, com.getGameID(), notif);
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);

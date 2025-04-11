@@ -15,6 +15,7 @@ public class ConnectionManager {
 
     public void add(String username, Session session, Integer gameID) {
         var connection = new Connection(username, session);
+        System.out.println("Adding connection for " + username + " on game " + gameID);
         connections.put(connection, gameID);
     }
 
@@ -22,28 +23,23 @@ public class ConnectionManager {
         connections.keySet().removeIf(conn -> conn.getUsername().equals(username));
     }
 
-    public void broadcast(String excludeUser, NotificationMessage notif) throws IOException {
-        // find what game they are in and get the gameID
-        Integer userGameID = null;
-        for (var entry : connections.entrySet()) {
-            if (entry.getKey().getUsername().equals(excludeUser)) {
-                userGameID = entry.getValue();
-                break;
-            }
-        }
-        if (userGameID == null) return;
-
+    public void broadcast(String excludeUser, int gameID, NotificationMessage notif) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var entry : connections.entrySet()) {
             Connection c = entry.getKey();
             int id = entry.getValue();
 
+            String test = ("Attempting to send to " + c.getUsername() + " (open? " + c.session.isOpen() + ")");
+            System.out.println(test);
+
             // check if the game id is the right one. if not, skip to next loop iteration
-            if (!Objects.equals(id, userGameID)) continue;
+            if (id != gameID) continue;
 
             // if session is open, broadcast to all but current user
             if (c.session.isOpen()) {
                 if (!c.getUsername().equals(excludeUser)) {
+                    System.out.println("Sending to " + c.getUsername() + ": " + new Gson().toJson(notif));
+
                     c.send(new Gson().toJson(notif));
                 }
             } else {

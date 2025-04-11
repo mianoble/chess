@@ -1,12 +1,15 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.ResponseException;
 import org.eclipse.jetty.io.EndPoint;
 import ui.BoardPrintUpdater;
 import ui.GameplayClient;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -79,7 +82,6 @@ public class WebsocketCommunicator extends Endpoint {
         // System.out.print(ERASE_LINE + '\r');
         // todo: finish this, change to gameplayclient add methods or whateverrrr
         gameplayClient.getBoardPrintUpdater().boardUpdate(game);
-
         gameplayClient.getBoardPrintUpdater().boardPrint(teamColor, null);
 
         System.out.print(" >>> ");
@@ -91,24 +93,26 @@ public class WebsocketCommunicator extends Endpoint {
 
     // sendMessage class (called every time necessary -
     //  join game, spectate game, make move, resign, leave game, in check?, etc.)
-    public void userJoinedAGame(String auth, String username, int gameID, ConnectCommand.Role role) {
+    public void userJoinedAGame(String auth, String username, int gameID, ConnectCommand.Role role) throws IOException {
         ConnectCommand con;
         con = new ConnectCommand(auth, gameID, username, role);
-
-//        if (color.equals(ChessGame.TeamColor.WHITE)) {
-//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER);
-//        } else if (color.equals(ChessGame.TeamColor.BLACK)){
-//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER);
-//        } else {
-//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.SPECTATOR);
-//        }
         String json = new Gson().toJson(con);
+        session.getBasicRemote().sendText(json);
+    }
 
+    public void playerMadeMove(String auth, int gameID, ChessMove chessMove) {
+        MakeMoveCommand move;
+        move = new MakeMoveCommand(auth, gameID, chessMove);
+        String json = new Gson().toJson(move);
         session.getAsyncRemote().sendText(json);
     }
 
 
-
-//    public void userLeftAGame
+    public void userLeftAGame(String auth, int id, String user) throws IOException {
+        LeaveCommand leave;
+        leave = new LeaveCommand(auth, id, user);
+        String json = new Gson().toJson(leave);
+        session.getBasicRemote().sendText(json);
+    }
 
 }

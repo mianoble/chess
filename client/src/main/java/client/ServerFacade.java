@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.*;
 import model.ResponseException;
@@ -177,4 +178,13 @@ public class ServerFacade {
         ws.userJoinedAGame(authToken, username, gameID, ConnectCommand.Role.PLAYER);
     }
 
+    public void playerLeave(String auth, int gameID) {
+        //ws = new WebsocketCommunicator(serverURL, notificationHandler);
+        ws.userLeftAGame(auth, gameID, username);
+    }
+
+    public void makeMove(String auth, int gameID, ChessMove move) throws Exception {
+        ws = new WebsocketCommunicator(serverURL, notificationHandler);
+        ws.playerMadeMove(auth, gameID, move);
+    }
 }

@@ -2,6 +2,7 @@ package ui;
 
 import java.util.Scanner;
 
+import chess.ChessGame;
 import client.NotificationHandler;
 import client.ServerFacade;
 import com.sun.nio.sctp.Notification;
@@ -18,6 +19,8 @@ public class Repl implements NotificationHandler {
     private final GameplayClient gameplayClient;
 
     private int gameID;
+    private ChessGame.TeamColor currentColor;
+    private String currentUser;
 
     public enum State {
         prelogin, // 1
@@ -50,9 +53,19 @@ public class Repl implements NotificationHandler {
                 try {
                     result = preloginClient.eval(line);
                     System.out.println(SET_TEXT_COLOR_BLUE + result);
-                    if (result.equals("loggedin") || result.equals("registered")) {
+//                    if (result.equals("loggedin") || result.equals("registered")) {
+//                        state = State.postlogin;
+//                    }
+                    if (result.startsWith("loggedin")) {
+                        currentUser = result.substring(9);
+                        result = result.substring(0,8);
+                        state = State.postlogin;
+                    } else if (result.startsWith("registered")) {
+                        currentUser = result.substring(11);
+                        result = result.substring(0,10);
                         state = State.postlogin;
                     }
+
                 } catch (Throwable e) {
                     var msg = e.getMessage();
                     System.out.print(msg);
@@ -62,21 +75,41 @@ public class Repl implements NotificationHandler {
             if (state == State.postlogin) {
                 try {
                     result = postloginClient.eval(line);
-                    if (result.length() >= 10 && result.substring(0, 10).equals("joinedgame")) {
+                    if (result.startsWith("joinedgame WHITE")) {
+                        currentColor = ChessGame.TeamColor.WHITE;
                         // get gameID
                         String idString = result.substring(16);
                         gameID = Integer.parseInt(idString);
-
+                        result = result.substring(0, 16);
+                    } else if (result.startsWith("joinedgame BLACK")) {
+                        currentColor = ChessGame.TeamColor.BLACK;
+                        // get gameID
+                        String idString = result.substring(16);
+                        gameID = Integer.parseInt(idString);
                         result = result.substring(0, 16);
                     }
-
-                    if (result.length() >= 10 && result.substring(0, 10).equals("spectating")) {
+                    if (result.startsWith("spectating")) {
+                        currentColor = ChessGame.TeamColor.WHITE;
                         // get gameID
                         String idString = result.substring(10);
                         gameID = Integer.parseInt(idString);
-
                         result = result.substring(0, 10);
                     }
+//                    if (result.length() >= 10 && result.substring(0, 10).equals("joinedgame")) {
+//                        // get gameID
+//                        String idString = result.substring(16);
+//                        gameID = Integer.parseInt(idString);
+//
+//                        result = result.substring(0, 16);
+//                    }
+//
+//                    if (result.length() >= 10 && result.substring(0, 10).equals("spectating")) {
+//                        // get gameID
+//                        String idString = result.substring(10);
+//                        gameID = Integer.parseInt(idString);
+//
+//                        result = result.substring(0, 10);
+//                    }
 
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
@@ -94,10 +127,10 @@ public class Repl implements NotificationHandler {
 
             if (state == State.gameplay) {
                 try {
-                    result = gameplayClient.eval(line, gameID);
+                    result = gameplayClient.eval(line, gameID, currentColor, currentUser);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
-                    if (board.length < 2 && board[0].equals("exit")) { // spectating or quitting
+                    if (board.length < 2 && board[0].equals("left")) {
                         state = State.postlogin;
                     }
                     if (result.equals("invalidcolor")) {
