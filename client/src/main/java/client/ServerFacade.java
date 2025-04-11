@@ -3,6 +3,8 @@ package client;
 import com.google.gson.Gson;
 import model.*;
 import model.ResponseException;
+import websocket.commands.ConnectCommand;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,11 +21,13 @@ public class ServerFacade {
     private static String username;
     WebsocketCommunicator ws;
     HttpCommunicator http;
+    NotificationHandler notificationHandler;
 
-    public ServerFacade(String url) {
+    public ServerFacade(String url, NotificationHandler nh) {
         serverURL = url;
         authToken = "";
         username = "";
+        this.notificationHandler = nh;
     }
 
     public String getAuthID() {
@@ -168,8 +172,9 @@ public class ServerFacade {
         return response;
     }
 
-    public void playerConnect(String authToken, int gameID) {
-        ws = new WebsocketCommunicator(serverURL, nh);
+    public void playerConnect(String authToken, int gameID) throws Exception {
+        ws = new WebsocketCommunicator(serverURL, notificationHandler);
+        ws.userJoinedAGame(authToken, username, gameID, ConnectCommand.Role.PLAYER);
     }
 
 }

@@ -28,7 +28,7 @@ public class Repl implements NotificationHandler {
     private State state;
 
     public Repl(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+        server = new ServerFacade(serverUrl, this);
         preloginClient = new PreloginClient(server);
         postloginClient = new PostloginClient(server, this);
         gameplayClient = new GameplayClient(server, this);

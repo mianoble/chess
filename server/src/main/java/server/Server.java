@@ -2,6 +2,7 @@ package server;
 
 import dataaccess.*;
 import handler.*;
+import server.websocket.WebsocketHandler;
 import spark.*;
 
 public class
@@ -9,6 +10,8 @@ Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+
+        Spark.webSocket("/ws", WebsocketHandler.class);
 
         Spark.staticFiles.location("web");
 

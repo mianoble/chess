@@ -1,10 +1,12 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,7 +44,7 @@ public class ConnectionManager {
             // if session is open, broadcast to all but current user
             if (c.session.isOpen()) {
                 if (!c.getUsername().equals(excludeUser)) {
-                    c.send(notif.toString());
+                    c.send(new Gson().toJson(notif));
                 }
             } else {
                 removeList.add(c);

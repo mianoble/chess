@@ -3,6 +3,7 @@ package client;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
+import ui.Repl;
 
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade facade;
     private String authID;
+    private static NotificationHandler nh;
 
 
     @BeforeAll
@@ -20,7 +22,8 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         var url = "http://localhost:" + port;
-        facade = new ServerFacade(url);
+        nh = new Repl(url);
+        facade = new ServerFacade(url, nh);
         facade.clear();
     }
 

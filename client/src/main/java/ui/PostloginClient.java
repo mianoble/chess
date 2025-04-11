@@ -10,6 +10,9 @@ import client.ServerFacade;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static websocket.commands.ConnectCommand.Role.PLAYER;
+import static websocket.commands.ConnectCommand.Role.SPECTATOR;
+
 public class PostloginClient {
     private ServerFacade server;
     private HashMap<Integer, Integer> gameNumbers = new HashMap<>();
@@ -23,7 +26,7 @@ public class PostloginClient {
         serverUrl = server.getServerURL();
     }
 
-    public String eval (String input) {
+    public String eval (String input) throws Exception {
         var tokens = input.split(" ");
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -106,11 +109,12 @@ public class PostloginClient {
             System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
             ws = new WebsocketCommunicator(serverUrl, notificationHandler);
             if (playerColor.equals("WHITE")) {
-                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, ChessGame.TeamColor.WHITE);
+                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, PLAYER);
+                server.playerConnect(server.getAuthID(), id);
                 return "joinedgame " + playerColor + id;
             }
             else if (playerColor.equals("BLACK")) {
-                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, ChessGame.TeamColor.BLACK);
+                ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, PLAYER);
                 return "joinedgame " + playerColor + id;
             }
             else {
@@ -141,7 +145,7 @@ public class PostloginClient {
         }
         int id = gameNumbers.get(gameNum);
         // ws = new WebsocketCommunicator(serverUrl, notificationHandler);
-        ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, null);
+        ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, SPECTATOR);
         return "spectating" + id;
     }
 

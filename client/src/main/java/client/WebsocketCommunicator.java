@@ -91,23 +91,23 @@ public class WebsocketCommunicator extends Endpoint {
 
     // sendMessage class (called every time necessary -
     //  join game, spectate game, make move, resign, leave game, in check?, etc.)
-    public void userJoinedAGame(String auth, String username, int gameID, ChessGame.TeamColor color) {
+    public void userJoinedAGame(String auth, String username, int gameID, ConnectCommand.Role role) {
         ConnectCommand con;
-        this.teamColor = color;
-        if (color.equals(ChessGame.TeamColor.WHITE)) {
-            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
-                    ConnectCommand.Color.WHITE);
-        } else if (color.equals(ChessGame.TeamColor.BLACK)){
-            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
-                    ConnectCommand.Color.BLACK);
-        } else {
-            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.SPECTATOR,
-                    ConnectCommand.Color.WHITE);
-        }
+        con = new ConnectCommand(auth, gameID, username, role);
+
+//        if (color.equals(ChessGame.TeamColor.WHITE)) {
+//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER);
+//        } else if (color.equals(ChessGame.TeamColor.BLACK)){
+//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER);
+//        } else {
+//            con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.SPECTATOR);
+//        }
         String json = new Gson().toJson(con);
 
         session.getAsyncRemote().sendText(json);
     }
+
+
 
 //    public void userLeftAGame
 

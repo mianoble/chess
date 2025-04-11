@@ -4,10 +4,13 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.GameDAO;
+import dataaccess.MySQLAuthDAO;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import service.UserService;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
@@ -24,38 +27,73 @@ public class WebsocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        if (message.contains("\"commandType\":\"CONNECT\"")) {
-            ConnectCommand com = new Gson().fromJson(message, ConnectCommand.class);
-            connections.add(com.getUsername(), session, com.getGameID()); // add new session for this new player
-            connectPlayer(session, com);
-        }
-        else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
-            MakeMoveCommand com = new Gson().fromJson(message, MakeMoveCommand.class);
-            makeMove(session, com);
-        }
-        else if (message.contains("\"commandType\":\"RESIGN\"")) {
-            ResignCommand com = new Gson().fromJson(message, ResignCommand.class);
-            playerResign(session, com);
-        }
-        else if (message.contains("\"commandType\":\"LEAVE\"")) {
-            LeaveCommand com = new Gson().fromJson(message, LeaveCommand.class);
-            connections.remove(com.getUsername());
-            playerLeave(session, com);
+        try {
+            if (message.contains("\"commandType\":\"CONNECT\"")) {
+                ConnectCommand com = new Gson().fromJson(message, ConnectCommand.class);
+
+                var authDAO = new MySQLAuthDAO();
+                AuthData auth = authDAO.getAuth(com.getAuthToken());
+                String user = auth.username();
+
+                connections.add(user, session, com.getGameID()); // add new session for this new player
+                connectPlayer(session, com);
+            } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
+                MakeMoveCommand com = new Gson().fromJson(message, MakeMoveCommand.class);
+                makeMove(session, com);
+            } else if (message.contains("\"commandType\":\"RESIGN\"")) {
+                ResignCommand com = new Gson().fromJson(message, ResignCommand.class);
+                playerResign(session, com);
+            } else if (message.contains("\"commandType\":\"LEAVE\"")) {
+                LeaveCommand com = new Gson().fromJson(message, LeaveCommand.class);
+
+                //todo double check this
+                var authDAO = new MySQLAuthDAO();
+                AuthData auth = authDAO.getAuth(com.getAuthToken());
+                String user = auth.username();
+
+                connections.remove(user);
+                playerLeave(session, com);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void connectPlayer(Session session, ConnectCommand com) throws IOException {
         // check if connect is valid
 
-        try {
-            // send message to everyone in game that player joined
-            NotificationMessage notif = new NotificationMessage(com.getUsername() + " has joined the game on the " +
-                    com.getColor() + " side.");
-            connections.broadcast(com.getUsername(), notif);
 
-            // send board to the current user
+        try {
+
+
+            var authDAO = new MySQLAuthDAO();
+            AuthData auth = authDAO.getAuth(com.getAuthToken());
+            String user = auth.username();
+
             var gameDAO = new dataaccess.MySQLGameDAO();
             var game = gameDAO.getGame(com.getGameID());
+
+            ChessGame.TeamColor color = null;
+
+            if (user.equals(game.whiteUsername())) {
+                color = ChessGame.TeamColor.WHITE;
+            } else if (user.equals(game.blackUsername())) {
+                color = ChessGame.TeamColor.BLACK;
+            }
+
+            if (color == null) {
+                NotificationMessage notif = new NotificationMessage(user + " has joined the game as a " +
+                        "spectator.");
+                connections.broadcast(user, notif);
+            }
+            else {
+            // send message to everyone in game that player joined
+            NotificationMessage notif = new NotificationMessage(user + " has joined the game on the " +
+                    color + " side.");
+                connections.broadcast(user, notif);
+            }
+
+            // send board to the current user
             LoadGameMessage gameMessage = new LoadGameMessage(game.game());
             session.getRemote().sendString(new Gson().toJson(gameMessage));
 
@@ -134,7 +172,7 @@ public class WebsocketHandler {
     }
 
     private void playerResign(Session session, ResignCommand com) {
-
+        //todo
     }
 
     private void playerLeave(Session session, LeaveCommand com) {
