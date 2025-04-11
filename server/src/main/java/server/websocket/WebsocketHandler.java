@@ -15,6 +15,7 @@ import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
@@ -33,6 +34,11 @@ public class WebsocketHandler {
 
                 var authDAO = new MySQLAuthDAO();
                 AuthData auth = authDAO.getAuth(com.getAuthToken());
+                if (auth == null) {
+                    ErrorMessage error = new ErrorMessage("Invalid auth token.");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                    return; // Don't continue
+                }
                 String user = auth.username();
 
                 connections.add(user, session, com.getGameID()); // add new session for this new player
@@ -68,6 +74,13 @@ public class WebsocketHandler {
 
             var authDAO = new MySQLAuthDAO();
             AuthData auth = authDAO.getAuth(com.getAuthToken());
+
+            if (auth == null) {
+                var error = new ErrorMessage("Invalid auth token.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             String user = auth.username();
 
             var gameDAO = new dataaccess.MySQLGameDAO();
