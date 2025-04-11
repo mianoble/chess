@@ -37,6 +37,9 @@ Server {
             // list games
             Spark.get("/game", new ListHandler(gameDAO, authDAO));
 
+            // update game
+            Spark.get("/game/update", new UpdateHandler(gameDAO, authDAO));
+
             // ClearService
             Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));
 

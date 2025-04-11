@@ -105,4 +105,10 @@ public class GameService {
         return new ListResult(games);
     }
 
+    public EmptyResult update(UpdateRequest req) throws ResponseException {
+        authDAO.getAuth(req.authToken()); // throws if not valid
+        gameDAO.updateGame(req.gameData()); // actually updates the game
+        return new EmptyResult();
+    }
+
 }

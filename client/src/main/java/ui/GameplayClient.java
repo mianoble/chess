@@ -127,6 +127,34 @@ public class GameplayClient {
     }
 
     public String leave(int gameID) throws Exception {
+        ListRes res = server.list();
+        GameData game = null;
+        for (GameData g : res.games()) {
+            if (g.gameID() == gameID) {
+                game = g;
+                break;
+            }
+        }
+
+        if (game == null) {
+            return "game " + gameID + " not found";
+        }
+
+        boolean updated = false;
+        GameData removePlayerGame = null;
+        if (currUser.equals(game.whiteUsername())) {
+            removePlayerGame = new GameData(gameID, null, game.blackUsername(),
+                    game.gameName(), game.game());
+            updated = true;
+        } else if (currUser.equals(game.blackUsername())) {
+            removePlayerGame = new GameData(gameID, game.whiteUsername(), null,
+                    game.gameName(), game.game());
+            updated = true;
+        }
+
+        if (updated) {
+            server.update(removePlayerGame);
+        }
 
         ws = new WebsocketCommunicator(serverUrl, notificationHandler);
         ws.userLeftAGame(server.getAuthID(), gameID, currUser);

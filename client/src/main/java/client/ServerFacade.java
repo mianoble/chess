@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.*;
@@ -103,6 +104,11 @@ public class ServerFacade {
         this.makeRequest("PUT", path, realReq, LogoutRes.class);
     }
 
+    public void update(GameData game) throws ResponseException {
+        var path = "/game/update";
+        this.makeRequest("PUT", path, game, LoginRes.class);
+    }
+
     public ListRes list() throws ResponseException {
         var path = "/game";
         ListRes res = this.makeRequest("GET", path, authToken, ListRes.class);
@@ -178,7 +184,7 @@ public class ServerFacade {
         ws.userJoinedAGame(authToken, username, gameID, ConnectCommand.Role.PLAYER);
     }
 
-    public void playerLeave(String auth, int gameID) {
+    public void playerLeave(String auth, int gameID) throws IOException {
         //ws = new WebsocketCommunicator(serverURL, notificationHandler);
         ws.userLeftAGame(auth, gameID, username);
     }

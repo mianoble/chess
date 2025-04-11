@@ -5,6 +5,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.GameDAO;
 import dataaccess.MySQLAuthDAO;
+import dataaccess.ResponseException;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -45,7 +46,13 @@ public class WebsocketHandler {
                 connectPlayer(session, com);
             } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
                 MakeMoveCommand com = new Gson().fromJson(message, MakeMoveCommand.class);
-                makeMove(session, com);
+
+                var authDAO = new MySQLAuthDAO();
+                AuthData auth = authDAO.getAuth(com.getAuthToken());
+                if (auth == null) return;
+                String user = auth.username();
+
+                makeMove(session, com, user);
             } else if (message.contains("\"commandType\":\"RESIGN\"")) {
                 ResignCommand com = new Gson().fromJson(message, ResignCommand.class);
                 playerResign(session, com);
@@ -114,7 +121,7 @@ public class WebsocketHandler {
         }
     }
 
-    private void makeMove(Session session, MakeMoveCommand com) {
+    private void makeMove(Session session, MakeMoveCommand com, String user) {
         try {
             GameDAO gameDAO = new dataaccess.MySQLGameDAO();
             GameData gameData = gameDAO.getGame(com.getGameID());
@@ -146,7 +153,7 @@ public class WebsocketHandler {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.blackUsername() + " is in check."));
                 } else {
-                    connections.broadcast(null, com.getGameID(), new NotificationMessage(gameData.blackUsername() +
+                    connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.blackUsername() +
                             " made a move."));
                 }
             } else {
@@ -160,7 +167,7 @@ public class WebsocketHandler {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.whiteUsername() + " is in check."));
                 } else {
-                    connections.broadcast(null, com.getGameID(), new NotificationMessage(gameData.whiteUsername() +
+                    connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.whiteUsername() +
                             " made a move."));
                 }
             }
@@ -181,12 +188,30 @@ public class WebsocketHandler {
 
     private void playerLeave(Session session, LeaveCommand com, String user) {
         try {
+            GameDAO gameDAO = new dataaccess.MySQLGameDAO();
+            GameData gameData = gameDAO.getGame(com.getGameID());
+
+            GameData updatedGameData = null;
+            boolean changed = false;
+
+            if (user.equals(gameData.whiteUsername())) {
+                updatedGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+                changed = true;
+            } else if (user.equals(gameData.blackUsername())) {
+                updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+                changed = true;
+            }
+
+            if (changed) {
+                gameDAO.updateGame(updatedGameData);
+            }
+
             // send message to everyone in game that player left
             NotificationMessage notif = new NotificationMessage(user + " has left the game.");
             connections.broadcast(user, com.getGameID(), notif);
 
 
-        } catch (IOException e) {
+        } catch (IOException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
