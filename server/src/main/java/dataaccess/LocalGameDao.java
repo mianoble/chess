@@ -65,4 +65,15 @@ public class LocalGameDao implements GameDAO {
         }
         throw new ResponseException(500, "Game " + game.gameID() + " not found");
     }
+
+    public void updateGame(GameData game) throws ResponseException {
+        for (GameData i : localGameData) {
+            if (i.equals(game)) {
+                localGameData.remove(i);
+                localGameData.add(game);
+                return;
+            }
+        }
+        throw new ResponseException(500, "Game " + game.gameID() + " not found");
+    }
 }

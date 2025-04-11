@@ -168,4 +168,8 @@ public class ServerFacade {
         return response;
     }
 
+    public void playerConnect(String authToken, int gameID) {
+        ws = new WebsocketCommunicator(serverURL, nh);
+    }
+
 }

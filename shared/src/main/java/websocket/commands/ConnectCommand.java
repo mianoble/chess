@@ -2,7 +2,7 @@ package websocket.commands;
 
 public class ConnectCommand extends UserGameCommand{
     public enum Role { PLAYER, SPECTATOR };
-    public enum Color { WHITE, BLACK, NONE};
+    public enum Color { WHITE, BLACK, NONE };
 
     private final String user;
     private final Role role;
@@ -23,7 +23,7 @@ public class ConnectCommand extends UserGameCommand{
         return role;
     }
 
-    public Color getColor() {
-        return color;
+    public String getColor() {
+        return color.toString();
     }
 }

@@ -25,6 +25,7 @@ public class WebsocketCommunicator extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
     GameplayClient gameplayClient;
+    private ChessGame.TeamColor teamColor;
 
     public WebsocketCommunicator(String url, NotificationHandler notificationHandler) throws Exception {
         try {
@@ -78,10 +79,9 @@ public class WebsocketCommunicator extends Endpoint {
         // System.out.print(ERASE_LINE + '\r');
         // todo: finish this, change to gameplayclient add methods or whateverrrr
         gameplayClient.getBoardPrintUpdater().boardUpdate(game);
-        gameplayClient.getBoardPrintUpdater().boardPrint( , null);
 
-//        GameplayClient.boardPrinter.updateGame(game);
-//        GameplayClient.boardPrinter.printBoard(GameplayREPL.color, null);
+        gameplayClient.getBoardPrintUpdater().boardPrint(teamColor, null);
+
         System.out.print(" >>> ");
     }
 
@@ -93,6 +93,7 @@ public class WebsocketCommunicator extends Endpoint {
     //  join game, spectate game, make move, resign, leave game, in check?, etc.)
     public void userJoinedAGame(String auth, String username, int gameID, ChessGame.TeamColor color) {
         ConnectCommand con;
+        this.teamColor = color;
         if (color.equals(ChessGame.TeamColor.WHITE)) {
             con = new ConnectCommand(auth, gameID, username, ConnectCommand.Role.PLAYER,
                     ConnectCommand.Color.WHITE);
@@ -105,13 +106,9 @@ public class WebsocketCommunicator extends Endpoint {
         }
         String json = new Gson().toJson(con);
 
-        try {
-            session.getBasicRemote().sendText(json);
-        } catch (IOException e) {
-            System.out.println("failed to send connect command (userJoinedAGame");
-        }
+        session.getAsyncRemote().sendText(json);
     }
 
-    public void
+//    public void userLeftAGame
 
 }

@@ -142,6 +142,25 @@ public class MySQLGameDAO implements GameDAO{
         }
     }
 
+    @Override
+    public void updateGame(GameData game) throws ResponseException {
+        var statement = "UPDATE game SET whiteUsername=?, blackUsername =?, gameName=?, game=? WHERE gameID=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            var ps = conn.prepareStatement(statement);
+            var json = new Gson().toJson(game.game());
+
+            ps.setString(1, game.whiteUsername());
+            ps.setString(2, game.blackUsername());
+            ps.setString(3, game.gameName());
+            ps.setString(4, json);
+            ps.setInt(5, game.gameID());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new ResponseException(500, String.format("unable to update game: %s, %s", statement, e.getMessage()));
+        }
+    }
+
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS game  (

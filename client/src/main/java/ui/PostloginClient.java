@@ -125,7 +125,7 @@ public class PostloginClient {
         }
     }
 
-    public String spectate (String... params) {
+    public String spectate (String... params) throws Exception {
         if (params.length != 1) {
             return "Type \"spectate\" and the game ID to spectate.\n";
         }
@@ -140,6 +140,7 @@ public class PostloginClient {
             return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
         }
         int id = gameNumbers.get(gameNum);
+        // ws = new WebsocketCommunicator(serverUrl, notificationHandler);
         ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, null);
         return "spectating" + id;
     }

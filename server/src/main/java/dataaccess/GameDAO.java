@@ -20,4 +20,5 @@ public interface GameDAO {
 
     public void deleteGame(GameData game) throws ResponseException;
 
+    public void updateGame(GameData game) throws ResponseException;
 }
