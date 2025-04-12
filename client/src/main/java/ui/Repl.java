@@ -53,9 +53,6 @@ public class Repl implements NotificationHandler {
                 try {
                     result = preloginClient.eval(line);
                     System.out.println(SET_TEXT_COLOR_BLUE + result);
-//                    if (result.equals("loggedin") || result.equals("registered")) {
-//                        state = State.postlogin;
-//                    }
                     if (result.startsWith("loggedin")) {
                         currentUser = result.substring(9);
                         result = result.substring(0,8);
@@ -95,22 +92,6 @@ public class Repl implements NotificationHandler {
                         gameID = Integer.parseInt(idString);
                         result = result.substring(0, 10);
                     }
-//                    if (result.length() >= 10 && result.substring(0, 10).equals("joinedgame")) {
-//                        // get gameID
-//                        String idString = result.substring(16);
-//                        gameID = Integer.parseInt(idString);
-//
-//                        result = result.substring(0, 16);
-//                    }
-//
-//                    if (result.length() >= 10 && result.substring(0, 10).equals("spectating")) {
-//                        // get gameID
-//                        String idString = result.substring(10);
-//                        gameID = Integer.parseInt(idString);
-//
-//                        result = result.substring(0, 10);
-//                    }
-
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
                     if (result.equals("loggedout")) {

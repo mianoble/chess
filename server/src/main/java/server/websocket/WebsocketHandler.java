@@ -175,6 +175,7 @@ public class WebsocketHandler {
             e.printStackTrace();
             try {
                 var error = new websocket.messages.ErrorMessage("Failed to make move: " + e.getMessage());
+                // connections.broadcast(null, com.getGameID(), error);
                 session.getRemote().sendString(new Gson().toJson(error));
             } catch (IOException ioException) {
                 ioException.printStackTrace();
@@ -185,6 +186,8 @@ public class WebsocketHandler {
     private void playerResign(Session session, ResignCommand com) {
         //todo
     }
+
+
 
     private void playerLeave(Session session, LeaveCommand com, String user) {
         try {

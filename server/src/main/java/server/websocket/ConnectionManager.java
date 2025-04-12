@@ -3,6 +3,7 @@ package server.websocket;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ConnectionManager {
         connections.keySet().removeIf(conn -> conn.getUsername().equals(username));
     }
 
-    public void broadcast(String excludeUser, int gameID, NotificationMessage notif) throws IOException {
+    public void broadcast(String excludeUser, int gameID, ServerMessage notif) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var entry : connections.entrySet()) {
             Connection c = entry.getKey();
