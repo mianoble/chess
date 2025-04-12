@@ -1,7 +1,6 @@
     package ui;
 
-    import chess.ChessGame;
-    import chess.ChessMove;
+    import chess.*;
     import client.NotificationHandler;
     import client.ServerFacade;
     import client.WebsocketCommunicator;
@@ -14,6 +13,7 @@
     import java.io.PrintStream;
     import java.nio.charset.StandardCharsets;
     import java.util.ArrayList;
+    import java.util.Arrays;
     import java.util.Collection;
 
     public class GameplayClient {
@@ -25,7 +25,7 @@
 
         private ChessGame.TeamColor currColor;
         private String currUser;
-        //private int currGameID;
+        private int currGameID;
 
         // Board dimensions.
         private static final int BOARD_SIZE_IN_SQUARES = 8;
@@ -50,22 +50,32 @@
 
         public String eval (String input, int gameID, ChessGame.TeamColor color, String user) throws Exception {
             currColor = color;
-            //currGameID = gameID;
+            currGameID = gameID;
             currUser = user;
+
+            initWebSocket();
+
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch(cmd) {
                 case "spectate" -> spectate(gameID);
                 case "join" -> joinGame(gameID, tokens[2]);
                 case "help" -> help();
                 case "redraw" -> redraw();
                 case "leave" -> leave(gameID);
-                case "move" -> makeMove(tokens[1]);
+                case "move" -> makeMoveClient(params);
     //            case "resign" -> resign();
     //            case "highlight" -> highlight(tokens[1]);
                 case "exit" -> "exit";
                 default -> help();
             };
+        }
+
+        private void initWebSocket() throws Exception {
+            if (ws == null) {
+                ws = new WebsocketCommunicator(serverUrl, notificationHandler);
+            }
         }
 
         public String help() {
@@ -100,6 +110,20 @@
             }
         }
 
+        public GameData findGameData(int gameID) {
+            try {
+                ListRes res = server.list();
+                for (GameData g : res.games()) {
+                    if (g.gameID() == gameID) {
+                        return g;
+                    }
+                }
+            } catch (ResponseException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
         public String spectate(int gameID) {
             ChessGame game = findGame(gameID);
             boardPrintUpdater = new BoardPrintUpdater(game);
@@ -122,8 +146,73 @@
             return "invalidcolor";
         }
 
-        public String makeMove(ChessMove move) {
+        public String makeMoveClient(String... params) throws Exception {
+            if (params.length < 2) {
+                return "invalid move request";
+            }
+            String start = params[0];
+            String end = params[1];
+            ChessPosition startPos = parseAlgebraic(start);
+            ChessPosition endPos = parseAlgebraic(end);
 
+            ChessPiece.PieceType promotion = null;
+            if (params.length == 3) {
+                promotion = returnType(params[3]);
+            }
+            // create the move to be used in calculating
+            ChessMove move = new ChessMove(startPos, endPos, promotion);
+
+            ChessGame game = findGame(currGameID);
+            GameData gameData = findGameData(currGameID);
+
+//            game.makeMove(move);
+            ws.playerMadeMove(server.getAuthID(), currGameID, move);
+
+
+            GameData updatedGameData = new GameData(currGameID, gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), game);
+            server.update(updatedGameData);
+
+            boardPrintUpdater = new BoardPrintUpdater(game);
+            if (currColor.equals(ChessGame.TeamColor.WHITE)) {
+                boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
+                return "";
+            } else if (currColor.equals(ChessGame.TeamColor.BLACK)) {
+                boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
+                return "";
+            }
+            return "invalid color";
+
+        }
+
+        private ChessPosition parseAlgebraic(String algebraic) {
+            if (algebraic == null || algebraic.length() != 2) {
+                throw new IllegalArgumentException("Invalid move notation: " + algebraic);
+            }
+
+            char file = algebraic.charAt(0); // a-h
+            char rank = algebraic.charAt(1); // 1-8
+
+            int col = file - 'a' + 1;
+            int row = rank - '1' + 1;
+
+            if (col < 1 || col > 8 || row < 1 || row > 8) {
+                throw new IllegalArgumentException("Invalid chess position: " + algebraic);
+            }
+
+            return new ChessPosition(row, col);
+        }
+
+        public ChessPiece.PieceType returnType(String piece) {
+            return switch(piece.toUpperCase()) {
+                case "PAWN" -> ChessPiece.PieceType.PAWN;
+                case "ROOK" -> ChessPiece.PieceType.ROOK;
+                case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+                case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+                case "KING" -> ChessPiece.PieceType.KING;
+                case "QUEEN" -> ChessPiece.PieceType.QUEEN;
+                default ->  null;
+            };
         }
 
         public String redraw() {
@@ -145,23 +234,22 @@
                 return "game " + gameID + " not found";
             }
 
-            boolean updated = false;
-            GameData removePlayerGame = null;
-            if (currUser.equals(game.whiteUsername())) {
-                removePlayerGame = new GameData(gameID, null, game.blackUsername(),
-                        game.gameName(), game.game());
-                updated = true;
-            } else if (currUser.equals(game.blackUsername())) {
-                removePlayerGame = new GameData(gameID, game.whiteUsername(), null,
-                        game.gameName(), game.game());
-                updated = true;
-            }
+//            boolean updated = false;
+//            GameData removePlayerGame = null;
+//            if (currUser.equals(game.whiteUsername())) {
+//                removePlayerGame = new GameData(gameID, null, game.blackUsername(),
+//                        game.gameName(), game.game());
+//                updated = true;
+//            } else if (currUser.equals(game.blackUsername())) {
+//                removePlayerGame = new GameData(gameID, game.whiteUsername(), null,
+//                        game.gameName(), game.game());
+//                updated = true;
+//            }
+//
+//            if (updated) {
+//                server.update(removePlayerGame);
+//            }
 
-            if (updated) {
-                server.update(removePlayerGame);
-            }
-
-            ws = new WebsocketCommunicator(serverUrl, notificationHandler);
             ws.userLeftAGame(server.getAuthID(), gameID, currUser);
             server.playerLeave(server.getAuthID(), gameID);
             return "left";

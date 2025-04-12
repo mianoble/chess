@@ -60,15 +60,17 @@ public class WebsocketCommunicator extends Endpoint {
         if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
             printGame(loadGame.getGame());
-
+            notificationHandler.notify(loadGame);
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
             ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
             printNotif(error.getErrorMessage());
+            notificationHandler.notify(error);
         }
         else if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
             NotificationMessage notif = new Gson().fromJson(message, NotificationMessage.class);
             printNotif(notif.getMessage());
+            notificationHandler.notify(notif);
         }
     }
 
@@ -114,5 +116,6 @@ public class WebsocketCommunicator extends Endpoint {
         String json = new Gson().toJson(leave);
         session.getBasicRemote().sendText(json);
     }
+
 
 }
