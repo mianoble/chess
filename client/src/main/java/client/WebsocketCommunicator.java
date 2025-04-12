@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static ui.EscapeSequences.ERASE_LINE;
+import static ui.EscapeSequences.*;
 import static websocket.commands.ConnectCommand.Role.PLAYER;
 //import javax.websocket.Endpoint;
 
@@ -81,12 +81,19 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     private void printGame(ChessGame game) {
-        // System.out.print(ERASE_LINE + '\r');
-        // todo: finish this, change to gameplayclient add methods or whateverrrr
-        gameplayClient.getBoardPrintUpdater().boardUpdate(game);
-        gameplayClient.getBoardPrintUpdater().boardPrint(teamColor, null);
-
+        if (gameplayClient != null) {
+            gameplayClient.getBoardPrintUpdater().boardUpdate(game);
+            gameplayClient.getBoardPrintUpdater().boardPrint(teamColor, null);
+        } else {
+            System.out.println("Warning: gameplayClient is null — can't print board.");
+        }
+        System.out.print(RESET_BG_COLOR);
+        System.out.print(SET_TEXT_COLOR_BLUE);
         System.out.print(" >>> ");
+    }
+
+    public void setGameplayClient(GameplayClient client) {
+        this.gameplayClient = client;
     }
 
     // todo: implement methods for sending messages TO the server

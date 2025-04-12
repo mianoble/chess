@@ -6,6 +6,7 @@ import chess.ChessGame;
 import client.NotificationHandler;
 import client.ServerFacade;
 import com.sun.nio.sctp.Notification;
+import websocket.commands.ConnectCommand;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -78,12 +79,22 @@ public class Repl implements NotificationHandler {
                         String idString = result.substring(16);
                         gameID = Integer.parseInt(idString);
                         result = result.substring(0, 16);
+
+                        gameplayClient.connectToGame(gameID, currentColor, currentUser);
+//                        gameplayClient.initWebSocket(); // 👈 Make this public if needed
+//                        server.getWebSocket().userJoinedAGame(server.getAuthID(), server.getUsername(), gameID,
+//                                ConnectCommand.Role.PLAYER);
                     } else if (result.startsWith("joinedgame BLACK")) {
                         currentColor = ChessGame.TeamColor.BLACK;
                         // get gameID
                         String idString = result.substring(16);
                         gameID = Integer.parseInt(idString);
                         result = result.substring(0, 16);
+
+                        gameplayClient.connectToGame(gameID, currentColor, currentUser);
+//                        gameplayClient.initWebSocket(); // 👈 Make this public if needed
+//                        server.getWebSocket().userJoinedAGame(server.getAuthID(), server.getUsername(), gameID,
+//                                ConnectCommand.Role.PLAYER);
                     }
                     if (result.startsWith("spectating")) {
                         currentColor = ChessGame.TeamColor.WHITE;
