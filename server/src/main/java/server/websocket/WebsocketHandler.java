@@ -29,6 +29,7 @@ public class WebsocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
+        System.out.println("Received WebSocket message: " + message);
         try {
             if (message.contains("\"commandType\":\"CONNECT\"")) {
                 ConnectCommand com = new Gson().fromJson(message, ConnectCommand.class);
@@ -49,7 +50,19 @@ public class WebsocketHandler {
 
                 var authDAO = new MySQLAuthDAO();
                 AuthData auth = authDAO.getAuth(com.getAuthToken());
-                if (auth == null) return;
+
+//                if (auth == null) return;
+                if (auth == null) {
+                    System.out.println("Invalid auth token. Sending error.");
+                    ErrorMessage error = new ErrorMessage("Unauthorized move attempt — invalid auth token.");
+                    try {
+                        session.getRemote().sendString(new Gson().toJson(error));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+
                 String user = auth.username();
 
                 makeMove(session, com, user);
@@ -124,9 +137,14 @@ public class WebsocketHandler {
     private void makeMove(Session session, MakeMoveCommand com, String user) {
         try {
             var authDAO = new MySQLAuthDAO();
+
+            System.out.println("Attempting move with token: " + com.getAuthToken());
+
             AuthData auth = authDAO.getAuth(com.getAuthToken());
             if (auth == null) {
+                System.out.println("Auth is null. Sending error message to client.");
                 var error = new ErrorMessage("Unauthorized move attempt — invalid auth token.");
+                System.out.println("Sending error: " + new Gson().toJson(error));
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }

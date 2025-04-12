@@ -4,8 +4,6 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.ResponseException;
-import org.eclipse.jetty.io.EndPoint;
-import ui.BoardPrintUpdater;
 import ui.GameplayClient;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
@@ -16,13 +14,11 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import javax.websocket.*;
-import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import static ui.EscapeSequences.*;
-import static websocket.commands.ConnectCommand.Role.PLAYER;
 //import javax.websocket.Endpoint;
 
 public class WebsocketCommunicator extends Endpoint {
@@ -110,9 +106,9 @@ public class WebsocketCommunicator extends Endpoint {
         session.getBasicRemote().sendText(json);
     }
 
-    public void playerMadeMove(String auth, int gameID, ChessMove chessMove) throws IOException {
+    public void playerMadeMove(String auth, int gameID, ChessMove chessMove, String currUser) throws IOException {
         MakeMoveCommand move;
-        move = new MakeMoveCommand(auth, gameID, chessMove);
+        move = new MakeMoveCommand(auth, gameID, chessMove, currUser);
         String json = new Gson().toJson(move);
         session.getBasicRemote().sendText(json);
     }

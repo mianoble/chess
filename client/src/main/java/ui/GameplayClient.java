@@ -178,7 +178,7 @@
             // create the move to be used in calculating
             ChessMove move = new ChessMove(startPos, endPos, promotion);
 
-            ws.playerMadeMove(server.getAuthID(), currGameID, move);
+            ws.playerMadeMove(server.getAuthID(), currGameID, move, currUser);
             // how to make real move and print board?
             return "move sent";
         }

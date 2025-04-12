@@ -197,15 +197,15 @@ public class ServerFacade {
         }
     }
 
-    public void makeMove(String auth, int gameID, ChessMove move) throws Exception {
-//        ws = new WebsocketCommunicator(serverURL, notificationHandler);
-//        ws.playerMadeMove(auth, gameID, move);
-        if (ws != null) {
-            ws.playerMadeMove(auth, gameID, move);
-        } else {
-            throw new IllegalStateException("WebSocket not initialized");
-        }
-    }
+//    public void makeMove(String auth, int gameID, ChessMove move) throws Exception {
+////        ws = new WebsocketCommunicator(serverURL, notificationHandler);
+////        ws.playerMadeMove(auth, gameID, move);
+//        if (ws != null) {
+//            ws.playerMadeMove(auth, gameID, move);
+//        } else {
+//            throw new IllegalStateException("WebSocket not initialized");
+//        }
+//    }
 
     public void setWebSocket(WebsocketCommunicator ws) {
         this.ws = ws;
