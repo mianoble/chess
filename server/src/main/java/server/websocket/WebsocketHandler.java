@@ -3,14 +3,13 @@ package server.websocket;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
-import dataaccess.GameDAO;
-import dataaccess.MySQLAuthDAO;
-import dataaccess.ResponseException;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.w3c.dom.CDATASection;
 import service.UserService;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
@@ -19,6 +18,7 @@ import websocket.commands.ResignCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -123,6 +123,14 @@ public class WebsocketHandler {
 
     private void makeMove(Session session, MakeMoveCommand com, String user) {
         try {
+            var authDAO = new MySQLAuthDAO();
+            AuthData auth = authDAO.getAuth(com.getAuthToken());
+            if (auth == null) {
+                var error = new ErrorMessage("Unauthorized move attempt — invalid auth token.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             GameDAO gameDAO = new dataaccess.MySQLGameDAO();
             GameData gameData = gameDAO.getGame(com.getGameID());
             ChessGame game = gameData.game();
@@ -183,8 +191,53 @@ public class WebsocketHandler {
         }
     }
 
-    private void playerResign(Session session, ResignCommand com) {
+    private void playerResign(Session session, ResignCommand com) throws ResponseException {
         //todo
+        try {
+            AuthTokenDAO authDAO = new dataaccess.MySQLAuthDAO();
+            GameDAO gameDAO = new MySQLGameDAO();
+            var auth = authDAO.getAuth(com.getAuthToken());
+            var game = gameDAO.getGame(com.getGameID());
+
+            game.game().setGameOver(true);
+            gameDAO.updateGame(game);
+
+            connections.broadcast(null, com.getGameID(), new NotificationMessage(auth.username() +
+                    " has resigned. The game is over."));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        /*
+        try {
+
+
+
+        // 3. Have resigning player leave
+        playerLeave(session, new LeaveCommand(com.getAuthString(), com.getGameID()));
+
+        // 4. Kick observers (could filter based on users not being white/black)
+        List<String> removeList = new ArrayList<>();
+        for (var entry : connections.connections.entrySet()) {
+            Connection conn = entry.getKey();
+            int id = entry.getValue();
+
+            if (id == com.getGameID() && !conn.getUsername().equals(game.whiteUsername()) && !conn.getUsername().equals(game.blackUsername())) {
+                // Notify remaining players
+                var kickNotif = new NotificationMessage(conn.getUsername() + " has been removed (game is over).");
+                connections.broadcast(conn.getUsername(), kickNotif);
+                removeList.add(conn.getUsername());
+            }
+        }
+
+        for (String username : removeList) {
+            connections.remove(username);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Or send error back to client
+    }
+         */
     }
 
 

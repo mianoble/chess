@@ -12,6 +12,8 @@ import java.util.Collection;
 public class ChessGame {
     TeamColor currentTeam = TeamColor.WHITE;
     private ChessBoard thisBoard;
+    private boolean gameOver = false;
+
 
     public ChessGame() {
         thisBoard = new ChessBoard();
@@ -215,5 +217,13 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.thisBoard;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean over) {
+        this.gameOver = over;
     }
 }

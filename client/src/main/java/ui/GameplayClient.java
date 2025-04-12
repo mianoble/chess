@@ -66,7 +66,7 @@
                 case "redraw" -> redraw();
                 case "leave" -> leave(gameID);
                 case "move" -> makeMoveClient(params);
-    //            case "resign" -> resign();
+//                case "resign" -> resign();
     //            case "highlight" -> highlight(tokens[1]);
                 case "exit" -> "exit";
                 default -> help();
@@ -76,6 +76,7 @@
         public void initWebSocket() throws Exception {
             if (ws == null) {
                 ws = new WebsocketCommunicator(serverUrl, notificationHandler);
+                ws.setTeamColor(currColor);
                 ws.setGameplayClient(this);
             }
         }
@@ -144,20 +145,24 @@
 
         public String joinGame(int gameID, String playerColor) {
             ChessGame game = findGame(gameID);
-            boardPrintUpdater = new BoardPrintUpdater(game);
+            // boardPrintUpdater = new BoardPrintUpdater(game);
 
             playerColor = playerColor.toLowerCase();
             if (playerColor.equals("white")) {
-                boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
+                // boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
                 return "";
             } else if (playerColor.equals("black")) {
-                boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
+                // boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
                 return "";
             }
             return "invalidcolor";
         }
 
         public String makeMoveClient(String... params) throws Exception {
+            ChessGame game = findGame(currGameID);
+            if (game.isGameOver()){
+                return "The game is over. No more moves can be made.";
+            }
             if (params.length < 2) {
                 return "invalid move request";
             }
@@ -231,6 +236,10 @@
 //            server.playerLeave(server.getAuthID(), gameID);
             return "left";
         }
+//
+//        public String resign(int gameID) {
+//
+//        }
 
 
 

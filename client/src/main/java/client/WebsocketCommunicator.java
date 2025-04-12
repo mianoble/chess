@@ -10,6 +10,7 @@ import ui.GameplayClient;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -59,22 +60,22 @@ public class WebsocketCommunicator extends Endpoint {
     private void messageHandler(String message) {
         if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
-            printGame(loadGame.getGame());
+//            printGame(loadGame.getGame());
             notificationHandler.notify(loadGame);
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
             ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
-            printNotif(error.getErrorMessage());
+//            printNotif(error.getErrorMessage());
             notificationHandler.notify(error);
         }
         else if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
             NotificationMessage notif = new Gson().fromJson(message, NotificationMessage.class);
-            printNotif(notif.getMessage());
+//            printNotif(notif.getMessage());
             notificationHandler.notify(notif);
         }
     }
 
-    // todo
+
     private void printNotif(String message) {
         // System.out.print(ERASE_LINE + '\r');
         System.out.print("\n" + message + "\n >>> ");
@@ -109,11 +110,11 @@ public class WebsocketCommunicator extends Endpoint {
         session.getBasicRemote().sendText(json);
     }
 
-    public void playerMadeMove(String auth, int gameID, ChessMove chessMove) {
+    public void playerMadeMove(String auth, int gameID, ChessMove chessMove) throws IOException {
         MakeMoveCommand move;
         move = new MakeMoveCommand(auth, gameID, chessMove);
         String json = new Gson().toJson(move);
-        session.getAsyncRemote().sendText(json);
+        session.getBasicRemote().sendText(json);
     }
 
 
@@ -124,5 +125,15 @@ public class WebsocketCommunicator extends Endpoint {
         session.getBasicRemote().sendText(json);
     }
 
+    public void sendResign(String authToken, int gameID) {
+        ResignCommand resign;
+        resign = new ResignCommand(authToken, gameID);
+        String msg = new Gson().toJson(resign);
+        session.getAsyncRemote().sendText(msg);
+    }
+
+    public void setTeamColor(ChessGame.TeamColor color) {
+        this.teamColor = color;
+    }
 
 }

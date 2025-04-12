@@ -1,5 +1,7 @@
 package ui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import chess.ChessGame;
@@ -22,6 +24,8 @@ public class Repl implements NotificationHandler {
     private int gameID;
     private ChessGame.TeamColor currentColor;
     private String currentUser;
+
+    private final List<ServerMessage> receivedMessages = new ArrayList<>();
 
     public enum State {
         prelogin, // 1
@@ -140,12 +144,17 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage message) {
+        receivedMessages.add(message);
         if (message instanceof NotificationMessage notificationMessage) {
             System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
         } else {
             System.out.println(SET_TEXT_COLOR_RED + "[Non-notification message]");
         }
         printPrompt();
+    }
+
+    public List<ServerMessage> getReceivedMessages() {
+        return receivedMessages;
     }
 
     private void printPrompt() {
