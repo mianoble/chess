@@ -142,18 +142,55 @@ public class WebsocketHandler {
 
             AuthData auth = authDAO.getAuth(com.getAuthToken());
             if (auth == null) {
-                System.out.println("Auth is null. Sending error message to client.");
                 var error = new ErrorMessage("Unauthorized move attempt — invalid auth token.");
-                System.out.println("Sending error: " + new Gson().toJson(error));
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
 
             GameDAO gameDAO = new dataaccess.MySQLGameDAO();
             GameData gameData = gameDAO.getGame(com.getGameID());
+
+            if (gameData == null) {
+                var error = new ErrorMessage("Game not found.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             ChessGame game = gameData.game();
 
+            if (game.isGameOver()) {
+                var error = new ErrorMessage("The game is over.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
+            ChessGame.TeamColor playerColor;
+
+            if (auth.username().equals(gameData.whiteUsername())) {
+                playerColor = ChessGame.TeamColor.WHITE;
+            } else if (auth.username().equals(gameData.blackUsername())) {
+                playerColor = ChessGame.TeamColor.BLACK;
+            } else {
+                var error = new ErrorMessage("You are not a player in this game.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
+            if (game.getTeamTurn() != playerColor) {
+                var error = new ErrorMessage("It's not your turn.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             ChessMove move = com.getMove(); // get the move from the command
+
+            var piece = game.getBoard().getPiece(move.getStartPosition());
+            if (piece == null || piece.getTeamColor() != playerColor) {
+                var error = new ErrorMessage("You can only move your own pieces.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             game.makeMove(move);
 
             // update the game in the DAO
@@ -217,6 +254,18 @@ public class WebsocketHandler {
             var auth = authDAO.getAuth(com.getAuthToken());
             var game = gameDAO.getGame(com.getGameID());
 
+            if (!auth.username().equals(game.whiteUsername()) && !auth.username().equals(game.blackUsername())) {
+                var error = new ErrorMessage("You can't resign as an observer.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
+            if (game.game().isGameOver()) {
+                var error = new ErrorMessage("You can't resign. The game is over.");
+                session.getRemote().sendString(new Gson().toJson(error));
+                return;
+            }
+
             game.game().setGameOver(true);
             gameDAO.updateGame(game);
 
@@ -226,36 +275,6 @@ public class WebsocketHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        /*
-        try {
-
-
-
-        // 3. Have resigning player leave
-        playerLeave(session, new LeaveCommand(com.getAuthString(), com.getGameID()));
-
-        // 4. Kick observers (could filter based on users not being white/black)
-        List<String> removeList = new ArrayList<>();
-        for (var entry : connections.connections.entrySet()) {
-            Connection conn = entry.getKey();
-            int id = entry.getValue();
-
-            if (id == com.getGameID() && !conn.getUsername().equals(game.whiteUsername()) && !conn.getUsername().equals(game.blackUsername())) {
-                // Notify remaining players
-                var kickNotif = new NotificationMessage(conn.getUsername() + " has been removed (game is over).");
-                connections.broadcast(conn.getUsername(), kickNotif);
-                removeList.add(conn.getUsername());
-            }
-        }
-
-        for (String username : removeList) {
-            connections.remove(username);
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace(); // Or send error back to client
-    }
-         */
     }
 
 

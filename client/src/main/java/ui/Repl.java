@@ -85,9 +85,6 @@ public class Repl implements NotificationHandler {
                         result = result.substring(0, 16);
 
                         gameplayClient.connectToGame(gameID, currentColor, currentUser);
-//                        gameplayClient.initWebSocket(); // 👈 Make this public if needed
-//                        server.getWebSocket().userJoinedAGame(server.getAuthID(), server.getUsername(), gameID,
-//                                ConnectCommand.Role.PLAYER);
                     } else if (result.startsWith("joinedgame BLACK")) {
                         currentColor = ChessGame.TeamColor.BLACK;
                         // get gameID
@@ -126,7 +123,7 @@ public class Repl implements NotificationHandler {
                     result = gameplayClient.eval(line, gameID, currentColor, currentUser);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
-                    if (board.length < 2 && board[0].equals("left")) {
+                    if (board.length < 2 && (board[0].equals("left") || board[0].equals("resigned"))) {
                         state = State.postlogin;
                     }
                     if (result.equals("invalidcolor")) {

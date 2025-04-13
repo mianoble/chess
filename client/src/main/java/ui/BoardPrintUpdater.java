@@ -183,4 +183,7 @@ public class BoardPrintUpdater {
         return color;
     }
 
+    public ChessGame getGame() {
+        return game;
+    }
 }
