@@ -38,7 +38,7 @@ public class ConnectionManager {
             System.out.println(test);
 
             // check if the game id is the right one. if not, skip to next loop iteration
-            if (id != gameID) continue;
+            if (id != gameID) { continue; }
 
             // if session is open, broadcast to all but current user
             if (c.session.isOpen()) {

@@ -179,33 +179,13 @@ public class ServerFacade {
         return response;
     }
 
-    public void playerConnect(String authToken, int gameID) throws Exception {
-        if (ws == null) {
-//            ws = new WebsocketCommunicator(serverURL, notificationHandler);
-            throw new IllegalStateException("WebSocket not initialized. You must set it from GameplayClient.");
-        }
-        ws.userJoinedAGame(authToken, username, gameID, ConnectCommand.Role.PLAYER);
-    }
-
     public void playerLeave(String auth, int gameID) throws IOException {
-        //ws = new WebsocketCommunicator(serverURL, notificationHandler);
-//        ws.userLeftAGame(auth, gameID, username);
         if (ws != null) {
             ws.userLeftAGame(auth, gameID, username);
         } else {
             throw new IOException("WebSocket not initialized");
         }
     }
-
-//    public void makeMove(String auth, int gameID, ChessMove move) throws Exception {
-////        ws = new WebsocketCommunicator(serverURL, notificationHandler);
-////        ws.playerMadeMove(auth, gameID, move);
-//        if (ws != null) {
-//            ws.playerMadeMove(auth, gameID, move);
-//        } else {
-//            throw new IllegalStateException("WebSocket not initialized");
-//        }
-//    }
 
     public void setWebSocket(WebsocketCommunicator ws) {
         this.ws = ws;

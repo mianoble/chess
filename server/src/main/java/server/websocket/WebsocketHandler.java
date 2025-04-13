@@ -76,7 +76,7 @@ public class WebsocketHandler {
                 //todo double check this
                 var authDAO = new MySQLAuthDAO();
                 AuthData auth = authDAO.getAuth(com.getAuthToken());
-                if (auth == null) return;
+                if (auth == null) { return; }
 
                 String user = auth.username();
                 playerLeave(session, com, user);
@@ -143,35 +143,26 @@ public class WebsocketHandler {
     private void makeMove(Session session, MakeMoveCommand com, String user) {
         try {
             var authDAO = new MySQLAuthDAO();
-
-            System.out.println("Attempting move with token: " + com.getAuthToken());
-
             AuthData auth = authDAO.getAuth(com.getAuthToken());
             if (auth == null) {
                 var error = new ErrorMessage("Unauthorized move attempt — invalid auth token.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             GameDAO gameDAO = new dataaccess.MySQLGameDAO();
             GameData gameData = gameDAO.getGame(com.getGameID());
-
             if (gameData == null) {
                 var error = new ErrorMessage("Game not found.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             ChessGame game = gameData.game();
-
             if (game.isGameOver()) {
                 var error = new ErrorMessage("The game is over.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             ChessGame.TeamColor playerColor;
-
             if (auth.username().equals(gameData.whiteUsername())) {
                 playerColor = ChessGame.TeamColor.WHITE;
             } else if (auth.username().equals(gameData.blackUsername())) {
@@ -181,35 +172,27 @@ public class WebsocketHandler {
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             if (game.getTeamTurn() != playerColor) {
                 var error = new ErrorMessage("It's not your turn.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             ChessMove move = com.getMove(); // get the move from the command
-
             var piece = game.getBoard().getPiece(move.getStartPosition());
             if (piece == null || piece.getTeamColor() != playerColor) {
                 var error = new ErrorMessage("You can only move your own pieces.");
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
-
             game.makeMove(move);
-
-            // update the game in the DAO
             gameDAO.updateGame(new GameData(com.getGameID(), gameData.whiteUsername(), gameData.blackUsername(),
                     gameData.gameName(), game));
-
             LoadGameMessage updateMessage = new LoadGameMessage(game);
             for (var con : connections.connections.keySet()) {
                 if (connections.connections.get(con).equals(com.getGameID())) {
                     con.send(new Gson().toJson(updateMessage));
                 }
             }
-
             ChessGame.TeamColor turn = game.getTeamTurn();
             if (turn == ChessGame.TeamColor.WHITE) {
                 ChessGame.TeamColor opponent = ChessGame.TeamColor.BLACK;
@@ -244,7 +227,6 @@ public class WebsocketHandler {
             e.printStackTrace();
             try {
                 var error = new websocket.messages.ErrorMessage("Failed to make move: " + e.getMessage());
-                // connections.broadcast(null, com.getGameID(), error);
                 session.getRemote().sendString(new Gson().toJson(error));
             } catch (IOException ioException) {
                 ioException.printStackTrace();

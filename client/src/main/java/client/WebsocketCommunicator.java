@@ -56,49 +56,22 @@ public class WebsocketCommunicator extends Endpoint {
     private void messageHandler(String message) {
         if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
-//            printGame(loadGame.getGame());
             notificationHandler.notify(loadGame);
         }
         else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
             ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
-//            printNotif(error.getErrorMessage());
             notificationHandler.notify(error);
         }
         else if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
             NotificationMessage notif = new Gson().fromJson(message, NotificationMessage.class);
-//            printNotif(notif.getMessage());
             notificationHandler.notify(notif);
         }
-    }
-
-
-    private void printNotif(String message) {
-        // System.out.print(ERASE_LINE + '\r');
-        System.out.print("\n" + message + "\n >>> ");
-    }
-
-    private void printGame(ChessGame game) {
-        if (gameplayClient != null) {
-            gameplayClient.getBoardPrintUpdater().boardUpdate(game);
-            gameplayClient.getBoardPrintUpdater().boardPrint(teamColor, null);
-        } else {
-            System.out.println("Warning: gameplayClient is null — can't print board.");
-        }
-        System.out.print(RESET_BG_COLOR);
-        System.out.print(SET_TEXT_COLOR_BLUE);
-        System.out.print(" >>> ");
     }
 
     public void setGameplayClient(GameplayClient client) {
         this.gameplayClient = client;
     }
 
-    // todo: implement methods for sending messages TO the server
-    //  (ex: when someone joins a game, we send that message to the server, then the server will sent out
-    //  notif to everyone else connected)
-
-    // sendMessage class (called every time necessary -
-    //  join game, spectate game, make move, resign, leave game, in check?, etc.)
     public void userJoinedAGame(String auth, String username, int gameID, ConnectCommand.Role role) throws IOException {
         ConnectCommand con;
         con = new ConnectCommand(auth, gameID, username, role);

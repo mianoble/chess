@@ -122,20 +122,6 @@
             }
         }
 
-        public GameData findGameData(int gameID) {
-            try {
-                ListRes res = server.list();
-                for (GameData g : res.games()) {
-                    if (g.gameID() == gameID) {
-                        return g;
-                    }
-                }
-            } catch (ResponseException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
         public String spectate(int gameID) {
             ChessGame game = findGame(gameID);
             boardPrintUpdater = new BoardPrintUpdater(game);
@@ -145,14 +131,10 @@
 
         public String joinGame(int gameID, String playerColor) {
             ChessGame game = findGame(gameID);
-            // boardPrintUpdater = new BoardPrintUpdater(game);
-
             playerColor = playerColor.toLowerCase();
             if (playerColor.equals("white")) {
-                // boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
                 return "";
             } else if (playerColor.equals("black")) {
-                // boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
                 return "";
             }
             return "invalidcolor";

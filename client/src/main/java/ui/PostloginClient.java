@@ -107,23 +107,16 @@ public class PostloginClient {
         try {
             server.join(joinRequest);
             System.out.println("You've joined game " + params[0] + " as the " + playerColor.toLowerCase() + " player!");
-            //ws = new WebsocketCommunicator(serverUrl, notificationHandler);
             if (playerColor.equals("WHITE")) {
-                //ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, PLAYER);
-//                server.playerConnect(server.getAuthID(), id);
                 return "joinedgame " + playerColor + id;
             }
             else if (playerColor.equals("BLACK")) {
-                //ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, PLAYER);
                 return "joinedgame " + playerColor + id;
             }
             else {
                 return "failed";
             }
         }
-//        catch (ResponseException e) {
-//            return "failed";
-//        }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -144,7 +137,6 @@ public class PostloginClient {
             return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
         }
         int id = gameNumbers.get(gameNum);
-        // ws = new WebsocketCommunicator(serverUrl, notificationHandler);
         ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, SPECTATOR);
         return "spectating" + id;
     }
