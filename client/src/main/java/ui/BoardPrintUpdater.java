@@ -16,10 +16,6 @@ public class BoardPrintUpdater {
         this.game = game;
     }
 
-    public void boardUpdate(ChessGame updatedGame) {
-        this.game = updatedGame;
-    }
-
     public void boardPrint(ChessGame.TeamColor teamColor, ChessPosition highlightPos) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         boolean white = teamColor.equals(ChessGame.TeamColor.WHITE);
