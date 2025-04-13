@@ -7,6 +7,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.w3c.dom.CDATASection;
@@ -85,6 +86,11 @@ public class WebsocketHandler {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @OnWebSocketClose
+    public void onClose(Session session, int statusCode, String reason) {
+        connections.remove(session);
     }
 
     private void connectPlayer(Session session, ConnectCommand com) throws IOException {

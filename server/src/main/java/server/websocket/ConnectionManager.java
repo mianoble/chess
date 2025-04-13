@@ -20,8 +20,12 @@ public class ConnectionManager {
         connections.put(connection, gameID);
     }
 
-    public void remove(String username) {
-        connections.keySet().removeIf(conn -> conn.getUsername().equals(username));
+    public void remove(Session session) {
+        connections.keySet().removeIf(conn -> conn.getSession().equals(session));
+    }
+
+    public void remove(String user) {
+        connections.keySet().removeIf(conn -> conn.getUsername().equals(user));
     }
 
     public void broadcast(String excludeUser, int gameID, ServerMessage notif) throws IOException {
