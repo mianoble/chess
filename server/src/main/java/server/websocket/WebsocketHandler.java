@@ -66,6 +66,7 @@ public class WebsocketHandler {
 
                 String user = auth.username();
 
+
                 makeMove(session, com, user);
             } else if (message.contains("\"commandType\":\"RESIGN\"")) {
                 ResignCommand com = new Gson().fromJson(message, ResignCommand.class);
@@ -90,6 +91,7 @@ public class WebsocketHandler {
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
+        // Thread.sleep(50);
         connections.remove(session);
     }
 
@@ -177,7 +179,9 @@ public class WebsocketHandler {
                 session.getRemote().sendString(new Gson().toJson(error));
                 return;
             }
+
             ChessMove move = com.getMove(); // get the move from the command
+
             var piece = game.getBoard().getPiece(move.getStartPosition());
             if (piece == null || piece.getTeamColor() != playerColor) {
                 var error = new ErrorMessage("You can only move your own pieces.");
@@ -193,9 +197,14 @@ public class WebsocketHandler {
                     con.send(new Gson().toJson(updateMessage));
                 }
             }
+
+
+
             ChessGame.TeamColor turn = game.getTeamTurn();
             if (turn == ChessGame.TeamColor.WHITE) {
-                ChessGame.TeamColor opponent = ChessGame.TeamColor.BLACK;
+                ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
+                connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.blackUsername() +
+                        " made this move: " + move.toString()));
                 if (game.isInCheckmate(opponent)) {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Checkmate! " +
                             gameData.blackUsername() + " lost the game."));
@@ -204,12 +213,11 @@ public class WebsocketHandler {
                 } else if (game.isInCheck(opponent)) {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.blackUsername() + " is in check."));
-                } else {
-                    connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.blackUsername() +
-                            " made a move."));
                 }
             } else {
-                ChessGame.TeamColor opponent = ChessGame.TeamColor.WHITE;
+                ChessGame.TeamColor opponent = ChessGame.TeamColor.BLACK;
+                connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.whiteUsername() +
+                        " made this move: " + move.toString()));
                 if (game.isInCheckmate(opponent)) {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Checkmate! " +
                             gameData.whiteUsername() + " lost the game."));
@@ -218,9 +226,6 @@ public class WebsocketHandler {
                 } else if (game.isInCheck(opponent)) {
                     connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
                             gameData.whiteUsername() + " is in check."));
-                } else {
-                    connections.broadcast(user, com.getGameID(), new NotificationMessage(gameData.whiteUsername() +
-                            " made a move."));
                 }
             }
         } catch (Exception e) {
@@ -231,6 +236,97 @@ public class WebsocketHandler {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
+        }
+    }
+
+//    private void makeMove(Session session, MakeMoveCommand com, String user) {
+//        try {
+//            var authDAO = new MySQLAuthDAO();
+//            var gameDAO = new MySQLGameDAO();
+//            AuthData auth = authDAO.getAuth(com.getAuthToken());
+//            if (auth == null) {
+//                sendError(session, "Unauthorized move attempt — invalid auth token.");
+//                return;
+//            }
+//            GameData gameData = gameDAO.getGame(com.getGameID());
+//            if (gameData == null) {
+//                sendError(session, "Game not found.");
+//                return;
+//            }
+//            ChessGame game = gameData.game();
+//            if (game.isGameOver()) {
+//                sendError(session, "The game is over.");
+//                return;
+//            }
+//            ChessGame.TeamColor playerColor = getPlayerColor(auth.username(), gameData);
+//            if (playerColor == null) {
+//                sendError(session, "You are not a player in this game.");
+//                return;
+//            }
+//            if (game.getTeamTurn() != playerColor) {
+//                sendError(session, "It's not your turn.");
+//                return;
+//            }
+//            ChessMove move = com.getMove();
+//            var piece = game.getBoard().getPiece(move.getStartPosition());
+//            if (piece == null || piece.getTeamColor() != playerColor) {
+//                sendError(session, "You can only move your own pieces.");
+//                return;
+//            }
+//            ChessGame.TeamColor opponent = (playerColor == ChessGame.TeamColor.WHITE)
+//                    ? ChessGame.TeamColor.BLACK
+//                    : ChessGame.TeamColor.WHITE;
+//            String opponentUsername = (opponent == ChessGame.TeamColor.WHITE)
+//                    ? gameData.whiteUsername()
+//                    : gameData.blackUsername();
+//            game.makeMove(move);
+//            gameDAO.updateGame(new GameData(com.getGameID(), gameData.whiteUsername(), gameData.blackUsername(),
+//                    gameData.gameName(), game));
+//            LoadGameMessage updateMessage = new LoadGameMessage(game);
+//            for (var con : connections.connections.keySet()) {
+//                if (connections.connections.get(con).equals(com.getGameID())) {
+//                    con.send(new Gson().toJson(updateMessage));
+//                }
+//            }
+//
+//            if (game.isInCheckmate(opponent)) {
+//                connections.broadcast(null, com.getGameID(),
+//                        new NotificationMessage("Checkmate! " + opponentUsername + " lost the game."));
+//                game.setGameOver(true);
+//                gameDAO.updateGame(gameData);
+//            } else if (game.isInStalemate(opponent)) {
+//                connections.broadcast(null, com.getGameID(),
+//                        new NotificationMessage("Stalemate! It's a tie."));
+//                game.setGameOver(true);
+//                gameDAO.updateGame(gameData);
+//            } else if (game.isInCheck(opponent)) {
+//                connections.broadcast(null, com.getGameID(), new NotificationMessage("Look out! " +
+//                        opponentUsername + " is in check."));
+//            } else {
+//                connections.broadcast(user, com.getGameID(), new NotificationMessage(user + " made a move."));
+//            }
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//            try {
+//                sendError(session, "Failed to make move: " + e.getMessage());
+//            } catch (IOException ioException) {
+//                ioException.printStackTrace();
+//            }
+//        }
+//    }
+
+    private void sendError(Session session, String message) throws IOException {
+        ErrorMessage error = new ErrorMessage(message);
+        session.getRemote().sendString(new Gson().toJson(error));
+    }
+
+    private ChessGame.TeamColor getPlayerColor(String username, GameData gameData) {
+        if (username.equals(gameData.whiteUsername())) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (username.equals(gameData.blackUsername())) {
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
         }
     }
 
@@ -281,6 +377,10 @@ public class WebsocketHandler {
             } else if (user.equals(gameData.blackUsername())) {
                 updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
                 changed = true;
+            } else {
+                NotificationMessage notif = new NotificationMessage(user + " has left the game as a spectator.");
+                connections.broadcast(user, com.getGameID(), notif);
+                return;
             }
 
             if (changed) {

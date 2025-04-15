@@ -66,8 +66,9 @@
                 case "redraw" -> redraw();
                 case "leave" -> leave(gameID);
                 case "move" -> makeMoveClient(params);
-                case "resign" -> resign(gameID);
-    //            case "highlight" -> highlight(tokens[1]);
+                case "resign" -> resignPrompt();
+                case "yes" -> resign(gameID);
+                case "highlight" -> highlight(tokens[1]);
                 case "exit" -> "exit";
                 default -> help();
             };
@@ -97,7 +98,7 @@
                         Leave the game: type "leave"
                         Make a move: type "move" <ChessMove>
                         Forfeit the game: type "resign"
-                        Highlight legal moves: type "highlight" <ChessPiece>
+                        Highlight legal moves: type "highlight" <ChessPosition>
                         Print a list of possible actions: type "help"
                     """;
         }
@@ -133,8 +134,10 @@
             ChessGame game = findGame(gameID);
             playerColor = playerColor.toLowerCase();
             if (playerColor.equals("white")) {
+                boardPrintUpdater.boardPrint(ChessGame.TeamColor.WHITE, null);
                 return "";
             } else if (playerColor.equals("black")) {
+                boardPrintUpdater.boardPrint(ChessGame.TeamColor.BLACK, null);
                 return "";
             }
             return "invalidcolor";
@@ -154,6 +157,10 @@
             ChessPosition startPos = parseAlgebraic(start);
             ChessPosition endPos = parseAlgebraic(end);
 
+            if (startPos.equals(null) || endPos.equals(null)) {
+                return "failed move";
+            }
+
             ChessPiece.PieceType promotion = null;
             if (params.length == 3) {
                 promotion = returnType(params[3]);
@@ -168,7 +175,9 @@
 
         private ChessPosition parseAlgebraic(String algebraic) {
             if (algebraic == null || algebraic.length() != 2) {
-                throw new IllegalArgumentException("Invalid move notation: " + algebraic);
+//                throw new IllegalArgumentException("Invalid move notation: " + algebraic);
+                System.out.println("\"Invalid move notation: \" + algebraic");
+                return null;
             }
 
             char file = algebraic.charAt(0); // a-h
@@ -178,7 +187,9 @@
             int row = rank - '1' + 1;
 
             if (col < 1 || col > 8 || row < 1 || row > 8) {
-                throw new IllegalArgumentException("Invalid chess position: " + algebraic);
+//                throw new IllegalArgumentException("Invalid chess position: " + algebraic);
+                System.out.println("\"Invalid chess position: \" + algebraic");
+                return null;
             }
 
             return new ChessPosition(row, col);
@@ -219,7 +230,11 @@
             return "left";
         }
 
+        public String resignPrompt () {
+            return "resignprompt";
+        }
         public String resign(int gameID) {
+
             try {
                 ws.sendResign(server.getAuthID(), gameID);
                 return "resigned";
@@ -228,5 +243,10 @@
             }
         }
 
+        private  String highlight(String pos) {
+            ChessPosition position = parseAlgebraic(pos);
+            boardPrintUpdater.boardPrint(currColor, position);
+            return "highlighted";
+        }
 
     }

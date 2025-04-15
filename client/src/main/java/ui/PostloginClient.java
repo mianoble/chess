@@ -28,6 +28,7 @@ public class PostloginClient {
 
     public String eval (String input) throws Exception {
         var tokens = input.split(" ");
+
         var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch(cmd) {
@@ -137,6 +138,11 @@ public class PostloginClient {
             return "Invalid game ID. Type \"spectate\" and the game ID to spectate.\n";
         }
         int id = gameNumbers.get(gameNum);
+
+        if (ws == null) {
+            ws = new WebsocketCommunicator(server.getServerURL(), notificationHandler);
+        }
+
         ws.userJoinedAGame(server.getAuthID(), server.getUsername(), id, SPECTATOR);
         return "spectating" + id;
     }

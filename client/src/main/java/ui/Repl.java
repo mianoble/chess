@@ -9,6 +9,8 @@ import client.NotificationHandler;
 import client.ServerFacade;
 import com.sun.nio.sctp.Notification;
 import websocket.commands.ConnectCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -123,7 +125,11 @@ public class Repl implements NotificationHandler {
                     result = gameplayClient.eval(line, gameID, currentColor, currentUser);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     var board = result.split(" ");
-                    if (board.length < 2 && (board[0].equals("left") || board[0].equals("resigned"))) {
+                    if (board[0].equals("resignprompt")) {
+                        System.out.println();
+                        System.out.println("Are you sure you want to resign? <YES|NO>");
+                    }
+                    if (board.length < 2 && (board[0].equals("left"))) {
                         state = State.postlogin;
                     }
                     if (result.equals("invalidcolor")) {
@@ -142,11 +148,26 @@ public class Repl implements NotificationHandler {
 
     public void notify(ServerMessage message) {
         receivedMessages.add(message);
-        if (message instanceof NotificationMessage notificationMessage) {
-            System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
+
+        if (message instanceof NotificationMessage) {
+            NotificationMessage nm = (NotificationMessage) message;
+            System.out.println();
+            System.out.println(SET_TEXT_COLOR_MAGENTA + nm.getMessage());
+        } else if (message instanceof ErrorMessage) {
+            ErrorMessage em = (ErrorMessage) message;
+            System.out.println();
+            System.out.println(SET_TEXT_COLOR_RED + "Error: " + em.getErrorMessage());
+        } else if (message instanceof LoadGameMessage) {
+            LoadGameMessage lm = (LoadGameMessage) message;
+            System.out.println();
+            System.out.println(SET_TEXT_COLOR_GREEN + "Board updated.");
+            gameplayClient.getBoardPrintUpdater().boardUpdate(lm.getGame());
+            gameplayClient.getBoardPrintUpdater().boardPrint(currentColor, null);
         } else {
-            System.out.println(SET_TEXT_COLOR_RED + "[Non-notification message]");
+            System.out.println();
+            System.out.println(SET_TEXT_COLOR_RED + "[Unrecognized message type]");
         }
+
         printPrompt();
     }
 

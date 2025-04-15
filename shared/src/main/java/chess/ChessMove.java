@@ -28,7 +28,47 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return "[" + endPosition.getRow() + ", " + endPosition.getColumn() + "]";
+        String startAlpha = "";
+        if (startPosition.getColumn() == 1) {
+            startAlpha = "a";
+        } else if (startPosition.getColumn() == 2) {
+            startAlpha = "b";
+        } else if (startPosition.getColumn() == 3) {
+            startAlpha = "c";
+        } else if (startPosition.getColumn() == 4) {
+            startAlpha = "d";
+        } else if (startPosition.getColumn() == 5) {
+            startAlpha = "e";
+        } else if (startPosition.getColumn() == 6) {
+            startAlpha = "f";
+        } else if (startPosition.getColumn() == 7) {
+            startAlpha = "g";
+        } else if (startPosition.getColumn() == 8) {
+            startAlpha = "h";
+        }
+
+        String endAlpha = "";
+        if (endPosition.getColumn() == 1) {
+            endAlpha = "a";
+        } else if (endPosition.getColumn() == 2) {
+            endAlpha = "b";
+        } else if (endPosition.getColumn() == 3) {
+            endAlpha = "c";
+        }else if (endPosition.getColumn() == 4) {
+            endAlpha = "d";
+        }else if (endPosition.getColumn() == 5) {
+            endAlpha = "e";
+        }else if (endPosition.getColumn() == 6) {
+            endAlpha = "f";
+        }else if (endPosition.getColumn() == 7) {
+            endAlpha = "g";
+        }else if (endPosition.getColumn() == 8) {
+            endAlpha = "h";
+        }
+
+        String ans = startAlpha + startPosition.getRow() + " to " +
+                endAlpha + endPosition.getRow();
+        return ans;
     }
 
     @Override

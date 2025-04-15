@@ -60,6 +60,10 @@ public class BoardPrintUpdater {
         out.println();
     }
 
+    public void boardUpdate(ChessGame updatedGame) {
+        this.game = updatedGame;
+    }
+
     // method for printing letter headers
     private void printLetters(ChessGame.TeamColor teamColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
